@@ -13,6 +13,7 @@ items.qc
 name.qc
 menus.qc
 weapons.qc
+round_manager.qc
 world.qc
 client.qc
 server.qc
