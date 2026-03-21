@@ -209,7 +209,10 @@ void () GameControl =
 	if (pcount == 0 && pdead > 0) //everyone died
 	{
 		if (endgame_timer == 0)
+		{
+			dprint("GameControl: all players dead, starting restart countdown\n");
 			bprint(2, "^4** ^bTHE PLAYERS WERE SLAIN^b **\n");
+		}
 		if (endgame_timer == 1)
 			bprint(2, "^4** ^bTHIS AREA WILL RESTART^b **\n");
 		if (endgame_timer == 7)
@@ -219,13 +222,26 @@ void () GameControl =
 		if (endgame_timer == 9)
 			bprint(2, "^4** 1 **\n");
 		if (endgame_timer == 10)
+		{
+			dprint("GameControl: issuing map restart\n");
 			localcmd("restart\n");
+		}
 
 		sound (world, CHAN_BODY, "misc/menu3.wav", 1, ATTN_NONE);
 	}
 
 	if (pcount == 0 && pdead > 0)
-		endgame_timer = endgame_timer + 1;
+	{
+		// clamp timer so it stops incrementing after the restart command fires
+		if (endgame_timer <= 10)
+			endgame_timer = endgame_timer + 1;
+	}
+	else
+	{
+		// reset timer if players are alive (e.g. after reconnect before restart takes effect)
+		if (endgame_timer > 0)
+			endgame_timer = 0;
+	}
 
 	self.think = GameControl;
 	self.nextthink = time + 1;
@@ -241,12 +257,15 @@ void () GameTimer =
 	switched = 0;
 
 	te = findradius(self.origin, 25000);
-	while (c < 300 && switched == 0)
+	while (te && c < 300 && switched == 0)
 	{
 		if (te.classname == "raider" && te.enemy != world && te.processed == 0 && te.active == 0 && switched == 0)
 		{
 			te.active = 1;
 			te.processed = 1;
+			dprint("GameTimer: activating raider turn for ");
+			dprint(te.netname);
+			dprint("\n");
 			bprint(2, "it is now ");
 			bprint(2, te.netname);
 			bprint(2, "'s turn.\n");
@@ -255,7 +274,7 @@ void () GameTimer =
 
 			ze = findradius(self.origin, 25000);
 			z = 0;
-			while (z < 300)
+			while (ze && z < 300)
 			{
 				if ((ze.classname == "player" || ze.classname == "raider") && ze != te)
 				{
@@ -270,6 +289,9 @@ void () GameTimer =
 		{
 			te.active = 1;
 			te.processed = 1;
+			dprint("GameTimer: activating player turn for ");
+			dprint(te.netname);
+			dprint("\n");
 			bprint(2, "it is now ");
 			bprint(2, te.netname);
 			bprint(2, "'s turn.\n");
@@ -278,7 +300,7 @@ void () GameTimer =
 
 			ze = findradius(self.origin, 25000);
 			z = 0;
-			while (z < 300)
+			while (ze && z < 300)
 			{
 				if ((ze.classname == "player" || ze.classname == "raider") && ze != te)
 				{
@@ -296,10 +318,11 @@ void () GameTimer =
 	c = 0;
 	if (switched == 0) // no entities left, turn is over
 	{
+		dprint("GameTimer: round over, resetting all entities\n");
 		bprint(2, "round is now over.\n");
 
 		te = findradius(self.origin, 25000);
-		while (c < 300)
+		while (te && c < 300)
 		{
 			if (te.classname == "player" || te.classname == "raider")
 			{
@@ -348,6 +371,7 @@ World Types:
 //=======================
 void() worldspawn =
 {
+	dprint("worldspawn: map loading, initializing game state\n");
 	lastspawn = world;
 	InitBodyQue ();
 	coop = !cvar("deathmatch");

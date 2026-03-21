@@ -969,6 +969,9 @@ void () DeathSound =
 
 void () PlayerDead =
 {
+	dprint("PlayerDead: ");
+	dprint(self.netname);
+	dprint(" is now dead\n");
 	setmodel(self, "progs/dead.mdl");
 	setsize(self, '-16 -16 -24', '16 16 0');
 	self.nextthink = CONTENT_EMPTY;
@@ -1144,6 +1147,13 @@ void () PlayerDie =
 	local float i;
 	local float r;
 
+	dprint("PlayerDie: ");
+	dprint(self.netname);
+	dprint(" died, health=");
+	dprint(ftos(self.health));
+	dprint(" deathtype=");
+	dprint(self.deathtype);
+	dprint("\n");
 	//self.solid = SOLID_NOT;
 	self.dead = self.dead + 1;
 	if ((self.deathtype == "fall"))

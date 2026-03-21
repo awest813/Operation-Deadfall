@@ -496,6 +496,13 @@ void() PutClientInServer =
 {
 	local entity spot;
 	local float x;
+	dprint("PutClientInServer: ");
+	dprint(self.netname);
+	dprint(" class=");
+	dprint(ftos(self.class));
+	dprint(" team=");
+	dprint(ftos(self.team));
+	dprint("\n");
 	if (self.class == 0 || self.team == 0)
 	{
 		self.deadflag = DEAD_NO;
@@ -506,8 +513,18 @@ void() PutClientInServer =
 		self.takedamage = DAMAGE_NO;
 		self.solid = SOLID_NOT;
 		spot = SelectSpawnPoint ();
-		self.origin = spot.origin + '0 0 1';
-		self.angles = spot.angles;
+		if (spot)
+		{
+			self.origin = spot.origin + '0 0 1';
+			self.angles = spot.angles;
+		}
+		else
+		{
+			dprint("WARNING: SelectSpawnPoint returned null for spectator ");
+			dprint(self.netname);
+			dprint(", using world origin\n");
+			self.origin = '0 0 128';
+		}
 		self.fixangle = TRUE;           // turn this way immediately
 		self.movetype = MOVETYPE_WALK;
 		self.flags = FL_CLIENT;
@@ -593,8 +610,18 @@ void() PutClientInServer =
 	
 	spot = SelectSpawnPoint ();
 
-	self.origin = spot.origin + '0 0 1';
-	self.angles = spot.angles;
+	if (spot)
+	{
+		self.origin = spot.origin + '0 0 1';
+		self.angles = spot.angles;
+	}
+	else
+	{
+		dprint("WARNING: SelectSpawnPoint returned null for player ");
+		dprint(self.netname);
+		dprint(", using world origin\n");
+		self.origin = '0 0 128';
+	}
 	self.fixangle = TRUE;           // turn this way immediately
 
 	if (self.class == 1)
@@ -1715,6 +1742,9 @@ called when a player connects to a server
 */
 void() ClientConnect =
 {
+	dprint("ClientConnect: ");
+	dprint(self.netname);
+	dprint(" connecting\n");
 	bprint (PRINT_HIGH, self.netname);
 	bprint (PRINT_HIGH, " entered the game\n");
 	
@@ -1764,6 +1794,9 @@ called when a player disconnects from a server
 */
 void() ClientDisconnect =
 {
+	dprint("ClientDisconnect: ");
+	dprint(self.netname);
+	dprint(" disconnecting\n");
 	// let everyone else know
 	bprint (PRINT_HIGH, self.netname);
 		bprint (PRINT_HIGH, " left the game with ");
