@@ -1730,6 +1730,14 @@ void() PlayerPostThink =
 
 	W_WeaponFrame ();
 
+	// Sync round-manager globals into per-player stat fields so the
+	// CSQC HUD can read them via getstati().
+	self.hud_kills          = self.kills;
+	self.hud_round          = current_round;
+	self.hud_round_state    = round_state;
+	self.hud_zombies_alive  = zombies_alive;
+	self.hud_zombies_queued = zombies_queued;
+
 };
 
 

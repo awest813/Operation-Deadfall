@@ -66,6 +66,21 @@ float INPUT_MOUSEMOVE = 2;
 #define STAT_ITEMS 15
 //stats 32 onwards are filled by the csqc.
 
+// Custom HUD stats exposed by the server via clientstatf().
+#define STAT_KILLS          48   // this player's kill count
+#define STAT_ROUND          64   // current round number
+#define STAT_ROUND_STATE    65   // RSTATE_* (0=waiting … 5=gameover)
+#define STAT_ZOMBIES_ALIVE  66   // zombies currently alive
+#define STAT_ZOMBIES_QUEUED 67   // zombies still to spawn this round
+
+// Round state constants (must match round_manager.qc values).
+#define RSTATE_WAITING      0
+#define RSTATE_INTRO        1
+#define RSTATE_SPAWNING     2
+#define RSTATE_ACTIVE       3
+#define RSTATE_INTERMISSION 4
+#define RSTATE_GAMEOVER     5
+
 
 #define FL_ONGROUND 1
 

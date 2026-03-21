@@ -46,21 +46,13 @@ void() CSQC_Init =
 void(float do2d) CSQC_UpdateView =
 {
 	float width,height;
-	float usehud;
 	width = cvar("vid_conwidth");
 	height = cvar("vid_conheight");
 
 	clearscene();
 
-	if (0)//!cvar("cg_usehud"))
-	{
-		setviewprop(VF_DRAWENGINESBAR, 0);
-		usehud = true;
-	}
-	else
-	{
-		setviewprop(VF_DRAWENGINESBAR, 1);
-	}
+	// Disable the engine's default status bar so the custom HUD is shown.
+	setviewprop(VF_DRAWENGINESBAR, 0);
 
 	setviewprop(VF_DRAWCROSSHAIR, 1);
 
@@ -73,8 +65,8 @@ void(float do2d) CSQC_UpdateView =
 
 	renderscene();
 
-//	if (usehud)
-//		Hud_Draw();
+	// Draw the custom HUD over the rendered scene.
+	HUD_Draw();
 
 	if (show_inventory)
 		Invent_Draw();
