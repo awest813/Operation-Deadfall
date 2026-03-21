@@ -1795,7 +1795,7 @@ void(entity player) CheckKillMilestone =
 		return;
 
 	player.milestone_kills = milestone;
-	centerprint(player, "milestone reached\n", ftos(milestone), " kills\n");
+	centerprint(player, "Milestone reached\n", ftos(milestone), " kills\n");
 	bprint(PRINT_MEDIUM, player.netname, " reached the ", ftos(milestone), " kill milestone.\n");
 };
 
