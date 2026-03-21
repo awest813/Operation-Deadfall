@@ -454,6 +454,7 @@ void() RM_Init =
     round_zombie_health = 60;  // classic kill-threshold; overwritten each round
     round_state         = RSTATE_WAITING;
     round_timer         = 0;
+    power_on            = 0;   // power starts off; activate func_power_switch to enable perks/box
 
     rm             = spawn();
     rm.classname   = "round_manager";

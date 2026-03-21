@@ -490,6 +490,9 @@ void() zombie_die =
 	// Notify round manager when a wave-spawned ghoul is killed.
 	if (self.classname == "ighoul")
 		RM_ZombieDied();
+	// Award kill-reward points to whoever dealt the killing blow.
+	if (self.enemy.classname == "player")
+		EC_GivePoints(self.enemy, EC_KillReward());
 };
 
 /*

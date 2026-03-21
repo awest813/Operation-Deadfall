@@ -1,6 +1,7 @@
 ../qwprogs.dat
 
 defs.qc
+economy.qc
 inventory.qc
 subs.qc
 fight.qc
