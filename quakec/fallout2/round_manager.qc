@@ -71,6 +71,20 @@ KNOWN ISSUES
 void(entity stuff) spawn_zombie;   // defined in zombie.qc
 
 // ---------------------------------------------------------------------------
+// Helper — broadcast a centerprint to every live player.
+// ---------------------------------------------------------------------------
+void(string msg) RM_CenterprintAll =
+{
+    local entity p;
+    p = find(world, classname, "player");
+    while (p)
+    {
+        centerprint(p, msg);
+        p = find(p, classname, "player");
+    }
+};
+
+// ---------------------------------------------------------------------------
 // Tuning constants — edit here to rebalance without touching game logic.
 // ---------------------------------------------------------------------------
 float ROUND_INTRO_DURATION  =  5;   // seconds of fanfare before first spawn
@@ -255,6 +269,7 @@ void() RoundManager_Think =
             round_timer   = time + ROUND_INTRO_DURATION;
             dprint("RM: player detected — starting Round 1 in 5 s\n");
             bprint(2, "^4** ^bROUND 1 BEGINS IN 5 SECONDS^b **\n");
+            RM_CenterprintAll("ROUND 1\nBegins in 5 seconds...");
         }
         self.nextthink = time + 1;
         return;
@@ -360,6 +375,7 @@ void() RoundManager_Think =
             bprint(2, "^4** ^bROUND ");
             bprint(2, ftos(current_round));
             bprint(2, " COMPLETE!^b **\n");
+            RM_CenterprintAll(strcat("ROUND ", ftos(current_round), " COMPLETE!\nNext round in 10 seconds..."));
             dprint("RM: ACTIVE→INTERMISSION\n");
         }
         self.nextthink = time + 1;
@@ -396,6 +412,7 @@ void() RoundManager_Think =
             bprint(2, "^4** ^bROUND ");
             bprint(2, ftos(current_round));
             bprint(2, " BEGINS!^b **\n");
+            RM_CenterprintAll(strcat("ROUND ", ftos(current_round), "\nBegins now!"));
             dprint("RM: INTERMISSION→INTRO  round=");
             dprint(ftos(current_round));
             dprint("\n");

@@ -6,4 +6,5 @@ csqc/builtins.qc
 csqc/stdconstants.qc
 csqc/constants.qc
 csqc/invent.qc
+csqc/hud.qc
 csqc/main.qc
