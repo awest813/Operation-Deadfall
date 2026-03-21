@@ -52,6 +52,19 @@ $frame cruc_1 cruc_2 cruc_3 cruc_4 cruc_5 cruc_6
 
 float	SPAWN_CRUCIFIED	= 1;
 
+// ── Zombie AI tuning ─────────────────────────────────────────────────────
+// Edit these constants to adjust zombie feel without touching game logic.
+// ─────────────────────────────────────────────────────────────────────────
+float ZOMBIE_MELEE_RANGE      = 80;   // max distance for a claw strike (units)
+float ZOMBIE_MELEE_DAMAGE_MIN = 10;   // minimum claw damage per hit
+float ZOMBIE_MELEE_DAMAGE_MAX = 20;   // maximum claw damage per hit
+float ZOMBIE_MELEE_COOLDOWN   = 0.8;  // seconds between melee attacks
+float ZOMBIE_PAIN_IGNORE      = 9;    // damage below this value is ignored
+float ZOMBIE_PAIN_KNOCKDOWN   = 25;   // damage threshold that knocks zombie down
+float ZOMBIE_STUCK_THRESHOLD  = 8;    // units of movement before zombie is un-stuck
+float ZOMBIE_STUCK_YAW_BASE   = 45;   // minimum yaw jitter when stuck (degrees)
+float ZOMBIE_STUCK_YAW_RANGE  = 90;   // random yaw range added on top of base (degrees)
+
 //=============================================================================
 
 .float inpain;
@@ -104,23 +117,34 @@ ai_walk(0);
 if (random() < 0.2)
 	sound (self, CHAN_VOICE, "zombie/z_idle.wav", 1, ATTN_IDLE);};
 
-void() zombie_run1		=[	$run1,		zombie_run2	] {ai_run(1);self.inpain = 0;};
-void() zombie_run2		=[	$run2,		zombie_run3	] {ai_run(1);};
-void() zombie_run3		=[	$run3,		zombie_run4	] {ai_run(0);};
-void() zombie_run4		=[	$run4,		zombie_run5	] {ai_run(1);};
-void() zombie_run5		=[	$run5,		zombie_run6	] {ai_run(2);};
-void() zombie_run6		=[	$run6,		zombie_run7	] {ai_run(3);};
-void() zombie_run7		=[	$run7,		zombie_run8	] {ai_run(4);};
-void() zombie_run8		=[	$run8,		zombie_run9	] {ai_run(4);};
-void() zombie_run9		=[	$run9,		zombie_run10	] {ai_run(2);};
-void() zombie_run10		=[	$run10,		zombie_run11	] {ai_run(0);};
-void() zombie_run11		=[	$run11,		zombie_run12	] {ai_run(0);};
-void() zombie_run12		=[	$run12,		zombie_run13	] {ai_run(0);};
-void() zombie_run13		=[	$run13,		zombie_run14	] {ai_run(2);};
-void() zombie_run14		=[	$run14,		zombie_run15	] {ai_run(4);};
-void() zombie_run15		=[	$run15,		zombie_run16	] {ai_run(6);};
-void() zombie_run16		=[	$run16,		zombie_run17	] {ai_run(7);};
-void() zombie_run17		=[	$run17,		zombie_run18	] {ai_run(3);};
+void() zombie_run1		=[	$run1,		zombie_run2	] {
+// Stuck recovery: if the zombie hasn't moved since the last run cycle and
+// is not mid-attack, jitter ideal_yaw to find a path around the obstacle.
+if (self.attack_finished < time)
+{
+	if (vlen(self.origin - self.oldorg) < ZOMBIE_STUCK_THRESHOLD)
+		self.ideal_yaw = self.ideal_yaw + ZOMBIE_STUCK_YAW_BASE + random() * ZOMBIE_STUCK_YAW_RANGE;
+}
+self.oldorg = self.origin;
+ai_run(6);
+self.inpain = 0;
+};
+void() zombie_run2		=[	$run2,		zombie_run3	] {ai_run(6);};
+void() zombie_run3		=[	$run3,		zombie_run4	] {ai_run(6);};
+void() zombie_run4		=[	$run4,		zombie_run5	] {ai_run(6);};
+void() zombie_run5		=[	$run5,		zombie_run6	] {ai_run(7);};
+void() zombie_run6		=[	$run6,		zombie_run7	] {ai_run(7);};
+void() zombie_run7		=[	$run7,		zombie_run8	] {ai_run(8);};
+void() zombie_run8		=[	$run8,		zombie_run9	] {ai_run(8);};
+void() zombie_run9		=[	$run9,		zombie_run10	] {ai_run(8);};
+void() zombie_run10		=[	$run10,		zombie_run11	] {ai_run(6);};
+void() zombie_run11		=[	$run11,		zombie_run12	] {ai_run(6);};
+void() zombie_run12		=[	$run12,		zombie_run13	] {ai_run(6);};
+void() zombie_run13		=[	$run13,		zombie_run14	] {ai_run(6);};
+void() zombie_run14		=[	$run14,		zombie_run15	] {ai_run(7);};
+void() zombie_run15		=[	$run15,		zombie_run16	] {ai_run(8);};
+void() zombie_run16		=[	$run16,		zombie_run17	] {ai_run(8);};
+void() zombie_run17		=[	$run17,		zombie_run18	] {ai_run(7);};
 void() zombie_run18		=[	$run18,		zombie_run1	] {
 ai_run(8);
 if (random() < 0.2)
@@ -250,6 +274,69 @@ void() zombie_missile =
 		zombie_attb1 ();
 	else
 		zombie_attc1 ();
+};
+
+
+/*
+================
+zombie_melee
+
+Close-range claw strike.  Called by ai_run_melee when the zombie is facing
+the player and within ZOMBIE_MELEE_RANGE units.
+================
+*/
+void() zombie_melee =
+{
+	local vector delta;
+	local float  ldmg;
+	local float  damage_range;
+
+	if (!self.enemy)
+		return;
+
+	delta = self.enemy.origin - self.origin;
+	if (vlen(delta) > ZOMBIE_MELEE_RANGE)
+		return;
+
+	damage_range = ZOMBIE_MELEE_DAMAGE_MAX - ZOMBIE_MELEE_DAMAGE_MIN;
+	ldmg = ZOMBIE_MELEE_DAMAGE_MIN + random() * damage_range;
+	sound (self, CHAN_WEAPON, "zombie/z_hit.wav", 1, ATTN_NORM);
+	T_Damage (self.enemy, self, self, ldmg);
+};
+
+
+/*
+================
+ZombieCheckAttack
+
+Zombie-specific attack check.  Zombies are pure melee fighters — they only
+attack when close enough to claw.  No ranged attacks during pursuit.
+Returns TRUE if an attack was initiated.
+================
+*/
+float() ZombieCheckAttack =
+{
+	local vector spot1, spot2;
+
+	if (time < self.attack_finished)
+		return FALSE;
+
+	if (enemy_range != RANGE_MELEE)
+		return FALSE;		// only strike in melee range
+
+	// Verify line of sight — don't swing through walls or other monsters.
+	spot1 = self.origin + self.view_ofs;
+	spot2 = self.enemy.origin + self.enemy.view_ofs;
+	traceline (spot1, spot2, FALSE, self);
+	if (trace_ent != self.enemy)
+		return FALSE;
+	if (trace_inopen && trace_inwater)
+		return FALSE;
+
+	// Queue a melee attack; ai_run_melee will execute it once we face the enemy.
+	self.attack_state = AS_MELEE;
+	SUB_AttackFinished (ZOMBIE_MELEE_COOLDOWN);
+	return TRUE;
 };
 
 
@@ -436,14 +523,14 @@ void(entity attacker, float take) zombie_pain =
 	else
 		self.health = 60;
 
-	if (take < 9)
+	if (take < ZOMBIE_PAIN_IGNORE)
 		return;				// totally ignore
 
 	if (self.inpain == 2)
 		return;			// down on ground, so don't reset any counters
 
 // go down immediately if a big enough hit
-	if (take >= 25)
+	if (take >= ZOMBIE_PAIN_KNOCKDOWN)
 	{
 		self.inpain = 2;
 		zombie_paine1 ();
@@ -514,6 +601,7 @@ void (entity stuff) spawn_zombie =
 	self.th_run = zombie_run1;
 	self.th_pain = zombie_pain;
 	self.th_die = zombie_die;
+	self.th_melee = zombie_melee;
 	self.th_missile = zombie_missile;
 	self.target = stuff.target;
 	walkmonster_start_go ();
@@ -551,6 +639,7 @@ void() monster_zombie =
 	self.th_run = zombie_run1;
 	self.th_pain = zombie_pain;
 	self.th_die = zombie_die;
+	self.th_melee = zombie_melee;
 	self.th_missile = zombie_missile;
 
 	if (self.spawnflags & SPAWN_CRUCIFIED)
