@@ -126,6 +126,7 @@ string () ArmorString =
 		"ê8ë metal armor mkii  20 8/50% 55$\n");
 };
 
+// Costs must match EC_PERK_T1/T2/T3/T4 constants in economy.qc.
 string () PerkString =
 {
 	return ("perks\n"

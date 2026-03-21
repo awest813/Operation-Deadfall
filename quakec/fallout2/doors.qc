@@ -781,8 +781,10 @@ if (self.state != STATE_BOTTOM)
 return;
 
 // Only engage on door panels narrow enough to be an actual passage.
+// Wide brushes (> 64 in both X and Y) are large area-separator or
+// decorative geometry that should not act as buy-gated portals.
 if (self.size_y > 64 && self.size_x > 64)
-return;
+	return;
 
 self.owner.attack_finished = time + 1.5;
 

@@ -874,6 +874,8 @@ sprint(self, PRINT_HIGH, ".\n");
 // DoMysteryBox — called from BuyMenu when near a func_mystery_box.
 //   Costs EC_BOX_COST, gives a random ranged weapon.  Requires power on.
 // ---------------------------------------------------------------------------
+// box_pool_size must equal the number of entries in the if/else chain below.
+// Update both together when adding or removing weapons from the pool.
 float box_pool_size = 14;
 
 void(entity ent) DoMysteryBox =
