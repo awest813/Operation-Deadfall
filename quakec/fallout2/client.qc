@@ -1781,6 +1781,24 @@ called when a player dies
 ============
 */
 
+void(entity player) CheckKillMilestone =
+{
+	local float milestone;
+
+	if (player.kills >= 25 && player.milestone_kills < 25)
+		milestone = 25;
+	else if (player.kills >= 10 && player.milestone_kills < 10)
+		milestone = 10;
+	else if (player.kills >= 5 && player.milestone_kills < 5)
+		milestone = 5;
+	else
+		return;
+
+	player.milestone_kills = milestone;
+	centerprint(player, "Milestone reached\n", ftos(milestone), " kills\n");
+	bprint(PRINT_MEDIUM, player.netname, " reached the ", ftos(milestone), " kill milestone.\n");
+};
+
 void(entity targ, entity attacker) ClientObituary =
 {
 	local   float rnum;
@@ -1811,9 +1829,15 @@ void(entity targ, entity attacker) ClientObituary =
 		else if (attacker.team == targ.team)
 			attacker.kills = attacker.kills - 1;
 		else if (targ.classname == "player")
+		{
 			attacker.kills = attacker.kills + 1;
+			CheckKillMilestone(attacker);
+		}
 		else if (targ.classname == "monster")
+		{
 			attacker.kills = attacker.kills + 1;
+			CheckKillMilestone(attacker);
+		}
 	}
 
 	if (targ == attacker && targ.deathtype == "suicide")
