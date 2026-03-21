@@ -103,17 +103,17 @@ void() W_FireMelee =
 	local float iid;
 	iid = ToIID(self.(SlotField(self.current_slot)));
 	if (iid == IID_NONE)
-		FireMelee(3, 32, 0.6);
+		FireMelee(8, 32, 0.6);
 	else if (iid == IID_WP_TOOLKIT)
-		FireMelee(5, 32, 0.2);
+		FireMelee(8, 32, 0.2);
 	else if (iid == IID_WP_KNIFE)
-		FireMelee(5, 32, 0.2);
+		FireMelee(18, 32, 0.2);
 	else if (iid == IID_WP_AXE)
-		FireMelee(10, 64, 0.2);
+		FireMelee(30, 64, 0.2);
 	else if (iid == IID_WP_VIBROBLADE)	
-		FireMelee(25, 64, 0.2);
+		FireMelee(50, 64, 0.2);
 	else if (iid == IID_WP_POWERAXE)
-		FireMelee(50, 96, 0.2);
+		FireMelee(100, 96, 0.2);
 
 	else if (iid == IID_CHEM_STIMPACK ||
 		   iid == IID_CHEM_MEDICALBAG ||
@@ -1002,7 +1002,22 @@ void (float slotno) ReloadWeapon =
 
 	sprint(self, 2, "reloading...\n");
 
-	if (self.perk == 3)
+	// Pistols and SMGs reload faster than rifles and heavy weapons
+	if (wid == IID_WP_USP || wid == IID_WP_DEAGLE || wid == IID_WP_NEEDLER ||
+	    wid == IID_WP_ALIENBLASTER || wid == IID_WP_MP9 || wid == IID_WP_MP7)
+	{
+		if (self.perk == 3)
+		{
+			self.attack_finished = time + 0.8;
+			self.rtime = time + 0.8;
+		}
+		else
+		{
+			self.attack_finished = time + 1.5;
+			self.rtime = time + 1.5;
+		}
+	}
+	else if (self.perk == 3)
 	{
 		self.attack_finished = time + 1;
 		self.rtime = time + 1;
@@ -1090,39 +1105,39 @@ void() W_Attack =
 		player_knife1 ();
 	}
 	else if (weap == IID_WP_USP)
-		FirePistol(12, 2, "weapons/1911.wav", 2000, 0.25);
+		FirePistol(15, 2, "weapons/1911.wav", 2000, 0.22);
 	else if (weap == IID_WP_DEAGLE)
-		FirePistol(15, 2, "weapons/deagle.wav", 2000, 0.25);
+		FirePistol(28, 3, "weapons/deagle.wav", 2000, 0.40);
 	else if (weap == IID_WP_NEEDLER)
-		FirePistol(10, 2, "weapons/needler.wav", 2000, 0.25);
+		FirePistol(12, 1, "weapons/needler.wav", 2000, 0.12);
 	else if (weap == IID_WP_ALIENBLASTER)
 		FireAlienBlaster();
 	else if (weap == IID_WP_PIPERIFLE)
-		FireAssaultRifle(18, 2, "weapons/rangem.wav", 3000, 0.1);
+		FireAssaultRifle(22, 2, "weapons/rangem.wav", 3000, 0.65);
 	else if (weap == IID_WP_WINCHESTER)
-		W_FireShotgun (1, 5, 6, 160, 3000, 0);
+		W_FireShotgun (1, 5, 10, 160, 3000, 0);
 	else if (weap == IID_WP_MOSSBERG)
-		W_FireShotgun (1, 5, 6, 160, 3000, 0);
+		W_FireShotgun (1, 5, 9, 160, 3000, 0);
 	else if (weap == IID_WP_JACKHAMMER)
-		W_FireShotgun (1, 5, 6, 160, 3000, 1);
+		W_FireShotgun (1, 5, 7, 160, 3000, 1);
 	else if (weap == IID_WP_MP9)
-		FireSMG(12, 2, "weapons/burst.wav", 2000, 0.09);
+		FireSMG(14, 1, "weapons/burst.wav", 2000, 0.08);
 	else if (weap == IID_WP_MP7)
-		FireSMG(12, 2, "weapons/mp7.wav", 2000, 0.09);
+		FireSMG(20, 2, "weapons/mp7.wav", 2000, 0.13);
 	else if (weap == IID_WP_RANGEMASTER)
-		FireAssaultRifle(14, 2, "weapons/rangem.wav", 4000, 0.5);
+		FireAssaultRifle(22, 2, "weapons/rangem.wav", 4000, 0.50);
 	else if (weap == IID_WP_AK112)
-		FireAssaultRifle(14, 2, "weapons/ak112.wav", 4000, 0.09);
+		FireAssaultRifle(17, 2, "weapons/ak112.wav", 4000, 0.10);
 	else if (weap == IID_WP_AK74)
-		FireAssaultRifle(18, 2, "weapons/ak47.wav", 4000, 0.1);
+		FireAssaultRifle(22, 2, "weapons/ak47.wav", 4000, 0.11);
 	else if (weap == IID_WP_DKS1)
-		FireAssaultRifle(24, 2, "weapons/dks-1.wav", 8000, 0.5);
+		FireAssaultRifle(50, 2, "weapons/dks-1.wav", 8000, 0.70);
 	else if (weap == IID_WP_MOONLIGHT)
-		FireAssaultRifle(14, 2, "weapons/m4-nw.wav", 4000, 0.09);
+		FireAssaultRifle(15, 1, "weapons/m4-nw.wav", 4000, 0.08);
 	else if (weap == IID_WP_SA80)
-		FireAssaultRifle(17, 2, "weapons/sa80.wav", 4000, 0.08);
+		FireAssaultRifle(18, 2, "weapons/sa80.wav", 4000, 0.09);
 	else if (weap == IID_WP_FNFAL)
-		FireAssaultRifle(12, 3, "weapons/fnfal.wav", 6000, 0.12);
+		FireAssaultRifle(32, 3, "weapons/fnfal.wav", 6000, 0.22);
 
 //float IID_WP_GAUSERIFLE = 421;
 //float IID_WP_PULSERIFLE = 422;
@@ -2005,6 +2020,7 @@ void(float slot, float magazine) GiveAmmo =
 
 void (float dam, float rec, string snd, float rng, float rate) FirePistol =
 {
+      // Note: rec parameter is reserved for future per-weapon recoil scaling; recoil increment is hardcoded below.
       local float weap, tmp, zdif, xdif, ydif, is_headshot;
       local vector dir, source, targ, org, org2, org3, adjust;
 
@@ -2014,6 +2030,12 @@ void (float dam, float rec, string snd, float rng, float rate) FirePistol =
 	sound (self, CHAN_WEAPON, snd, 1, ATTN_NORM);
 	self.attack_finished = (time + rate);
 
+	// Deagle gets a heavy kick for feedback
+	if (weap == IID_WP_DEAGLE)
+	{
+		msg_entity = self;
+		WriteByte (MSG_ONE, SVC_BIGKICK);
+	}
 
 	if (self.position == POS_STAND)
 		player_single1 ();
@@ -2030,16 +2052,17 @@ void (float dam, float rec, string snd, float rng, float rate) FirePistol =
 
 	DropAmmo ();
 	makevectors (self.v_angle);
-	if (self.recoil >= 15)
-		self.recoil = 15;
+	if (self.recoil >= 12)
+		self.recoil = 12;
 
 
-	tmp = 50;
+	tmp = 30;
 
 	if (self.velocity != '0 0 0')
-		tmp = 400;
+		tmp = 350;
 
-	tmp = tmp + (40 * self.recoil);
+	// recoil cap 12, multiplier 38: max pistol spread = 30 + (38*12) = 486 units (tight vs old 50+40*15=650)
+	tmp = tmp + (38 * self.recoil);
 
 	if (self.attack <= 3 && self.position == 1 && self.velocity_z == 0)
 		tmp = (tmp * 0.75);
@@ -2048,7 +2071,7 @@ void (float dam, float rec, string snd, float rng, float rate) FirePistol =
 		tmp = (tmp * 0.5);
 
 	self.attack = self.attack + 1;
-	self.recoil = self.recoil + 4;
+	self.recoil = self.recoil + 3;
 
 	source = self.origin + '0 0 22';
 
@@ -2137,13 +2160,13 @@ void (float dam, float rec, string snd, float rng, float rate) FireSMG =
 
 	DropAmmo ();
 	makevectors (self.v_angle);
-	if (self.recoil >= 15)
-		self.recoil = 15;
+	if (self.recoil >= 12)
+		self.recoil = 12;
 
-	tmp = 200;
+	tmp = 80;
 
 	if (self.velocity != '0 0 0')
-		tmp = 200;
+		tmp = 250;
 
 	tmp = tmp + (40 * self.recoil);
 
@@ -2212,6 +2235,13 @@ void (float dam, float rec, string snd, float rng, float rate) FireAssaultRifle 
 
 	sound (self, CHAN_WEAPON, snd, 1, ATTN_NORM);
 
+	// Heavy battle-rifles get a big kick for tactile feedback
+	if (weap == IID_WP_FNFAL || weap == IID_WP_DKS1)
+	{
+		msg_entity = self;
+		WriteByte (MSG_ONE, SVC_BIGKICK);
+	}
+
 	self.attack_finished = (time + rate);
 
 	if (self.position == 0)
@@ -2267,7 +2297,7 @@ void (float dam, float rec, string snd, float rng, float rate) FireAssaultRifle 
 		tmp = (tmp * 0.5);
 
 	self.attack = self.attack + 1;
-	self.recoil = self.recoil + 5;
+	self.recoil = self.recoil + 4;
 
 	source = self.origin + '0 0 22';
 
@@ -2302,7 +2332,7 @@ void (float dam, float rec, string snd, float rng, float rate) FireAssaultRifle 
 
 
 		dam = (dam * (1 - trace_fraction));
-		if (trace_ent.solid != SOLID_BSP && self.critical == 3)
+		if (trace_ent.solid != SOLID_BSP)
 			SpawnBlood (org, 1);
 
 		if (trace_ent.solid == SOLID_BSP)
