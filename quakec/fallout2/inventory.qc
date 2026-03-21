@@ -635,7 +635,7 @@ float(float iid) WeaponAmmoType =
 float(float iid) WeaponMagQuant =
 {
 	if (iid == IID_WP_USP)
-		return 12;
+		return 15;
 	if (iid == IID_WP_DEAGLE)
 		return 7;
 	if (iid == IID_WP_NEEDLER)
@@ -649,11 +649,11 @@ float(float iid) WeaponMagQuant =
 	if (iid == IID_WP_MOSSBERG)
 		return 6;
 	if (iid == IID_WP_JACKHAMMER)
-		return 10;
+		return 12;
 	if (iid == IID_WP_MP9)
 		return 30;
 	if (iid == IID_WP_MP7)
-		return 30;
+		return 25;
 	if (iid == IID_WP_RANGEMASTER)
 		return 10;
 	if (iid == IID_WP_AK112)
