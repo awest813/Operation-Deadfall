@@ -111,8 +111,9 @@ Mag: Jackhammer 10 → 12 (auto-shotgun needs the extra rounds).
 ## Files Changed
 | File                              | What Changed                                               |
 |-----------------------------------|------------------------------------------------------------|
-| `quakec/fallout2/weapons.qc`      | Melee dmg, W_Attack fire calls, FirePistol spread/recoil, FireSMG spread, FireAssaultRifle blood+recoil+screenshake, ReloadWeapon fast-reload tier, Deagle screenshake |
+| `quakec/fallout2/weapons.qc`      | Melee dmg, W_Attack fire calls, FirePistol spread/recoil, FireSMG spread, FireAssaultRifle blood+recoil+screenshake, ReloadWeapon fast-reload tier, Deagle screenshake; **milestone**: Alien Blaster damage+speed, Vibroblade/PowerAxe energy hit sound, per-shot hit-confirm ric cue |
 | `quakec/fallout2/inventory.qc`    | WeaponMagQuant: USP 12→15, Jackhammer 10→12, MP7 30→25    |
+| `quakec/fallout2/zombie.qc`       | **milestone**: tiered ammo drop on zombie death (10mm r1-7, 5.56mm r8-14, 7.62mm r15+) |
 
 ---
 
@@ -120,8 +121,8 @@ Mag: Jackhammer 10 → 12 (auto-shotgun needs the extra rounds).
 
 1. **Per-weapon reload animations** – The current system plays a single generic reload animation for all weapons. Adding weapon-specific reload sounds/animations would make each gun feel more distinct.
 2. **Muzzle flash / tracer effects** – No visual muzzle flash is spawned for hitscan weapons. A simple temporary light entity at the muzzle on each shot would greatly improve readability.
-3. **Hit markers** – A subtle crosshair flash or sound cue (`weapons/ric1.wav` family) on confirmed hits (not just kill) would add clarity, especially against off-screen targets.
-4. **Ammo pick-up economy** – Consider tiering ammo drops by round: earlier rounds drop more common ammo (10mm), later rounds shift toward high-tier drops to keep the player under pressure.
-5. **Pipe Rifle single-shot reload** – Now set to 0.65 s fire-rate (effectively bolt-action). Ideally it should use the shell-insert reload path like Winchester; this requires a small refactor of the `ReloadWeapon` single-shot list.
-6. **Alien Blaster tuning** – Currently uses a hardcoded `30 + random()*30` damage inside `PlasmaBolt`. Consider raising the base to 40–50 to give it end-game relevance, and possibly increasing projectile speed from 1700 → 2200.
-7. **Power Axe / Vibroblade hit sound** – These energy melee weapons currently use the same hit sound as bare fist. A distinct energy-impact sound would reinforce their premium feel.
+3. ~~**Hit markers**~~ – **Implemented**: `weapons/ric1.wav` is played as a quiet per-shot sound cue to the shooter on confirmed entity hits in `FirePistol`, `FireSMG`, and `FireAssaultRifle`.
+4. ~~**Ammo pick-up economy**~~ – **Implemented**: `zombie_die` drops tiered ammo (60 % chance) based on `current_round`: 18×10mm (rounds 1-7), 15×5.56mm (rounds 8-14), 12×7.62mm (rounds 15+).
+5. ~~**Pipe Rifle single-shot reload**~~ – **Already done**: `IID_WP_PIPERIFLE` uses the shell-insert (`weapons/shell.wav`, 1 s lock) path in `ReloadWeapon` alongside Winchester/Mossberg.
+6. ~~**Alien Blaster tuning**~~ – **Implemented**: `PlasmaBolt` base damage raised 30 → 50 (range 50–80); `FireAlienBlaster` projectile speed raised 1700 → 2200.
+7. ~~**Power Axe / Vibroblade hit sound**~~ – **Implemented**: `FireMelee` accepts an optional `entsnd` string; `W_FireMelee` passes `"enforcer/enfstop.wav"` for both energy melee weapons.
