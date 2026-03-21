@@ -191,13 +191,23 @@ void (float wt, float cost, float wid) BuyWeapon =
 
 void (float cost, float item) BuyPerk =
 {
-	if (self.frags < cost)
+	if (self.ammo_shells < cost)
 	{
-		sprint (self, PRINT_HIGH, "not enough kills\n");
+		sprint (self, PRINT_HIGH, "not enough money\n");
 		self.currentmenu = "none";
 		return;
 	}
-	sprint (self, PRINT_HIGH, "ok, ability gained.\n");
+	if (self.perk == item)
+	{
+		sprint (self, PRINT_HIGH, "you already have that perk.\n");
+		self.currentmenu = "none";
+		return;
+	}
+	self.ammo_shells = self.ammo_shells - cost;
+	sound (self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	sprint (self, PRINT_HIGH, "perk installed: ");
+	sprint (self, PRINT_HIGH, EC_PerkName(item));
+	sprint (self, PRINT_HIGH, ".\n");
 	self.perk = item;
 	self.currentmenu = "none";
 	return;
@@ -364,7 +374,7 @@ void () W_GetClass =
 			self.max_health = 80;
 			self.class = 1;
 			self.currentmenu = "confirm_skill";
-			centerprint (self, "your class will be‘\n\nMedic - OK?\n1‘ Yes     \n2‘ No      \n");
+			centerprint (self, "ï¿½your class will beï¿½\n\nMedic - OK?\nï¿½1ï¿½ Yes     \nï¿½2ï¿½ No      \n");
 			self.ghost = 0;
 			return;
 		}
@@ -374,7 +384,7 @@ void () W_GetClass =
 			self.max_health = 70;
 			self.class = 2;
 			self.currentmenu = "confirm_skill";
-			centerprint (self, "your class will be‘\n\nAssassin - OK?\n1‘ Yes     \n2‘ No      \n");
+			centerprint (self, "ï¿½your class will beï¿½\n\nAssassin - OK?\nï¿½1ï¿½ Yes     \nï¿½2ï¿½ No      \n");
 			self.ghost = 0;
 			return;
 		}
@@ -384,7 +394,7 @@ void () W_GetClass =
 			self.max_health = 100;
 			self.class = 3;
 			self.currentmenu = "confirm_skill";
-			centerprint (self, "your class will be‘\n\nSoldiier - OK?\n1‘ Yes     \n2‘ No      \n");
+			centerprint (self, "ï¿½your class will beï¿½\n\nSoldiier - OK?\nï¿½1ï¿½ Yes     \nï¿½2ï¿½ No      \n");
 			self.ghost = 0;
 			return;
 		}
@@ -394,7 +404,7 @@ void () W_GetClass =
 			self.currentmenu = "none";
 			self.class = 4;
 			self.currentmenu = "confirm_skill";
-			centerprint (self, "your class will be‘\n\nScientist - OK?\n1‘ Yes     \n2‘ No      \n");
+			centerprint (self, "ï¿½your class will beï¿½\n\nScientist - OK?\nï¿½1ï¿½ Yes     \nï¿½2ï¿½ No      \n");
 			self.ghost = 0;
 			return;
 		}
@@ -458,23 +468,23 @@ void() W_PlayerMenu =
 	if (self.currentmenu == "shop_perk")
 	{
 		if (self.impulse == 1)
-                  BuyPerk(1, 1);
+                  BuyPerk(EC_PERK_T1, 1);
 		if (self.impulse == 2)
-                  BuyPerk(1, 2);
+                  BuyPerk(EC_PERK_T1, 2);
 		if (self.impulse == 3)
-                  BuyPerk(1, 3);
+                  BuyPerk(EC_PERK_T1, 3);
 		if (self.impulse == 4)
-                  BuyPerk(2, 4);
+                  BuyPerk(EC_PERK_T2, 4);
 		if (self.impulse == 5)
-                  BuyPerk(2, 5);
+                  BuyPerk(EC_PERK_T2, 5);
 		if (self.impulse == 6)
-                  BuyPerk(2, 6);
+                  BuyPerk(EC_PERK_T2, 6);
 		if (self.impulse == 7)
-                  BuyPerk(2, 7);
+                  BuyPerk(EC_PERK_T2, 7);
 		if (self.impulse == 8)
-                  BuyPerk(3, 8);
+                  BuyPerk(EC_PERK_T3, 8);
 		if (self.impulse == 9)
-                  BuyPerk(4, 9);
+                  BuyPerk(EC_PERK_T4, 9);
 
 			return;
 	}
@@ -709,7 +719,7 @@ void() W_PlayerMenu =
 			self.max_health = 80;
 			self.class = 1;
 			self.currentmenu = "confirm_skill";
-			centerprint (self, "your class will be‘\n\nMedic - OK?\n1‘ Yes     \n2‘ No      \n");
+			centerprint (self, "ï¿½your class will beï¿½\n\nMedic - OK?\nï¿½1ï¿½ Yes     \nï¿½2ï¿½ No      \n");
 			self.ghost = 0;
 			return;
 		}
@@ -719,7 +729,7 @@ void() W_PlayerMenu =
 			self.max_health = 70;
 			self.class = 2;
 			self.currentmenu = "confirm_skill";
-			centerprint (self, "your class will be‘\n\nAssassin - OK?\n1‘ Yes     \n2‘ No      \n");
+			centerprint (self, "ï¿½your class will beï¿½\n\nAssassin - OK?\nï¿½1ï¿½ Yes     \nï¿½2ï¿½ No      \n");
 			self.ghost = 0;
 			return;
 		}
@@ -729,7 +739,7 @@ void() W_PlayerMenu =
 			self.max_health = 100;
 			self.class = 3;
 			self.currentmenu = "confirm_skill";
-			centerprint (self, "your class will be‘\n\nSoldiier - OK?\n1‘ Yes     \n2‘ No      \n");
+			centerprint (self, "ï¿½your class will beï¿½\n\nSoldiier - OK?\nï¿½1ï¿½ Yes     \nï¿½2ï¿½ No      \n");
 			self.ghost = 0;
 			return;
 		}
@@ -739,7 +749,7 @@ void() W_PlayerMenu =
 			self.currentmenu = "none";
 			self.class = 4;
 			self.currentmenu = "confirm_skill";
-			centerprint (self, "your class will be‘\n\nScientist - OK?\n1‘ Yes     \n2‘ No      \n");
+			centerprint (self, "ï¿½your class will beï¿½\n\nScientist - OK?\nï¿½1ï¿½ Yes     \nï¿½2ï¿½ No      \n");
 			self.ghost = 0;
 			return;
 		}
@@ -788,4 +798,417 @@ void() W_PlayerMenu =
 			}
 		}
 
+};
+// ============================================================================
+// WORLD INTERACTION ENTITIES
+// COD Zombies-style buy / interaction entities placed directly in maps.
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// Shared helper: give an item (weapon/equipment) to the current player.
+// Returns TRUE when the item was successfully placed in inventory.
+// ---------------------------------------------------------------------------
+float(float iid) EC_GiveItem =
+{
+local float slot;
+slot = FindSuitableEmptySlot(self, iid);
+if (!slot)
+{
+sprint(self, PRINT_HIGH, "no room in inventory.\n");
+return FALSE;
+}
+SetItemSlot(self, slot, SlotVal(iid, 1));
+if (slot == self.current_slot)
+W_SetCurrentAmmo();
+return TRUE;
+};
+
+// ---------------------------------------------------------------------------
+// DoWallBuy â€” called from BuyMenu when the player is near an info_wallbuy.
+//   Purchases the weapon/item this entity sells (ent.buy_item, ent.buy_cost).
+// ---------------------------------------------------------------------------
+void(entity ent) DoWallBuy =
+{
+local float cost;
+local float iid;
+local string name;
+
+if (self.spamdelay > time)
+return;
+self.spamdelay = time + 1.5;
+
+cost = ent.buy_cost;
+iid  = ent.buy_item;
+
+if (!iid)
+{
+sprint(self, PRINT_HIGH, "wall buy not configured (missing buy_item).\n");
+return;
+}
+if (!cost)
+{
+sprint(self, PRINT_HIGH, "wall buy not configured (missing buy_cost).\n");
+return;
+}
+
+if (!EC_CanAfford(self, cost))
+{
+sprint(self, PRINT_HIGH, "not enough money (");
+sprint(self, PRINT_HIGH, ftos(cost));
+sprint(self, PRINT_HIGH, " pts needed).\n");
+return;
+}
+
+name = GetItemName(iid);
+if (!EC_GiveItem(iid))
+return;
+
+EC_SpendPoints(self, cost);
+sound(self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+sprint(self, PRINT_HIGH, "bought ");
+sprint(self, PRINT_HIGH, name);
+sprint(self, PRINT_HIGH, ".\n");
+};
+
+// ---------------------------------------------------------------------------
+// DoMysteryBox â€” called from BuyMenu when near a func_mystery_box.
+//   Costs EC_BOX_COST, gives a random ranged weapon.  Requires power on.
+// ---------------------------------------------------------------------------
+// box_pool_size must equal the number of entries in the if/else chain below.
+// Update both together when adding or removing weapons from the pool.
+float box_pool_size = 14;
+
+void(entity ent) DoMysteryBox =
+{
+local float r;
+local float iid;
+local float cost;
+
+if (self.spamdelay > time)
+return;
+self.spamdelay = time + 2.0;
+
+if (!power_on)
+{
+centerprint(self, "^1Power is off.\nActivate the power switch first.");
+return;
+}
+
+cost = ent.buy_cost;
+if (!cost)
+cost = EC_BOX_COST;
+
+if (!EC_CanAfford(self, cost))
+{
+sprint(self, PRINT_HIGH, "not enough money (");
+sprint(self, PRINT_HIGH, ftos(cost));
+sprint(self, PRINT_HIGH, " pts needed).\n");
+return;
+}
+
+EC_SpendPoints(self, cost);
+
+// Random weapon pool â€” 14 entries (indices 0-13).
+r = floor(random() * box_pool_size);
+if      (r ==  0) iid = IID_WP_USP;
+else if (r ==  1) iid = IID_WP_DEAGLE;
+else if (r ==  2) iid = IID_WP_NEEDLER;
+else if (r ==  3) iid = IID_WP_MP9;
+else if (r ==  4) iid = IID_WP_MP7;
+else if (r ==  5) iid = IID_WP_PIPERIFLE;
+else if (r ==  6) iid = IID_WP_WINCHESTER;
+else if (r ==  7) iid = IID_WP_MOSSBERG;
+else if (r ==  8) iid = IID_WP_JACKHAMMER;
+else if (r ==  9) iid = IID_WP_RANGEMASTER;
+else if (r == 10) iid = IID_WP_AK112;
+else if (r == 11) iid = IID_WP_AK74;
+else if (r == 12) iid = IID_WP_ALIENBLASTER;
+else              iid = IID_WP_ROCKETLAUNCHER;
+
+sound(self, CHAN_BODY, "misc/item2.wav", 1, ATTN_NORM);
+EC_GiveItem(iid);
+sprint(self, PRINT_HIGH, "mystery box: ");
+sprint(self, PRINT_HIGH, GetItemName(iid));
+sprint(self, PRINT_HIGH, "!\n");
+};
+
+// ---------------------------------------------------------------------------
+// DoInstallPerk â€” called from BuyMenu when near a func_perk_machine.
+//   Installs the perk specified by ent.buy_item.  Requires power on.
+// ---------------------------------------------------------------------------
+void(entity ent) DoInstallPerk =
+{
+local float cost;
+local float perk_id;
+
+if (self.spamdelay > time)
+return;
+self.spamdelay = time + 1.5;
+
+if (!power_on)
+{
+centerprint(self, "^1Power is off.\nActivate the power switch first.");
+return;
+}
+
+perk_id = ent.buy_item;
+if (!perk_id)
+{
+sprint(self, PRINT_HIGH, "perk machine not configured (missing buy_item).\n");
+return;
+}
+
+if (self.perk == perk_id)
+{
+sprint(self, PRINT_HIGH, "you already have that perk.\n");
+return;
+}
+
+cost = ent.buy_cost;
+if (!cost)
+cost = EC_PerkCost(perk_id);
+
+if (!EC_CanAfford(self, cost))
+{
+sprint(self, PRINT_HIGH, "not enough money (");
+sprint(self, PRINT_HIGH, ftos(cost));
+sprint(self, PRINT_HIGH, " pts needed).\n");
+return;
+}
+
+EC_SpendPoints(self, cost);
+self.perk = perk_id;
+sound(self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+sprint(self, PRINT_HIGH, "perk installed: ");
+sprint(self, PRINT_HIGH, EC_PerkName(perk_id));
+sprint(self, PRINT_HIGH, ".\n");
+};
+
+// ---------------------------------------------------------------------------
+// info_wallbuy â€” point entity placed on a wall.
+//
+// Required map keys:
+//   buy_item  : IID of the weapon / item to sell (see inventory.qc for IIDs)
+//   buy_cost  : point cost
+//
+// Optional map keys:
+//   message   : short label shown in the touch prompt (default: item name)
+//
+/*QUAKED info_wallbuy (1 0.5 0) (-8 -8 -8) (8 8 8)
+Wall-mounted weapon purchase point.
+Player walks up and presses [BUY] to purchase the item.
+
+Required keys:
+  buy_item  IID of the weapon/item to sell (see inventory.qc IID_ constants)
+  buy_cost  point cost
+Optional keys:
+  message   label shown in the HUD prompt (defaults to item name)
+*/
+// ---------------------------------------------------------------------------
+void() wallbuy_touch =
+{
+local string name;
+local string msg;
+
+if (!triggercantouch(self, other))
+	return;
+if (other.classname != "player")
+	return;
+if (self.attack_finished > time)
+	return;
+self.attack_finished = time + 1.5;
+
+if (self.message != "")
+	name = self.message;
+else
+	name = GetItemName(self.buy_item);
+msg = strcat(name, "\n^2[", ftos(self.buy_cost), " pts - press BUY]");
+centerprint(other, msg);
+};
+
+void() info_wallbuy =
+{
+self.movetype = MOVETYPE_NONE;
+self.solid    = SOLID_TRIGGER;
+setsize(self, '-48 -48 -24', '48 48 48');
+self.classname = "info_wallbuy";
+self.touch     = wallbuy_touch;
+};
+
+// ---------------------------------------------------------------------------
+// func_mystery_box â€” brush entity that dispenses a random weapon.
+//
+// Optional map keys:
+//   buy_cost  : override spin cost (default EC_BOX_COST = 950)
+//
+/*QUAKED func_mystery_box (0 0.5 1) ?
+Mystery box.  Player approaches and presses [BUY] to spend EC_BOX_COST pts
+for a random weapon.  Requires the map power switch to be activated first.
+
+Optional keys:
+  buy_cost  override spin price (default 950)
+*/
+// ---------------------------------------------------------------------------
+void() mysterybox_touch =
+{
+local string msg;
+local float cost;
+
+if (!triggercantouch(self, other))
+return;
+if (other.classname != "player")
+return;
+if (self.attack_finished > time)
+return;
+self.attack_finished = time + 1.5;
+
+cost = self.buy_cost;
+if (!cost)
+cost = EC_BOX_COST;
+
+if (power_on)
+msg = strcat("MYSTERY BOX\n^2[", ftos(cost), " pts - press BUY]");
+else
+msg = "MYSTERY BOX\n^1[Power required - find the power switch]";
+centerprint(other, msg);
+};
+
+void() func_mystery_box =
+{
+self.movetype  = MOVETYPE_NONE;
+self.solid     = SOLID_BSP;
+self.classname = "func_mystery_box";
+setmodel(self, self.model);
+setorigin(self, self.origin);
+self.touch = mysterybox_touch;
+};
+
+// ---------------------------------------------------------------------------
+// func_perk_machine â€” brush entity that installs a single perk.
+//
+// Required map keys:
+//   buy_item  : perk ID (1-9)
+//
+// Optional map keys:
+//   buy_cost  : override cost (default derived from perk tier via EC_PerkCost)
+//
+/*QUAKED func_perk_machine (0.5 0 1) ?
+Perk vending machine.  Player approaches and presses [BUY] to install the
+perk specified by buy_item.  Requires power to be on.
+
+Required keys:
+  buy_item  perk ID (1-9)
+Optional keys:
+  buy_cost  override price (default from perk tier table in economy.qc)
+*/
+// ---------------------------------------------------------------------------
+void() perkmachine_touch =
+{
+local float cost;
+local float perk_id;
+local string msg;
+
+if (!triggercantouch(self, other))
+return;
+if (other.classname != "player")
+return;
+if (self.attack_finished > time)
+return;
+self.attack_finished = time + 1.5;
+
+perk_id = self.buy_item;
+cost    = self.buy_cost;
+if (!cost)
+cost = EC_PerkCost(perk_id);
+
+if (power_on)
+msg = strcat(EC_PerkName(perk_id), "\n^2[", ftos(cost), " pts - press BUY]");
+else
+msg = strcat(EC_PerkName(perk_id), "\n^1[Power required - find the power switch]");
+centerprint(other, msg);
+};
+
+void() func_perk_machine =
+{
+self.movetype  = MOVETYPE_NONE;
+self.solid     = SOLID_BSP;
+self.classname = "func_perk_machine";
+setmodel(self, self.model);
+setorigin(self, self.origin);
+self.touch = perkmachine_touch;
+};
+
+// ---------------------------------------------------------------------------
+// func_power_switch â€” brush or point entity that activates the map's power.
+//
+// Touching (or triggering) this entity turns on the power globally, enabling
+// perk machines and the mystery box.
+//
+/*QUAKED func_power_switch (1 1 0) ?
+Power switch.  Walk up and press [BUY] (or trigger via target/targetname) to
+turn on the map power, enabling perk machines and mystery box.
+Once activated the switch cannot be toggled off.
+*/
+// ---------------------------------------------------------------------------
+// power_switch_activate is called two ways:
+//   1. Via self.use trigger â€” self is the power switch entity
+//   2. Directly from BuyMenu â€” self is the player standing near the switch
+// In both cases we broadcast the power-on to all players.
+void() power_switch_activate =
+{
+	local entity p;
+
+	if (power_on)
+	{
+		// Give feedback to whoever called this.
+		if (self.classname == "player")
+			centerprint(self, "^3Power is already on.");
+		return;
+	}
+
+	power_on = 1;
+	bprint(2, "^3** POWER ON! Perk machines and mystery box are now active. **\n");
+
+	// Notify every live player.
+	p = find(world, classname, "player");
+	while (p)
+	{
+		centerprint(p, "^3POWER ON!\nPerk machines and mystery box are now active!");
+		sound(p, CHAN_BODY, "misc/basekey.wav", 1, ATTN_NORM);
+		p = find(p, classname, "player");
+	}
+
+	// If called as a triggered entity (self = the switch), fire its targets.
+	if (self.classname == "func_power_switch")
+		SUB_UseTargets();
+};
+
+void() powerswitch_touch =
+{
+local string msg;
+
+if (!triggercantouch(self, other))
+return;
+if (other.classname != "player")
+return;
+if (self.attack_finished > time)
+return;
+self.attack_finished = time + 1.5;
+
+if (power_on)
+msg = "POWER SWITCH\n^3[Power is ON]";
+else
+msg = "POWER SWITCH\n^2[Press BUY to activate]";
+centerprint(other, msg);
+};
+
+void() func_power_switch =
+{
+self.movetype  = MOVETYPE_NONE;
+self.solid     = SOLID_BSP;
+self.classname = "func_power_switch";
+setmodel(self, self.model);
+setorigin(self, self.origin);
+self.touch = powerswitch_touch;
+self.use   = power_switch_activate;
 };

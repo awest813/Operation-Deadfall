@@ -28,6 +28,11 @@ void (float slot, float snd, float drop) DropFromSlot;
 void() PositionControl;
 void() autofire;
 void() autofire_s;
+// Forward declarations for world-interaction buy helpers (defined in mod_buy.qc)
+void(entity ent) DoWallBuy;
+void(entity ent) DoMysteryBox;
+void(entity ent) DoInstallPerk;
+void() power_switch_activate;
 float(float iid) UseBoostingChem;
 float(float iid) UseHealingChem;
 float(float slotno) DecreaseDestroySlot;
@@ -2817,42 +2822,42 @@ void () DisplayMenu =
 	}
 	if (((self.currentmenu == "select_skill") && (self.team == 1)))
 	{
-		centerprint (self, "êCHOOSE SKILL SETë\n\nê1ë Medic    \nê2ë Assassin \nê3ë Soldier  \nê4ë Scientist\n");
+		centerprint (self, "ÔøΩCHOOSE SKILL SETÔøΩ\n\nÔøΩ1ÔøΩ Medic    \nÔøΩ2ÔøΩ Assassin \nÔøΩ3ÔøΩ Soldier  \nÔøΩ4ÔøΩ Scientist\n");
 	}
 	if (((self.currentmenu == "select_skill") && (self.team == 2)))
 	{
-		centerprint (self, "êCHOOSE SKILL SETë\n\nê1ë Medic    \nê2ë Assassin \nê3ë Soldier  \nê4ë Scientist\n");
+		centerprint (self, "ÔøΩCHOOSE SKILL SETÔøΩ\n\nÔøΩ1ÔøΩ Medic    \nÔøΩ2ÔøΩ Assassin \nÔøΩ3ÔøΩ Soldier  \nÔøΩ4ÔøΩ Scientist\n");
 	}
 	if ((self.currentmenu == "select_team"))
 	{
 		if (self.class == 0)
-			centerprint (self, "êCHOOSE YOUR TEAMë\n\nê1ë Rangers     (good)\nê2ë Raiders     (evil)\nê3ë Auto-Assign       \n");
+			centerprint (self, "ÔøΩCHOOSE YOUR TEAMÔøΩ\n\nÔøΩ1ÔøΩ Rangers     (good)\nÔøΩ2ÔøΩ Raiders     (evil)\nÔøΩ3ÔøΩ Auto-Assign       \n");
 		if (self.class >= 0 && self.oldteam == 0)
-			centerprint (self, "êCHOOSE YOUR TEAMë\n\nê1ë Rangers     (good)\nê2ë Raiders     (evil)\nê3ë Auto-Assign       \n");
+			centerprint (self, "ÔøΩCHOOSE YOUR TEAMÔøΩ\n\nÔøΩ1ÔøΩ Rangers     (good)\nÔøΩ2ÔøΩ Raiders     (evil)\nÔøΩ3ÔøΩ Auto-Assign       \n");
 		if (self.class > 0 && self.oldteam > 0)
-			centerprint (self, "êCHOOSE YOUR TEAMë\n\nê1ë Rangers     (good)\nê2ë Raiders     (evil)\nê3ë Auto-Assign       \nê4ë Keep Previous     \n");
+			centerprint (self, "ÔøΩCHOOSE YOUR TEAMÔøΩ\n\nÔøΩ1ÔøΩ Rangers     (good)\nÔøΩ2ÔøΩ Raiders     (evil)\nÔøΩ3ÔøΩ Auto-Assign       \nÔøΩ4ÔøΩ Keep Previous     \n");
 	}
 	if (self.currentmenu == "confirm_team")
 	{
 		sound (self, CHAN_BODY, "player/yourturn.wav", 1, ATTN_NORM);
 
 		if (self.team == 1)
-			centerprint (self, "êyou will respawn asë\n\nRanger - OK?\nê1ë Yes     \nê2ë No      \n");
+			centerprint (self, "ÔøΩyou will respawn asÔøΩ\n\nRanger - OK?\nÔøΩ1ÔøΩ Yes     \nÔøΩ2ÔøΩ No      \n");
 		if (self.team == 2)
-			centerprint (self, "êyou will respawn asë\n\nRaider - OK?\nê1ë Yes     \nê2ë No      \n");
+			centerprint (self, "ÔøΩyou will respawn asÔøΩ\n\nRaider - OK?\nÔøΩ1ÔøΩ Yes     \nÔøΩ2ÔøΩ No      \n");
 	}
 	if (self.currentmenu == "confirm_skill")
 	{
 		sound (self, CHAN_BODY, "player/yourturn.wav", 1, ATTN_NORM);
 
 		if (self.class == 1)
-			centerprint (self, "êyour class will beë\n\nMedic - OK?\nê1ë Yes     \nê2ë No      \n");
+			centerprint (self, "ÔøΩyour class will beÔøΩ\n\nMedic - OK?\nÔøΩ1ÔøΩ Yes     \nÔøΩ2ÔøΩ No      \n");
 		if (self.class == 2)
-			centerprint (self, "êyour class will beë\n\nAssassin - OK?\nê1ë Yes     \nê2ë No      \n");
+			centerprint (self, "ÔøΩyour class will beÔøΩ\n\nAssassin - OK?\nÔøΩ1ÔøΩ Yes     \nÔøΩ2ÔøΩ No      \n");
 		if (self.class == 3)
-			centerprint (self, "êyour class will beë\n\nSoldiier - OK?\nê1ë Yes     \nê2ë No      \n");
+			centerprint (self, "ÔøΩyour class will beÔøΩ\n\nSoldiier - OK?\nÔøΩ1ÔøΩ Yes     \nÔøΩ2ÔøΩ No      \n");
 		if (self.class == 4)
-			centerprint (self, "êyour class will beë\n\nScientist - OK?\nê1ë Yes     \nê2ë No      \n");
+			centerprint (self, "ÔøΩyour class will beÔøΩ\n\nScientist - OK?\nÔøΩ1ÔøΩ Yes     \nÔøΩ2ÔøΩ No      \n");
 	}
 
 	if (self.currentmenu == "menu_build")
@@ -2957,7 +2962,7 @@ void () Sneak =
 	if (self.sneak >= 1)
 	{
 		sound (self, CHAN_BODY, "items/inv1.wav", 1, ATTN_NORM);
-		centerprint (self, "ç Uncloaked ç\n");
+		centerprint (self, "ÔøΩ Uncloaked ÔøΩ\n");
 		setmodel (self, "progs/guy.mdl");
 		self.sneak = 0;
 		return;
@@ -2970,21 +2975,21 @@ void () Sneak =
 	if (self.sneak == 0 && self.class == 2)
 	{
 		sound (self, CHAN_BODY, "items/inv1.wav", 1, ATTN_NORM);
-		centerprint (self, "ç cloaked and sneaking ç\n(1% detection chance)");
+		centerprint (self, "ÔøΩ cloaked and sneaking ÔøΩ\n(1% detection chance)");
 		self.sneak = 1;
 		return;
 	}
 	else if (self.sneak == 0 && self.class != 2)
 	{
 		sound (self, CHAN_BODY, "items/inv1.wav", 1, ATTN_NORM);
-		centerprint (self, "ç cloaked ç\n(15% detection chance)");
+		centerprint (self, "ÔøΩ cloaked ÔøΩ\n(15% detection chance)");
 		self.sneak = 3;
 		return;
 	}
 	else if (self.sneak == 0 && w > 20)
 	{
 		sound (self, CHAN_BODY, "items/inv1.wav", 1, ATTN_NORM);
-		centerprint (self, "ç too much gear ç\n");
+		centerprint (self, "ÔøΩ too much gear ÔøΩ\n");
 		setmodel (self, "progs/guy.mdl");
 		self.sneak = 0;
 		return;
@@ -3000,7 +3005,7 @@ void () Shield =
 	}
 	if (self.sneak == 2)
 	{
-		centerprint (self, "ççç Unshielded ççç\n");
+		centerprint (self, "ÔøΩÔøΩÔøΩ Unshielded ÔøΩÔøΩÔøΩ\n");
 		self.sneak = 0;
 		sound (self, CHAN_BODY, "items/protect2.wav", 1, ATTN_NORM);
 		return;
@@ -3012,7 +3017,7 @@ void () Shield =
 	}
 	if (self.sneak == 0)
 	{
-		centerprint (self, "ççç Energy Shield ççç\n");
+		centerprint (self, "ÔøΩÔøΩÔøΩ Energy Shield ÔøΩÔøΩÔøΩ\n");
 		self.sneak = 2;
 		sound (self, CHAN_BODY, "items/protect.wav", 1, ATTN_NORM);
 		return;
@@ -3505,6 +3510,40 @@ void () BuyMenu =
 	if (self.currentmenu == "777")
 		return;
 
+	// ----------------------------------------------------------------
+	// World-placed interaction entities take priority over the general
+	// shop menu.  Scan for them within melee range (80 units).
+	// ----------------------------------------------------------------
+	te = findradius(self.origin, 80);
+	while (te)
+	{
+		if (te.classname == "info_wallbuy")
+		{
+			DoWallBuy(te);
+			return;
+		}
+		if (te.classname == "func_mystery_box")
+		{
+			DoMysteryBox(te);
+			return;
+		}
+		if (te.classname == "func_perk_machine")
+		{
+			DoInstallPerk(te);
+			return;
+		}
+		if (te.classname == "func_power_switch")
+		{
+			if (self.spamdelay <= time)
+			{
+				self.spamdelay = time + 1.5;
+				power_switch_activate();
+			}
+			return;
+		}
+		te = te.chain;
+	}
+
 	is_shop = 0;
 
 	if (coop == 0)
@@ -3566,7 +3605,7 @@ void () CharacterSheet =
 
 	stuffcmd (self, "toggleconsole\n");
 	sprint (self, PRINT_HIGH, "\n\n\n\n ** INFO ** \n");
-	sprint (self, PRINT_HIGH, "êClass     ë ");
+	sprint (self, PRINT_HIGH, "ÔøΩClass     ÔøΩ ");
 		if (self.class == 1)
 			sprint (self, 2, "Medic");
 		if (self.class == 2)
@@ -3576,14 +3615,14 @@ void () CharacterSheet =
 		if (self.class == 4)
 			sprint (self, 2, "Scientist");
 
-	sprint (self, PRINT_HIGH, "\nêTeam      ë ");
+	sprint (self, PRINT_HIGH, "\nÔøΩTeam      ÔøΩ ");
 
 	if (self.team == 1)
 		sprint (self, 2, "Rangers\n");
 	if (self.team == 2)
 		sprint (self, 2, "Raiders\n");
 
-	sprint (self, PRINT_HIGH, "êScore     ë ");
+	sprint (self, PRINT_HIGH, "ÔøΩScore     ÔøΩ ");
 	r1 = (self.dead);
 	r2 = (self.kills);
 	if (r1 == 0)
@@ -3599,31 +3638,31 @@ void () CharacterSheet =
 	x = ftos (self.dead);
 	sprint (self, 2, x);
 	sprint (self, 2, ")   ");
-	sprint (self, PRINT_HIGH, "\nêSpeed     ë ");
+	sprint (self, PRINT_HIGH, "\nÔøΩSpeed     ÔøΩ ");
 	x = ftos (self.maxspeed);
 	sprint (self, 2, x);
 	sprint (self, PRINT_HIGH, "/300\n");
-	sprint (self, PRINT_HIGH, "êMoney     ë ");
+	sprint (self, PRINT_HIGH, "ÔøΩMoney     ÔøΩ ");
 
 	x = ftos (self.ammo_shells);
 	sprint (self, 2, x);
 	sprint (self, PRINT_HIGH, "$\n");
 	if (self.class == 2)
 	{
-		sprint (self, PRINT_HIGH, "êBandages  ë ");
+		sprint (self, PRINT_HIGH, "ÔøΩBandages  ÔøΩ ");
 		x = ftos (self.bandages);
 		sprint (self, 2, x);
 		sprint (self, PRINT_HIGH, "\n");
 	}
 	if (self.class == 6)
 	{
-		sprint (self, PRINT_HIGH, "êScraps    ë ");
+		sprint (self, PRINT_HIGH, "ÔøΩScraps    ÔøΩ ");
 		x = ftos (self.scraps);
 		sprint (self, 2, x);
 		sprint (self, PRINT_HIGH, "\n");
 	}
 /*
-	sprint (self, PRINT_HIGH, "\nêArmor     ë ");
+	sprint (self, PRINT_HIGH, "\nÔøΩArmor     ÔøΩ ");
 	x = GetArmorName();
 	sprint (self, 2, x);
 	sprint (self, 2, "  (");
@@ -3631,12 +3670,12 @@ void () CharacterSheet =
 	sprint (self, 2, x);
 	sprint (self, 2, ")\n");
 */
-	sprint (self, PRINT_HIGH, "êProtectiveë ");
+	sprint (self, PRINT_HIGH, "ÔøΩProtectiveÔøΩ ");
 	x = GetProtectName();
 	sprint (self, 2, x);
 	sprint (self, 2, "\n");
 /*
-	sprint (self, PRINT_HIGH, "êChem      ë ");
+	sprint (self, PRINT_HIGH, "ÔøΩChem      ÔøΩ ");
 	x = GetChemName();
 	sprint (self, 2, x);
 	x = ftos (self.chemcount);
@@ -3645,21 +3684,21 @@ void () CharacterSheet =
 	sprint (self, 2, "]");
 	sprint (self, 2, "\n");
 */
-	sprint (self, PRINT_HIGH, "êGadget    ë ");
+	sprint (self, PRINT_HIGH, "ÔøΩGadget    ÔøΩ ");
 
 	x = GetEquipmentName();
 	sprint (self, 2, x);
 	sprint (self, 2, "\n");
-	sprint (self, PRINT_HIGH, "êPerk      ë ");
+	sprint (self, PRINT_HIGH, "ÔøΩPerk      ÔøΩ ");
 	x = GetPerkName();
 	sprint (self, 2, x);
 	sprint (self, 2, "\n");
-	sprint (self, PRINT_HIGH, "êTrait     ë ");
+	sprint (self, PRINT_HIGH, "ÔøΩTrait     ÔøΩ ");
 	x = GetTraitName();
 	sprint (self, 2, x);
 	sprint (self, 2, "\n");
 /*
-	sprint (self, PRINT_HIGH, "êWeapon 1  ë ");
+	sprint (self, PRINT_HIGH, "ÔøΩWeapon 1  ÔøΩ ");
 	x = GetWeaponName (self, self.slot1);
 	sprint (self, 2, x);
 	sprint (self, 2, "  (");
@@ -3669,7 +3708,7 @@ void () CharacterSheet =
 	sprint (self, 2, self.ammotype1);
 	sprint (self, 2, ")\n");
 
-	sprint (self, PRINT_HIGH, "êWeapon 2  ë ");
+	sprint (self, PRINT_HIGH, "ÔøΩWeapon 2  ÔøΩ ");
 	x = GetWeaponName (self, self.slot2);
 	sprint (self, 2, x);
 	sprint (self, 2, "  (");
@@ -3680,7 +3719,7 @@ void () CharacterSheet =
 	sprint (self, 2, ")\n\n");
 */
 	qq = weightx ();
-	sprint (self, PRINT_HIGH, "êWeight    ë ");
+	sprint (self, PRINT_HIGH, "ÔøΩWeight    ÔøΩ ");
 	x = ftos (qq);
 	sprint (self, 2, x);
 	qq = self.max_weight;
@@ -3696,27 +3735,27 @@ void () UseEquipment =
 
 	if (self.equipment == 0)
 	{
-		centerprint(self, "êë no extra equipment êë\n");
+		centerprint(self, "ÔøΩÔøΩ no extra equipment ÔøΩÔøΩ\n");
 		return;
 	}
 	if (self.equipment == 1)
 	{
-		centerprint(self, "êë medic's bag êë\nlets you carry more stimpacks\n");
+		centerprint(self, "ÔøΩÔøΩ medic's bag ÔøΩÔøΩ\nlets you carry more stimpacks\n");
 		return;
 	}
 	if (self.equipment == 4)
 	{
-		centerprint(self, "êë belt pouch êë\ngives you room for two extra grenades\n");
+		centerprint(self, "ÔøΩÔøΩ belt pouch ÔøΩÔøΩ\ngives you room for two extra grenades\n");
 		return;
 	}
 	if (self.equipment == 5)
 	{
-		centerprint(self, "êë backpack êë\nlets you carry more ammunition\n");
+		centerprint(self, "ÔøΩÔøΩ backpack ÔøΩÔøΩ\nlets you carry more ammunition\n");
 		return;
 	}
 	if (self.equipment == 6)
 	{
-		centerprint(self, "êë toolkit mark ii êë\nbuild, defuse and open doors faster\n");
+		centerprint(self, "ÔøΩÔøΩ toolkit mark ii ÔøΩÔøΩ\nbuild, defuse and open doors faster\n");
 		return;
 	}
 /*
@@ -3739,7 +3778,7 @@ void () UseEquipment =
 */
 	if (self.equipment == 8)
 	{
-		centerprint(self, "êë enhanced battery êë\nallows longer cloaking\n");
+		centerprint(self, "ÔøΩÔøΩ enhanced battery ÔøΩÔøΩ\nallows longer cloaking\n");
 		return;
 	}
 	if (self.equipment == 9)

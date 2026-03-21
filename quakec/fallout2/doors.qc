@@ -738,3 +738,99 @@ void () func_door_secret =
 		self.wait = MULTICAST_PVS_R;
 	}
 };
+
+// ============================================================================
+// func_door_zone — point-cost zone-unlock door (COD Zombies-style)
+//
+// Behaves identically to func_door but requires the player to spend points
+// to unlock it for the first time.  Once purchased the door stays open
+// permanently and never charges again.
+//
+// Required map keys:
+//   buy_cost  : point cost to unlock (default EC_DOOR_COST = 750)
+//
+// Optional map keys:
+//   message   : text shown in the HUD prompt when player approaches
+//   speed     : movement speed (inherited from func_door, default 100)
+//
+/*QUAKED func_door_zone (0 .5 .8) ? START_OPEN TOGGLE
+A door that costs points to unlock.  Walk into it to see the price; once
+you can afford it the door opens automatically on touch.  After purchase the
+door stays open (wait = -1) and never charges again.
+
+Required keys:
+  buy_cost  point cost (default 750)
+Optional keys:
+  message   label shown in the prompt
+  speed     movement speed (default 100)
+*/
+// ============================================================================
+
+void() zone_door_touch =
+{
+local float cost;
+local string msg;
+
+if (!triggercantouch(self, other))
+return;
+if (other.classname != "player")
+return;
+if (self.owner.attack_finished > time)
+return;
+if (self.state != STATE_BOTTOM)
+return;
+
+// Only engage on door panels narrow enough to be an actual passage.
+// Wide brushes (> 64 in both X and Y) are large area-separator or
+// decorative geometry that should not act as buy-gated portals.
+if (self.size_y > 64 && self.size_x > 64)
+	return;
+
+self.owner.attack_finished = time + 1.5;
+
+cost = self.owner.buy_cost;
+if (!cost)
+cost = EC_DOOR_COST;
+
+if (!EC_CanAfford(other, cost))
+{
+if (self.owner.message != "")
+msg = strcat(self.owner.message, "\n^1[", ftos(cost), " pts to unlock]");
+else
+msg = strcat("^1[", ftos(cost), " pts to unlock this door]");
+centerprint(other, msg);
+sound(other, CHAN_VOICE, "misc/talk.wav", 1, ATTN_NORM);
+return;
+}
+
+// Player can afford it — charge and open.
+EC_SpendPoints(other, cost);
+sound(other, CHAN_BODY, "misc/basekey.wav", 1, ATTN_NORM);
+
+// Disarm: zero out cost so the door is free on all future touches.
+self.owner.buy_cost = 0;
+
+// Disable the touch handler on every panel in the group so the door
+// never prompts or charges again after the first purchase.
+self.touch = SUB_Null;
+self.owner.touch = SUB_Null;
+
+door_use();
+};
+
+void() func_door_zone =
+{
+	// Run standard door setup (sets up panels, sounds, movement vectors, etc.)
+	func_door();
+
+	// Prevent the automatic trigger field from being created by LinkDoors.
+	// When self.items != 0, LinkDoors skips spawn_field(); zone_door_touch
+	// handles the actual cost check so the IT_KEY1 value is never tested.
+	self.items = IT_KEY1;
+
+	// Override the touch handler on this panel with our cost-gate version.
+	self.touch = zone_door_touch;
+
+	// Zone doors stay open permanently after purchase (wait = -1 means no auto-close).
+	self.wait = -1;
+};

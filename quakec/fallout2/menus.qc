@@ -126,21 +126,21 @@ string () ArmorString =
 		"ê8ë metal armor mkii  20 8/50% 55$\n");
 };
 
+// Costs must match EC_PERK_T1/T2/T3/T4 constants in economy.qc.
 string () PerkString =
 {
 	return ("perks\n"
-		"  ABILITY | FRAGS NEEDED \n"
+		"  ABILITY          | COST \n"
 		"\n"
-		"ê1ë bonus movement       2\n"
-		"ê2ë strong back          2\n"
-		"ê3ë quick pockets        2\n"
-		"ê4ë awareness            2\n"
-		"ê5ë silent running       3\n"
-		"ê6ë better criticals     3\n"
-		"ê7ë bonus ranged damage  3\n"
-		"ê8ë divine favor         3\n"
-		"ê9ë slayer               3\n"
-		"ê0ë sharpshooter         4\n");
+		"ê1ë bonus movement      500\n"
+		"ê2ë strong back          500\n"
+		"ê3ë quick pockets        500\n"
+		"ê4ë awareness           1000\n"
+		"ê5ë silent running      1000\n"
+		"ê6ë better criticals    1000\n"
+		"ê7ë bonus ranged dmg    1000\n"
+		"ê8ë divine favor        1500\n"
+		"ê9ë slayer              2000\n");
 };
 
 string () ProtectString =

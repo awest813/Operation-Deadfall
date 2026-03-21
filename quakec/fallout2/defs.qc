@@ -514,6 +514,9 @@ float           round_zombie_health; // per-round kill threshold (set by tuning 
 float           round_state;         // current state-machine state (RSTATE_* constants)
 float           round_timer;         // real-time deadline for next state transition
 
+// Economy / progression globals
+float           power_on;            // 1 once the map power switch has been activated
+
 //================================================
 
 //
@@ -679,6 +682,10 @@ float          red_armor;
 .float          vote7;
 .float          vote8;
 .float          spamdelay;
+
+// Economy / interaction fields (used by info_wallbuy, func_perk_machine, func_door_zone, etc.)
+.float          buy_cost;            // point cost for this purchasable entity
+.float          buy_item;            // item/perk IID sold by this entity
 
 .string        armornoise;
 .string        ammotype1;
