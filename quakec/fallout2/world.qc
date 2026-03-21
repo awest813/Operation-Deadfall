@@ -34,6 +34,9 @@ void () create_referees =
 	newmis.think = VoteBoy;
 	newmis.classname = "voteboy";
 	newmis.vote_time = (time + MULTICAST_PVS_R);
+
+	// Initialise the COD Zombies-style round manager (round_manager.qc).
+	RM_Init();
 };
 
 void() main =

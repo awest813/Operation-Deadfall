@@ -352,10 +352,19 @@ void() zombie_paine10	=[	$paine10,	zombie_paine11	] {
 sound (self, CHAN_BODY, "zombie/z_fall.wav", 1, ATTN_NORM);
 self.solid = SOLID_NOT;
 };
-void() zombie_paine11	=[	$paine11,	zombie_paine12	] {self.nextthink = self.nextthink + 5;self.health = 60;};
+void() zombie_paine11	=[	$paine11,	zombie_paine12	] {
+self.nextthink = self.nextthink + 5;
+if (self.max_health > 0)
+	self.health = self.max_health;
+else
+	self.health = 60;
+};
 void() zombie_paine12	=[	$paine12,	zombie_paine13	]{
 // see if ok to stand up
-self.health = 60;
+if (self.max_health > 0)
+	self.health = self.max_health;
+else
+	self.health = 60;
 sound (self, CHAN_VOICE, "zombie/z_idle.wav", 1, ATTN_IDLE);
 self.solid = SOLID_SLIDEBOX;
 if (!walkmove (0, 0))
@@ -391,6 +400,9 @@ void() zombie_die =
 	ThrowGib ("progs/gib1.mdl", self.health);
 	ThrowGib ("progs/gib2.mdl", self.health);
 	ThrowGib ("progs/gib3.mdl", self.health);
+	// Notify round manager when a wave-spawned ghoul is killed.
+	if (self.classname == "ighoul")
+		RM_ZombieDied();
 };
 
 /*
@@ -416,7 +428,13 @@ void(entity attacker, float take) zombie_pain =
 {
 	local float r;
 
-	self.health = 60;		// allways reset health
+	// Reset to the zombie's resilience threshold.
+	// Round-managed ghouls (max_health > 0) use the per-round value;
+	// map-placed monster_zombie entities fall back to the classic 60 HP.
+	if (self.max_health > 0)
+		self.health = self.max_health;
+	else
+		self.health = 60;
 
 	if (take < 9)
 		return;				// totally ignore
@@ -484,10 +502,13 @@ void (entity stuff) spawn_zombie =
 	self.movetype = MOVETYPE_STEP;
 	setmodel (self, "progs/tehghoul.mdl");
 	setsize (self, VEC_HULL_MIN, '16 16 40');
-	self.health = 180;
+	// Use the per-round kill threshold set by the round manager.
+	// round_zombie_health is initialized to 60 (classic value) and updated
+	// each round by RT_ZombieHealth in RoundManager_Think (round_manager.qc).
+	self.health = round_zombie_health;
 	self.classname = "ighoul";
 	self.netname = "ghoul";
-	self.max_health = self.health;
+	self.max_health = round_zombie_health;  // zombie_pain uses max_health to reset
 	self.th_stand = zombie_stand1;
 	self.th_walk = zombie_walk1;
 	self.th_run = zombie_run1;
@@ -496,6 +517,8 @@ void (entity stuff) spawn_zombie =
 	self.th_missile = zombie_missile;
 	self.target = stuff.target;
 	walkmonster_start_go ();
+	// Track how many ghouls are currently alive for the round manager.
+	zombies_alive = zombies_alive + 1;
 };
 
 void() monster_zombie =

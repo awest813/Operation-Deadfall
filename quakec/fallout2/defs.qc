@@ -504,6 +504,16 @@ float           gtimer;
 float           total_players;
 float           endgame_timer;
 
+// ---------------------------------------------------------------------------
+// Round-manager globals (see round_manager.qc for full documentation)
+// ---------------------------------------------------------------------------
+float           current_round;       // current round number (0 = pre-game)
+float           zombies_queued;      // zombies still to be spawned this round
+float           zombies_alive;       // currently alive round-manager ghouls
+float           round_zombie_health; // per-round kill threshold (set by tuning table)
+float           round_state;         // current state-machine state (RSTATE_* constants)
+float           round_timer;         // real-time deadline for next state transition
+
 //================================================
 
 //
