@@ -7,7 +7,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Linux i386
         run: |
           cd tools/
@@ -23,7 +23,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Linux i386 (no sdl)
         run: |
           cd tools/
@@ -39,7 +39,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Linux x86_64
         run: |
           cd tools/
@@ -55,7 +55,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Linux x86_64 (no sdl)
         run: |
           cd tools/
@@ -71,7 +71,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Linux Arm64
         run: |
           cd tools/
@@ -87,7 +87,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Linux Arm64 (no sdl)
         run: |
           cd tools/
@@ -103,7 +103,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Linux Armhf
         run: |
           cd tools/
@@ -119,7 +119,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Linux Armhf (no sdl)
         run: |
           cd tools/
@@ -135,7 +135,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Windows x86
         run: |
           cd tools/
@@ -151,7 +151,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Windows x86 (no SDL)
         run: |
           cd tools/
@@ -167,7 +167,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Windows x86_64
         run: |
           cd tools/
@@ -183,7 +183,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build Windows x86_64 (no SDL)
         run: |
           cd tools/
@@ -199,7 +199,7 @@ jobs:
       image: motolegacy/fteqw:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build WASM
         run: |
           cd tools/
@@ -216,7 +216,7 @@ jobs:
     needs: [Compile-Linux32, Compile-Linux32-noSDL2, Compile-Linux64, Compile-Linux64-noSDL2, Compile-LinuxArm64, Compile-LinuxArm64-noSDL2, Compile-LinuxArmhf, Compile-LinuxArmhf-noSDL2, Compile-Windows32, Compile-Windows32-noSDL2, Compile-Windows64, Compile-Windows64-noSDL2, Compile-WASM]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Wait for GitHub to keep up..
         run: sleep 2s
         shell: bash
@@ -241,150 +241,34 @@ jobs:
           zip -r -j pc-nzp-web.zip pc-nzp-web/*
       - name: Generate Build Date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H-%M-%S')"
-      - name: Delete Old Release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.1
-        with:
-          delete_release: true
-          tag_name: bleeding-edge
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+        run: echo "date=$(date +'%Y-%m-%d-%H-%M-%S')" >> "$GITHUB_OUTPUT"
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: bleeding-edge
-          release_name: Automated Release ${{ steps.date.outputs.date }}
+          name: Automated Release ${{ steps.date.outputs.date }}
           body: |
-            This is a **bleeding edge** NZ:P FTE release, stability is not guarenteed.
+            This is a **bleeding edge** NZ:P FTE release, stability is not guaranteed.
 
             To install:
             - Grab the .ZIP archive for your platform.
             - Extract the contents of the .ZIP archive to your game directory (place where you have the 'nzp' folder).
-          draft: true
-          prerelease: false
-      - name: Upload Linux32 Archive
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-linux32.zip
-          asset_name: pc-nzp-linux32.zip
-          asset_content_type: application/zip
-      - name: Upload Linux32 Archive (no SDL)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-linux32-nosdl.zip
-          asset_name: pc-nzp-linux32-nosdl.zip
-          asset_content_type: application/zip
-      - name: Upload Linux64 Archive
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-linux64.zip
-          asset_name: pc-nzp-linux64.zip
-          asset_content_type: application/zip
-      - name: Upload Linux64 Archive (no SDL)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-linux64-nosdl.zip
-          asset_name: pc-nzp-linux64-nosdl.zip
-          asset_content_type: application/zip
-      - name: Upload LinuxArm64 Archive
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-linux_arm64.zip
-          asset_name: pc-nzp-linux_arm64.zip
-          asset_content_type: application/zip
-      - name: Upload LinuxArm64 Archive (no SDL)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-linux_arm64-nosdl.zip
-          asset_name: pc-nzp-linux_arm64-nosdl.zip
-          asset_content_type: application/zip
-      - name: Upload LinuxArmhf Archive
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-linux_armhf.zip
-          asset_name: pc-nzp-linux_armhf.zip
-          asset_content_type: application/zip
-      - name: Upload LinuxArmhf Archive (no SDL)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-linux_armhf-nosdl.zip
-          asset_name: pc-nzp-linux_armhf-nosdl.zip
-          asset_content_type: application/zip
-      - name: Upload Windows32 Archive
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-win32.zip
-          asset_name: pc-nzp-win32.zip
-          asset_content_type: application/zip
-      - name: Upload Windows32 Archive (no SDL)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-win32-nosdl.zip
-          asset_name: pc-nzp-win32-nosdl.zip
-          asset_content_type: application/zip
-      - name: Upload Windows64 Archive
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-win64.zip
-          asset_name: pc-nzp-win64.zip
-          asset_content_type: application/zip
-      - name: Upload Windows64 Archive (no SDL)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-win64-nosdl.zip
-          asset_name: pc-nzp-win64-nosdl.zip
-          asset_content_type: application/zip
-      - name: Upload WASM Archive
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pc-nzp-web.zip
-          asset_name: pc-nzp-web.zip
-          asset_content_type: application/zip
-      - name: Publish Release
-        uses: StuYarrow/publish-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          id: ${{ steps.create_release.outputs.id }}
+          draft: false
+          prerelease: true
+          make_latest: false
+          files: |
+            pc-nzp-linux32.zip
+            pc-nzp-linux32-nosdl.zip
+            pc-nzp-linux64.zip
+            pc-nzp-linux64-nosdl.zip
+            pc-nzp-linux_arm64.zip
+            pc-nzp-linux_arm64-nosdl.zip
+            pc-nzp-linux_armhf.zip
+            pc-nzp-linux_armhf-nosdl.zip
+            pc-nzp-win32.zip
+            pc-nzp-win32-nosdl.zip
+            pc-nzp-win64.zip
+            pc-nzp-win64-nosdl.zip
+            pc-nzp-web.zip
