@@ -654,6 +654,7 @@ float          red_armor;
 .float          dead;
 .float          grenadetoggle;
 .float          kills;
+.float          milestone_kills;
 .float          materialize;
 .float          vote_time;
 .float          vote_on;
@@ -885,7 +886,6 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage;
 float (entity e, float healamount, float ignore) T_Heal; // health function
 
 float(entity targ, entity inflictor) CanDamage;
-
 
 
 
