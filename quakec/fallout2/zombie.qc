@@ -542,7 +542,7 @@ void() zombie_paine30	=[	$paine30,	zombie_run1		] {};
 
 void() zombie_die =
 {
-	local float drop_iid, drop_qty, pts;
+	local float drop_iid, drop_qty, pts, bonus;
 	drop_iid = 0;
 	drop_qty = 0;
 
@@ -558,9 +558,44 @@ void() zombie_die =
 	if (self.enemy.classname == "player")
 	{
 		pts = EC_KillReward();
+
+		// Double Kill combo: award 50% bonus if two kills land within 2.5 s.
+		bonus = 0;
+		if ((time - self.enemy.last_kill_time) < 2.5)
+		{
+			bonus = floor(pts * 0.5);
+			EC_GivePoints(self.enemy, bonus);
+			sprint(self.enemy, PRINT_HIGH, strcat("^3DOUBLE KILL! ^2+", ftos(bonus), " bonus pts\n"));
+		}
+		self.enemy.last_kill_time = time;
+
 		EC_GivePoints(self.enemy, pts);
 		// Notify the killer of their points reward so each kill feels tangible.
 		sprint(self.enemy, PRINT_HIGH, strcat("^2+", ftos(pts), " pts\n"));
+
+		// Kill streak tracking: increment and announce at thresholds.
+		self.enemy.kill_streak = self.enemy.kill_streak + 1;
+		if (self.enemy.kill_streak == 3)
+		{
+			sprint(self.enemy, PRINT_HIGH, "^3TRIPLE KILL!\n");
+			sound(self.enemy, CHAN_AUTO, "misc/menu2.wav", 0.7, ATTN_NONE);
+		}
+		else if (self.enemy.kill_streak == 5)
+		{
+			sprint(self.enemy, PRINT_HIGH, "^3KILLING SPREE!\n");
+			sound(self.enemy, CHAN_AUTO, "misc/menu2.wav", 0.9, ATTN_NONE);
+		}
+		else if (self.enemy.kill_streak == 10)
+		{
+			bprint(2, strcat("^3** ", self.enemy.netname, " is UNSTOPPABLE! **\n"));
+			sound(self.enemy, CHAN_AUTO, "misc/menu3.wav", 1, ATTN_NONE);
+		}
+		else if (self.enemy.kill_streak == 20)
+		{
+			bprint(2, strcat("^1** ", self.enemy.netname, " is on a RAMPAGE! **\n"));
+			sound(self.enemy, CHAN_AUTO, "misc/menu3.wav", 1, ATTN_NONE);
+		}
+
 		// Tiered ammo drop: type escalates with current round so the player
 		// always gets ammo relevant to the weapons available at that stage.
 		// Earlier rounds: common pistol/SMG ammo (10mm)
