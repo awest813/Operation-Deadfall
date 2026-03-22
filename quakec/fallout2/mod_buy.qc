@@ -874,9 +874,13 @@ sprint(self, PRINT_HIGH, ".\n");
 // DoMysteryBox — called from BuyMenu when near a func_mystery_box.
 //   Costs EC_BOX_COST, gives a random ranged weapon.  Requires power on.
 // ---------------------------------------------------------------------------
-// box_pool_size must equal the number of entries in the if/else chain below.
-// Update both together when adding or removing weapons from the pool.
-float box_pool_size = 14;
+// BOX_POOL_SIZE must equal the number of entries in the if/else chain below.
+// When adding or removing a weapon from the pool:
+//   1. Add/remove its branch in DoMysteryBox.
+//   2. Update BOX_POOL_SIZE to match.
+// Using a #define instead of a mutable global prevents the count from
+// drifting out of sync during refactors.
+#define BOX_POOL_SIZE 14
 
 void(entity ent) DoMysteryBox =
 {
@@ -908,8 +912,9 @@ return;
 
 EC_SpendPoints(self, cost);
 
-// Random weapon pool — 14 entries (indices 0-13).
-r = floor(random() * box_pool_size);
+// Random weapon pool — BOX_POOL_SIZE entries (indices 0 .. BOX_POOL_SIZE-1).
+// To add a weapon: append an "else if" branch, then increment BOX_POOL_SIZE.
+r = floor(random() * BOX_POOL_SIZE);
 if      (r ==  0) iid = IID_WP_USP;
 else if (r ==  1) iid = IID_WP_DEAGLE;
 else if (r ==  2) iid = IID_WP_NEEDLER;
@@ -923,7 +928,7 @@ else if (r ==  9) iid = IID_WP_RANGEMASTER;
 else if (r == 10) iid = IID_WP_AK112;
 else if (r == 11) iid = IID_WP_AK74;
 else if (r == 12) iid = IID_WP_ALIENBLASTER;
-else              iid = IID_WP_ROCKETLAUNCHER;
+else              iid = IID_WP_ROCKETLAUNCHER;  // index 13 = BOX_POOL_SIZE-1
 
 sound(self, CHAN_BODY, "misc/item2.wav", 1, ATTN_NORM);
 EC_GiveItem(iid);

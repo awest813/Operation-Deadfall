@@ -794,6 +794,50 @@ float(float item) GetItemsWeight =
 };
 
 
+
+// ============================================================================
+// HOW TO ADD A NEW RANGED WEAPON
+// ============================================================================
+// Ranged weapons have ammo, a magazine, a view model and a world model.
+// Follow this checklist in order to avoid silent bugs:
+//
+//  STEP 1 — inventory.qc  (this file)
+//    a) Add  float IID_WP_YOURGUN = NNN;  in the IID block at the top.
+//       • Melee weapons: 400-404 range   (update IsMelee upper bound if needed)
+//       • Ranged weapons: 405-430 range  (must stay inside IsRanged range)
+//       • Gaps are OK but avoid reusing existing IDs.
+//    b) GetItemName()      — add display name string.
+//    c) GetItemVModel()    — add "progs/v_yourgun.mdl" view-model path.
+//    d) GetItemWModel()    — add "progs/w_yourgun.mdl" world-model path.
+//    e) WeaponAmmoType()   — map IID_WP_YOURGUN → IID_AM_xxx.
+//    f) WeaponMagQuant()   — set magazine capacity.
+//    g) GetItemWeight()    — set carry weight.
+//    h) GetItemDesc()      — add flavour-text description (optional).
+//
+//  STEP 2 — weapons.qc
+//    a) W_Precache()       — add precache_sound("weapons/yourgun.wav").
+//    b) W_Attack()         — add  else if (weap == IID_WP_YOURGUN) FireXxx(...);
+//       • Pistols use FirePistol(dam, rec, snd, rng, rate).
+//       • SMGs   use FireSMG   (dam, rec, snd, rng, rate).
+//       • ARs    use FireAssaultRifle(dam, rec, snd, rng, rate).
+//       • Shotguns use W_FireShotgun(rec, pellets, dam, spread, rng, auto).
+//
+//  STEP 3 — mod_buy.qc  (optional — only if the gun belongs in the mystery box)
+//    a) Add  else if (r == N) iid = IID_WP_YOURGUN;  in DoMysteryBox.
+//    b) Increment  BOX_POOL_SIZE  by 1 directly above DoMysteryBox.
+//
+//  STEP 4 — Map / Trenchbroom
+//    • Place an  info_wallbuy  brush entity.
+//    • Set  buy_item = NNN  (the IID number) and  buy_cost = NNNN.
+//
+// ============================================================================
+// HOW TO ADD A NEW MELEE WEAPON
+// ============================================================================
+// Steps 1a/1b/1c/1d/1g/1h apply (no ammo type or magazine needed).
+// In weapons.qc W_FireMelee(): add  else if (iid == IID_WP_YOURWEAPON)
+//   FireMelee(damage, dist, rate, sound_or_empty_string);
+// ============================================================================
+
 string(float iid) GetItemName =
 {
 	if (iid == IID_NONE)
