@@ -75,6 +75,9 @@ float INPUT_MOUSEMOVE = 2;
 #define STAT_INTERMISSION_SECS  68   // whole seconds remaining until next round (0 outside INTERMISSION)
 #define STAT_POINTS             69   // this player's currency balance (ammo_shells)
 #define STAT_STREAK             70   // this player's current kill streak
+#define STAT_BEST_STREAK        71   // peak kill streak reached this session
+#define STAT_INTRO_SECS         72   // countdown seconds remaining during RSTATE_INTRO (0 otherwise)
+#define STAT_POWER              73   // 1 once the map power switch has been activated
 
 // Round state constants (must match round_manager.qc values).
 #define RSTATE_WAITING      0

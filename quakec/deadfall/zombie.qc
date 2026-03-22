@@ -615,6 +615,9 @@ void() zombie_die =
 
 		// Kill streak tracking: increment and announce at thresholds.
 		self.enemy.kill_streak = self.enemy.kill_streak + 1;
+		// Keep best_streak up to date in real time (not only on death).
+		if (self.enemy.kill_streak > self.enemy.best_streak)
+			self.enemy.best_streak = self.enemy.kill_streak;
 		if (self.enemy.kill_streak == 3)
 		{
 			sprint(self.enemy, PRINT_HIGH, "^3TRIPLE KILL!\n");

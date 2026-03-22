@@ -689,6 +689,7 @@ float          red_armor;
 .float          milestone_kills;
 .float          low_health_pulse;   // toggles each 0.5 s cycle for HP danger flash
 .float          kill_streak;        // consecutive kills without dying (reset on player death)
+.float          best_streak;        // peak kill streak reached during this life / game session
 .float          last_kill_time;     // server time of last zombie kill (for double-kill combo)
 .float          materialize;
 .float          vote_time;
