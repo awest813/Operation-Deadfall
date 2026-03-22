@@ -7,6 +7,19 @@ Centralized kill-reward and purchase-cost constants for the COD Zombies-style
 progression loop.  Edit this file to rebalance the game without touching any
 game-logic code.
 
+PERK IDs (used as buy_item on func_perk_machine entities and in EC_PerkCost /
+EC_PerkName).  Use these named constants everywhere instead of raw numbers.
+───────────────────────────────────────────────────
+  PERK_ID_MOVE    1  bonus movement (Tier 1 — 500 pts)
+  PERK_ID_BACK    2  strong back     (Tier 1 — 500 pts)
+  PERK_ID_POCKET  3  quick pockets   (Tier 1 — 500 pts)
+  PERK_ID_AWARE   4  awareness       (Tier 2 — 1000 pts)
+  PERK_ID_SILENT  5  silent running  (Tier 2 — 1000 pts)
+  PERK_ID_CRITS   6  better criticals (Tier 2 — 1000 pts)
+  PERK_ID_RANGED  7  bonus ranged damage (Tier 2 — 1000 pts)
+  PERK_ID_DIVINE  8  divine favor    (Tier 3 — 1500 pts)
+  PERK_ID_SLAYER  9  slayer          (Tier 4 — 2000 pts)
+
 KILL REWARDS  (ammo_shells awarded per zombie kill)
 ───────────────────────────────────────────────────
   Base reward : EC_KILL_BASE (10 pts)
@@ -39,6 +52,23 @@ REPAIR COST  (EC_REPAIR_COST)
 
 ==============================================================================
 */
+
+// ---------------------------------------------------------------------------
+// Perk ID constants — use these everywhere instead of raw integers 1-9.
+// Set buy_item to one of these on each func_perk_machine entity in the map.
+// To add a new perk: add a PERK_ID_* constant here, add a case to
+// EC_PerkName and EC_PerkCost below, and implement the perk effect in
+// client.qc (PlayerPreThink / PlayerPostThink).
+// ---------------------------------------------------------------------------
+#define PERK_ID_MOVE    1   // bonus movement speed
+#define PERK_ID_BACK    2   // strong back (carry weight)
+#define PERK_ID_POCKET  3   // quick pockets (item switch speed)
+#define PERK_ID_AWARE   4   // awareness (enemy outlines)
+#define PERK_ID_SILENT  5   // silent running (reduced footstep noise)
+#define PERK_ID_CRITS   6   // better criticals (critical hit chance)
+#define PERK_ID_RANGED  7   // bonus ranged damage
+#define PERK_ID_DIVINE  8   // divine favor (self-revive chance)
+#define PERK_ID_SLAYER  9   // slayer (execute threshold)
 
 // ---------------------------------------------------------------------------
 // Kill reward tuning
@@ -84,27 +114,27 @@ float() EC_KillReward =
     return pts;
 };
 
-// Return the point cost for a perk by its ID (1-9).
+// Return the point cost for a perk by its ID (use PERK_ID_* constants).
 float(float id) EC_PerkCost =
 {
-    if (id <= 3) return EC_PERK_T1;
-    if (id <= 7) return EC_PERK_T2;
-    if (id == 8) return EC_PERK_T3;
-    return EC_PERK_T4;
+    if (id <= PERK_ID_POCKET) return EC_PERK_T1;   // IDs 1-3
+    if (id <= PERK_ID_RANGED) return EC_PERK_T2;   // IDs 4-7
+    if (id == PERK_ID_DIVINE) return EC_PERK_T3;   // ID  8
+    return EC_PERK_T4;                              // ID  9 (PERK_ID_SLAYER)
 };
 
-// Return a human-readable name for a perk ID without touching entity state.
+// Return a human-readable name for a perk ID (use PERK_ID_* constants).
 string(float id) EC_PerkName =
 {
-    if (id == 1) return "bonus movement";
-    if (id == 2) return "strong back";
-    if (id == 3) return "quick pockets";
-    if (id == 4) return "awareness";
-    if (id == 5) return "silent running";
-    if (id == 6) return "better criticals";
-    if (id == 7) return "bonus ranged damage";
-    if (id == 8) return "divine favor";
-    if (id == 9) return "slayer";
+    if (id == PERK_ID_MOVE)   return "bonus movement";
+    if (id == PERK_ID_BACK)   return "strong back";
+    if (id == PERK_ID_POCKET) return "quick pockets";
+    if (id == PERK_ID_AWARE)  return "awareness";
+    if (id == PERK_ID_SILENT) return "silent running";
+    if (id == PERK_ID_CRITS)  return "better criticals";
+    if (id == PERK_ID_RANGED) return "bonus ranged damage";
+    if (id == PERK_ID_DIVINE) return "divine favor";
+    if (id == PERK_ID_SLAYER) return "slayer";
     return "unknown perk";
 };
 
