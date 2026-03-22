@@ -62,6 +62,18 @@ KNOWN ISSUES
   and reconnects before GameControl restarts, round_state stays GAMEOVER
   until a map restart clears it.
 
+PERFORMANCE PRESETS  (od_perf_preset cvar — see defs.qc)
+───────────────────────────────────────────────────────────────────────────
+The server cvar od_perf_preset (0/1/2) is read in worldspawn and stored in
+the global perf_preset (PERF_LOW=0 / PERF_MEDIUM=1 / PERF_HIGH=2).
+
+  Low  (0) — ROUND_MAX_CONCURRENT = 12  (halved zombie AI budget),
+              no per-ghoul dynamic lights, reduced blood particles.
+             Best for older hardware or high player-count servers.
+  Med  (1) — ROUND_MAX_CONCURRENT = 24  (default, unchanged behaviour).
+  High (2) — ROUND_MAX_CONCURRENT = 24  with full glow effects and
+             maximum particle density.  Use on high-end machines.
+
 ==============================================================================
 */
 
@@ -104,9 +116,13 @@ void(string snd, float vol) RM_SoundAll =
 // ---------------------------------------------------------------------------
 float ROUND_INTRO_DURATION  =  5;   // seconds of fanfare before first spawn
 float ROUND_INTERMISSION    = 10;   // seconds of rest between rounds
-float ROUND_MAX_CONCURRENT  = 24;   // hard cap on zombies alive at once
+float ROUND_MAX_CONCURRENT  = 24;   // hard cap on zombies alive at once (set by preset)
 float ROUND_STUCK_TIMEOUT   = 300;  // auto-end a hung active phase (seconds)
 float ROUND_TABLE_MAX       = 25;   // highest round in explicit tuning table
+
+// Per-preset concurrent-zombie caps (used in RM_Init to configure ROUND_MAX_CONCURRENT).
+float ROUND_MAX_CONCURRENT_LOW     = 12;  // Low preset: halved AI budget
+float ROUND_MAX_CONCURRENT_DEFAULT = 24;  // Medium / High preset: full quota
 
 // ---------------------------------------------------------------------------
 // State identifiers  (also stored in the global  round_state)
@@ -474,6 +490,13 @@ void() RM_Init =
     round_timer         = 0;
     power_on            = 0;   // power starts off; activate func_power_switch to enable perks/box
 
+    // Apply the performance preset to the concurrent-zombie hard cap.
+    // Low preset halves the AI budget to keep frame times stable at high rounds.
+    if (perf_preset == PERF_LOW)
+        ROUND_MAX_CONCURRENT = ROUND_MAX_CONCURRENT_LOW;
+    else
+        ROUND_MAX_CONCURRENT = ROUND_MAX_CONCURRENT_DEFAULT;  // Medium and High both use the full cap
+
     rm             = spawn();
     rm.classname   = "round_manager";
     rm.movetype    = MOVETYPE_NONE;
@@ -482,7 +505,9 @@ void() RM_Init =
     rm.think       = RoundManager_Think;
     rm.nextthink   = time + 2;  // short startup delay
 
-    dprint("RM: Round Manager initialized\n");
+    dprint("RM: Round Manager initialized  max_concurrent=");
+    dprint(ftos(ROUND_MAX_CONCURRENT));
+    dprint("\n");
 };
 
 // ---------------------------------------------------------------------------
