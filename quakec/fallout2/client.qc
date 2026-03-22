@@ -1746,6 +1746,19 @@ void() PlayerPostThink =
 	self.hud_round_state    = round_state;
 	self.hud_zombies_alive  = zombies_alive;
 	self.hud_zombies_queued = zombies_queued;
+	// Countdown seconds for the intermission break.
+	if (round_state == RSTATE_INTERMISSION)
+	{
+		local float secs;
+		secs = round_timer - time;
+		if (secs < 0)
+			secs = 0;
+		self.hud_intermission_secs = secs;
+	}
+	else
+	{
+		self.hud_intermission_secs = 0;
+	}
 
 };
 

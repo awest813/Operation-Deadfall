@@ -542,7 +542,7 @@ void() zombie_paine30	=[	$paine30,	zombie_run1		] {};
 
 void() zombie_die =
 {
-	local float drop_iid, drop_qty;
+	local float drop_iid, drop_qty, pts;
 	drop_iid = 0;
 	drop_qty = 0;
 
@@ -557,7 +557,10 @@ void() zombie_die =
 	// Award kill-reward points and tiered ammo drop to the killing player.
 	if (self.enemy.classname == "player")
 	{
-		EC_GivePoints(self.enemy, EC_KillReward());
+		pts = EC_KillReward();
+		EC_GivePoints(self.enemy, pts);
+		// Notify the killer of their points reward so each kill feels tangible.
+		sprint(self.enemy, PRINT_HIGH, strcat("^2+", ftos(pts), " pts\n"));
 		// Tiered ammo drop: type escalates with current round so the player
 		// always gets ammo relevant to the weapons available at that stage.
 		// Earlier rounds: common pistol/SMG ammo (10mm)

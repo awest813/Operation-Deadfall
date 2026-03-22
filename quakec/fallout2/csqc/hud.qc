@@ -193,7 +193,12 @@ void(float sw) HUD_DrawRoundInfo =
     }
     else if (rstate == RSTATE_INTERMISSION)
     {
-        state_str = "ROUND CLEAR";
+        float secs_left;
+        secs_left = getstati(STAT_INTERMISSION_SECS);
+        if (secs_left > 0)
+            state_str = strcat("ROUND CLEAR  ", ftos(rint(secs_left)), "s");
+        else
+            state_str = "ROUND CLEAR";
         col = HUD_COL_GREEN;
     }
     else  // GAMEOVER
@@ -247,7 +252,8 @@ void(float sw) HUD_DrawZombies =
 void(float sw, float sh) HUD_DrawGameOver =
 {
     float cx, cy;
-    string title, sub;
+    string title, sub, reached;
+    float rnd;
 
     // Dark semi-transparent vignette.
     drawfill('0 0 0', sw * '1 0 0' + sh * '0 1 0', '0 0 0', 0.55);
@@ -263,9 +269,19 @@ void(float sw, float sh) HUD_DrawGameOver =
                + (cy - 30) * '0 1 0',
                title, HUD_FONT_HUGE, HUD_COL_RED, 1);
 
+    // Round reached — only shown when the round system was active.
+    rnd = getstati(STAT_ROUND);
+    if (rnd > 0)
+    {
+        reached = strcat("Reached Round  ", ftos(rnd));
+        drawstring((cx - strlen(reached) * HUD_FONT_NORMAL_x * 0.5) * '1 0 0'
+                   + (cy - 4) * '0 1 0',
+                   reached, HUD_FONT_NORMAL, HUD_COL_YELLOW, 0.9);
+    }
+
     // Sub-line.
     drawstring((cx - strlen(sub) * HUD_FONT_SMALL_x * 0.5) * '1 0 0'
-               + (cy + 10) * '0 1 0',
+               + (cy + 14) * '0 1 0',
                sub, HUD_FONT_SMALL, HUD_COL_NORMAL, 0.85);
 };
 

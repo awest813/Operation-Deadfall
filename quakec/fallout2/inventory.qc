@@ -122,11 +122,12 @@ float(float slotno, float iid) FitsInSlot;
 .float          islot16;
 
 // Per-player fields that mirror server globals for the CSQC HUD.
-.float          hud_kills;          // stat 48 – this player's kill count
-.float          hud_round;          // stat 64 – current round number
-.float          hud_round_state;    // stat 65 – RSTATE_* value
-.float          hud_zombies_alive;  // stat 66 – zombies currently alive
-.float          hud_zombies_queued; // stat 67 – zombies still to spawn
+.float          hud_kills;               // stat 48 – this player's kill count
+.float          hud_round;               // stat 64 – current round number
+.float          hud_round_state;         // stat 65 – RSTATE_* value
+.float          hud_zombies_alive;       // stat 66 – zombies currently alive
+.float          hud_zombies_queued;      // stat 67 – zombies still to spawn
+.float          hud_intermission_secs;   // stat 68 – seconds until next round (INTERMISSION only)
 
 void(float stnum, float sttype, .float fieldname) clientstatf = #232;
 void() SetupStats =
@@ -160,6 +161,7 @@ void() SetupStats =
 	clientstatf(65, 2, hud_round_state);
 	clientstatf(66, 2, hud_zombies_alive);
 	clientstatf(67, 2, hud_zombies_queued);
+	clientstatf(68, 2, hud_intermission_secs);
 };
 
 float(entity e, float slotno) ItemInSlot =
