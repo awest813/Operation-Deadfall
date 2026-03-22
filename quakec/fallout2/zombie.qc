@@ -643,6 +643,19 @@ void (entity stuff) spawn_zombie =
 	self.th_missile = zombie_missile;
 	self.target = stuff.target;
 	walkmonster_start_go ();
+
+	// Atmospheric presentation: give wave ghouls a dim ambient glow and
+	// emit a teleport-ring particle burst at the spawn origin so nearby
+	// players get a visible + audio warning of the new enemy.
+	self.effects = EF_DIMLIGHT;
+	WriteByte (MSG_MULTICAST, SVC_TEMPENTITY);
+	WriteByte (MSG_MULTICAST, TE_TELEPORT);
+	WriteCoord (MSG_MULTICAST, self.origin_x);
+	WriteCoord (MSG_MULTICAST, self.origin_y);
+	WriteCoord (MSG_MULTICAST, self.origin_z);
+	multicast (self.origin, MULTICAST_PVS);
+	sound (self, CHAN_BODY, "misc/r_tele1.wav", 0.7, ATTN_NORM);
+
 	// Track how many ghouls are currently alive for the round manager.
 	zombies_alive = zombies_alive + 1;
 };

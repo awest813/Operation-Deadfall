@@ -41,6 +41,9 @@ void () DropAmmo;
 
 #define weightx() (self.weight)
 #define SND_ENERGY_MELEE_HIT "enforcer/enfstop.wav"
+// Fraction of damage value used to scale TE_BLOOD particle count in SpawnBlood().
+// damage * BLOOD_PARTICLE_SCALE, clamped 1–8 (e.g. knife=18 → 2, Power Axe=100 → 8).
+#define BLOOD_PARTICLE_SCALE 0.15
 
 
 // called by worldspawn
@@ -89,7 +92,7 @@ void(float damage, float dist, float rate, string entsnd) FireMelee =
 	if (trace_ent.takedamage)
 	{
 		trace_ent.axhitme = 1;
-		SpawnBlood (org, 1);
+		SpawnBlood (org, damage);
 		T_Damage (trace_ent, self, self, damage+random()*damage);
 		if (entsnd != "")
 			sound (self, CHAN_WEAPON, entsnd, 1, ATTN_NORM);
@@ -197,9 +200,14 @@ SpawnBlood
 */
 void(vector org, float damage) SpawnBlood =
 {
+	local float count;
+	// Scale particle count with the incoming damage for more impactful hits.
+	count = floor(damage * BLOOD_PARTICLE_SCALE);
+	if (count < 1)  count = 1;
+	if (count > 8)  count = 8;
 	WriteByte (MSG_MULTICAST, SVC_TEMPENTITY);
 	WriteByte (MSG_MULTICAST, TE_BLOOD);
-	WriteByte (MSG_MULTICAST, 1);
+	WriteByte (MSG_MULTICAST, count);
 	WriteCoord (MSG_MULTICAST, org_x);
 	WriteCoord (MSG_MULTICAST, org_y);
 	WriteCoord (MSG_MULTICAST, org_z);

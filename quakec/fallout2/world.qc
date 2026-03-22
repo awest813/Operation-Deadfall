@@ -392,6 +392,10 @@ void() worldspawn =
 
 // the area based ambient sounds MUST be the first precache_sounds
 
+	// Global atmospheric drone — low-volume tension loop heard map-wide.
+	precache_sound ("ambience/drone6.wav");
+	ambientsound ('0 0 0', "ambience/drone6.wav", 0.08, ATTN_NONE);
+
 // player precaches     
 	W_Precache ();                  // get weapon precaches
 
