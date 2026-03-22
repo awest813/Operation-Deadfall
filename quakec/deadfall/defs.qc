@@ -507,15 +507,16 @@ float           endgame_timer;
 // ---------------------------------------------------------------------------
 // Round-manager globals (see round_manager.qc for full documentation)
 // ---------------------------------------------------------------------------
-float           current_round;       // current round number (0 = pre-game)
-float           zombies_queued;      // zombies still to be spawned this round
-float           zombies_alive;       // currently alive round-manager zombies
-float           round_zombie_health; // per-round kill threshold (set by tuning table)
-float           round_state;         // current state-machine state (RSTATE_* constants)
-float           round_timer;         // real-time deadline for next state transition
+float           current_round;         // current round number (0 = pre-game)
+float           zombies_queued;        // zombies still to be spawned this round
+float           zombies_alive;         // currently alive round-manager zombies
+float           zombies_round_total;   // total zombies queued at the start of this round
+float           round_zombie_health;   // per-round kill threshold (set by tuning table)
+float           round_state;           // current state-machine state (RSTATE_* constants)
+float           round_timer;           // real-time deadline for next state transition
 
 // Economy / progression globals
-float           power_on;            // 1 once the map power switch has been activated
+float           power_on;              // 1 once the map power switch has been activated
 
 // ---------------------------------------------------------------------------
 // Performance preset — controls quality/cost tradeoffs at runtime.
@@ -691,6 +692,7 @@ float          red_armor;
 .float          kill_streak;        // consecutive kills without dying (reset on player death)
 .float          best_streak;        // peak kill streak reached during this life / game session
 .float          last_kill_time;     // server time of last zombie kill (for double-kill combo)
+.float          zombie_pain_cooldown; // dedicated cooldown for zombie rapid-hit knockdown (replaces pain_finished hack)
 .float          materialize;
 .float          vote_time;
 .float          vote_on;

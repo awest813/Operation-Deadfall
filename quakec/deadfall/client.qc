@@ -1725,6 +1725,21 @@ void() PlayerPostThink =
 	self.hud_streak         = self.kill_streak;
 	self.hud_best_streak    = self.best_streak;
 	self.hud_power          = power_on;
+	self.hud_deaths         = self.dead;
+	self.hud_round_total    = zombies_round_total;
+	// Live player count — iterate all players once per tick.
+	{
+		local entity lp;
+		local float  lpc;
+		lp = find(world, classname, "player");
+		while (lp)
+		{
+			if (lp.health > 0)
+				lpc = lpc + 1;
+			lp = find(lp, classname, "player");
+		}
+		self.hud_live_players = lpc;
+	}
 	// Countdown seconds for the intermission break.
 	if (round_state == RSTATE_INTERMISSION)
 	{
@@ -1868,19 +1883,57 @@ called when a player dies
 void(entity player) CheckKillMilestone =
 {
 	local float milestone;
+	local float bonus;
 
-	if (player.kills >= 25 && player.milestone_kills < 25)
+	if (player.kills >= 200 && player.milestone_kills < 200)
+	{
+		milestone = 200;
+		bonus = 2000;
+	}
+	else if (player.kills >= 100 && player.milestone_kills < 100)
+	{
+		milestone = 100;
+		bonus = 1000;
+	}
+	else if (player.kills >= 50 && player.milestone_kills < 50)
+	{
+		milestone = 50;
+		bonus = 500;
+	}
+	else if (player.kills >= 25 && player.milestone_kills < 25)
+	{
 		milestone = 25;
+		bonus = 200;
+	}
 	else if (player.kills >= 10 && player.milestone_kills < 10)
+	{
 		milestone = 10;
+		bonus = 50;
+	}
 	else if (player.kills >= 5 && player.milestone_kills < 5)
+	{
 		milestone = 5;
+		bonus = 0;
+	}
 	else
 		return;
 
 	player.milestone_kills = milestone;
-	centerprint(player, "Milestone reached\n", ftos(milestone), " kills\n");
-	bprint(PRINT_MEDIUM, player.netname, " reached the ", ftos(milestone), " kill milestone.\n");
+	if (bonus > 0)
+	{
+		EC_GivePoints(player, bonus);
+		sprint(player, PRINT_HIGH,
+		       strcat("^3** KILL MILESTONE: ", ftos(milestone), " kills!  ^2+",
+		              ftos(bonus), " pts **\n"));
+		sound(player, CHAN_AUTO, "misc/menu3.wav", 1, ATTN_NONE);
+	}
+	else
+	{
+		sprint(player, PRINT_HIGH,
+		       strcat("^3** KILL MILESTONE: ", ftos(milestone), " kills! **\n"));
+	}
+	bprint(PRINT_MEDIUM, player.netname, " reached ",
+	       ftos(milestone), " kills!\n");
 };
 
 void(entity targ, entity attacker) ClientObituary =

@@ -368,19 +368,30 @@ void(float sw, float sh) HUD_DrawGameOver =
                + (cy + 6) * '0 1 0',
                score_str, HUD_FONT_SMALL, HUD_COL_GREEN, 0.9);
 
+    // Deaths count.
+    {
+        float deaths;
+        string deaths_str;
+        deaths = getstati(STAT_DEATHS);
+        deaths_str = strcat("Deaths: ", ftos(deaths));
+        drawstring((cx - strlen(deaths_str) * HUD_FONT_SMALL_x * 0.5) * '1 0 0'
+                   + (cy + 18) * '0 1 0',
+                   deaths_str, HUD_FONT_SMALL, HUD_COL_RED, 0.9);
+    }
+
     // Best kill streak achieved — gives the player a personal record to beat.
     best = getstati(STAT_BEST_STREAK);
     if (best >= 3)
     {
         streak_str = strcat("Best streak: ", ftos(best), " kills");
         drawstring((cx - strlen(streak_str) * HUD_FONT_SMALL_x * 0.5) * '1 0 0'
-                   + (cy + 18) * '0 1 0',
+                   + (cy + 30) * '0 1 0',
                    streak_str, HUD_FONT_SMALL, HUD_COL_YELLOW, 0.9);
     }
 
     // Sub-line.
     drawstring((cx - strlen(sub) * HUD_FONT_SMALL_x * 0.5) * '1 0 0'
-               + (cy + (best >= 3 ? 32 : 22)) * '0 1 0',
+               + (cy + (best >= 3 ? 44 : 32)) * '0 1 0',
                sub, HUD_FONT_SMALL, HUD_COL_NORMAL, 0.85);
 };
 

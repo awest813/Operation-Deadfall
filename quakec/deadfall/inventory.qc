@@ -133,6 +133,9 @@ float(float slotno, float iid) FitsInSlot;
 .float          hud_best_streak;         // stat 71 – peak kill streak this session
 .float          hud_intro_secs;          // stat 72 – countdown seconds during RSTATE_INTRO
 .float          hud_power;              // stat 73 – 1 when map power switch is active
+.float          hud_deaths;             // stat 74 – this player's death count this session
+.float          hud_live_players;       // stat 75 – number of live players currently in the game
+.float          hud_round_total;        // stat 76 – total zombies queued at round start
 
 void(float stnum, float sttype, .float fieldname) clientstatf = #232;
 void() SetupStats =
@@ -172,6 +175,9 @@ void() SetupStats =
 	clientstatf(71, 2, hud_best_streak);
 	clientstatf(72, 2, hud_intro_secs);
 	clientstatf(73, 2, hud_power);
+	clientstatf(74, 2, hud_deaths);
+	clientstatf(75, 2, hud_live_players);
+	clientstatf(76, 2, hud_round_total);
 };
 
 float(entity e, float slotno) ItemInSlot =
