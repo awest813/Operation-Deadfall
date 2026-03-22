@@ -8,8 +8,8 @@ Client-side HUD for Operation Deadfall.
 LAYOUT (at default 640×480 resolution)
 ───────────────────────────────────────────────────────────────────────────
   Top-centre    │ ROUND <n> label + state banner (with countdown seconds)
-  Top-right     │ Zombies remaining (alive shown separately from queued)
-  Top-left      │ PWR indicator (OFF/ON status of the map power switch)
+  Top-right     │ Zombies remaining + spawn progress during SPAWNING
+  Top-left      │ PWR indicator + live-player count
   Bottom-left   │ Health  │  Armor  │  Kill Streak (when ≥ 3)
   Bottom-right  │ Ammo count + ammo-type name (reserve rows colour-coded)
   Bottom-centre │ Kill count + Points balance
@@ -298,17 +298,22 @@ void(float sw) HUD_DrawRoundInfo =
 
 // --------------------------------------------------------------------------
 // Top-right: Zombies remaining (alive shown separately from still-queued)
+// plus round spawn progress while the current wave is still entering.
 // --------------------------------------------------------------------------
 void(float sw) HUD_DrawZombies =
 {
-    float alive, queued, total;
-    string s;
-    float  lw;
+    float alive, queued, total, round_total, spawned;
+    string s, progress_str;
+    float  lw, progress_lw, progress_w, progress_fill;
     vector base, col;
 
     alive  = getstati(STAT_ZOMBIES_ALIVE);
     queued = getstati(STAT_ZOMBIES_QUEUED);
     total  = alive + queued;
+    round_total = getstati(STAT_ROUND_TOTAL);
+    spawned = round_total - queued;
+    if (spawned < 0)
+        spawned = 0;
 
     // When zombies are still spawning, show "5 + 10" so the player knows
     // how many are already on the map vs still entering.  Once all are
@@ -325,6 +330,28 @@ void(float sw) HUD_DrawZombies =
     base = (sw - HUD_PADDING - lw) * '1 0 0' + HUD_PADDING * '0 1 0';
     HUD_DrawBack(base, lw * '1 0 0' + '0 10 0');
     drawstring(base, s, HUD_FONT_NORMAL, col, 1);
+
+    if (queued > 0 && round_total > 0)
+    {
+        progress_str = strcat("SPAWNED: ", ftos(spawned), "/", ftos(round_total));
+        progress_lw = strlen(progress_str) * HUD_FONT_SMALL_x;
+
+        base_y = base_y + 14;
+        base_x = sw - HUD_PADDING - progress_lw;
+        HUD_DrawBack(base, progress_lw * '1 0 0' + '0 10 0');
+        drawstring(base, progress_str, HUD_FONT_SMALL, HUD_COL_YELLOW, 1);
+
+        progress_w = progress_lw;
+        progress_fill = progress_w * spawned / round_total;
+        if (progress_fill < 0)
+            progress_fill = 0;
+        if (progress_fill > progress_w)
+            progress_fill = progress_w;
+
+        base_y = base_y + 12;
+        drawfill(base, progress_w * '1 0 0' + '0 4 0', '0.12 0.12 0.12', 0.9);
+        drawfill(base, progress_fill * '1 0 0' + '0 4 0', HUD_COL_ORANGE, 0.95);
+    }
 };
 
 // --------------------------------------------------------------------------
@@ -524,19 +551,21 @@ void() HUD_CheckTransitions =
 };
 
 // --------------------------------------------------------------------------
-// Top-left: Power switch status indicator.
+// Top-left: Power switch status indicator and live-player counter.
 // Shows "PWR: OFF" (red) or "PWR: ON" (green) so players know whether
-// perks and the mystery box are available yet.
+// perks and the mystery box are available yet, plus how many operators
+// are still alive in the current round.
 // --------------------------------------------------------------------------
 void() HUD_DrawPower =
 {
-    float  pwr;
-    string s;
-    vector col;
-    float  lw;
+    float  pwr, live_players;
+    string s, player_str;
+    vector col, player_col;
+    float  lw, player_lw;
     vector base;
 
     pwr = getstati(STAT_POWER);
+    live_players = getstati(STAT_LIVE_PLAYERS);
 
     if (pwr)
     {
@@ -553,6 +582,19 @@ void() HUD_DrawPower =
     base = HUD_PADDING * '1 0 0' + HUD_PADDING * '0 1 0';
     HUD_DrawBack(base, lw * '1 0 0' + '0 10 0');
     drawstring(base, s, HUD_FONT_SMALL, col, 1);
+
+    if (live_players <= 1)
+        player_col = HUD_COL_RED;
+    else if (live_players == 2)
+        player_col = HUD_COL_YELLOW;
+    else
+        player_col = HUD_COL_GREEN;
+
+    player_str = strcat("OPS: ", ftos(live_players));
+    player_lw = strlen(player_str) * HUD_FONT_SMALL_x;
+    base_y = base_y + 12;
+    HUD_DrawBack(base, player_lw * '1 0 0' + '0 10 0');
+    drawstring(base, player_str, HUD_FONT_SMALL, player_col, 1);
 };
 
 // --------------------------------------------------------------------------
