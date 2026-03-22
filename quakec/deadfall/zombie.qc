@@ -548,9 +548,24 @@ void() zombie_die =
 
 	sound (self, CHAN_VOICE, "zombie/z_gib.wav", 1, ATTN_NORM);
 	ThrowHead ("progs/h_zombie.mdl", self.health);
+	// Fix entity leak: ThrowHead reuses `self` with nextthink=-1 (never expires).
+	// Schedule removal so heads don't accumulate permanently across rounds.
+	// Shorter lifetime on Low preset to keep entity count low under heavy load.
+	self.think = SUB_Remove;
+	if (perf_preset == PERF_LOW)
+		self.nextthink = time + 5;
+	else if (perf_preset == PERF_MEDIUM)
+		self.nextthink = time + 10;
+	else
+		self.nextthink = time + 15;
+	// Preset-gated gib count: Low spawns 1 gib instead of 3, cutting bounce-physics
+	// entity costs by ~67 % per kill — a meaningful win at 24 zombies/round.
 	ThrowGib ("progs/gib1.mdl", self.health);
-	ThrowGib ("progs/gib2.mdl", self.health);
-	ThrowGib ("progs/gib3.mdl", self.health);
+	if (perf_preset >= PERF_MEDIUM)
+	{
+		ThrowGib ("progs/gib2.mdl", self.health);
+		ThrowGib ("progs/gib3.mdl", self.health);
+	}
 	// Notify round manager when a wave-spawned zombie is killed.
 	if (self.classname == "izombie")
 		RM_ZombieDied();
