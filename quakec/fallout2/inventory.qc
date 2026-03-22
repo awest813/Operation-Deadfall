@@ -128,6 +128,8 @@ float(float slotno, float iid) FitsInSlot;
 .float          hud_zombies_alive;       // stat 66 – zombies currently alive
 .float          hud_zombies_queued;      // stat 67 – zombies still to spawn
 .float          hud_intermission_secs;   // stat 68 – seconds until next round (INTERMISSION only)
+.float          hud_points;              // stat 69 – this player's currency (ammo_shells)
+.float          hud_streak;             // stat 70 – current kill streak
 
 void(float stnum, float sttype, .float fieldname) clientstatf = #232;
 void() SetupStats =
@@ -162,6 +164,8 @@ void() SetupStats =
 	clientstatf(66, 2, hud_zombies_alive);
 	clientstatf(67, 2, hud_zombies_queued);
 	clientstatf(68, 2, hud_intermission_secs);
+	clientstatf(69, 2, hud_points);
+	clientstatf(70, 2, hud_streak);
 };
 
 float(entity e, float slotno) ItemInSlot =

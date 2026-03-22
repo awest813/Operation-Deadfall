@@ -73,6 +73,8 @@ float INPUT_MOUSEMOVE = 2;
 #define STAT_ZOMBIES_ALIVE      66   // zombies currently alive
 #define STAT_ZOMBIES_QUEUED     67   // zombies still to spawn this round
 #define STAT_INTERMISSION_SECS  68   // whole seconds remaining until next round (0 outside INTERMISSION)
+#define STAT_POINTS             69   // this player's currency balance (ammo_shells)
+#define STAT_STREAK             70   // this player's current kill streak
 
 // Round state constants (must match round_manager.qc values).
 #define RSTATE_WAITING      0

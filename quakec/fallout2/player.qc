@@ -1190,6 +1190,8 @@ void () PlayerDie =
 	self.angles_z = 0;
 	i = (WEAPON_SHOTGUN + floor ((random () * WEAPON_ROCKET)));
 	self.angles_z = MULTICAST_ALL;
+	// Reset kill streak on death.
+	self.kill_streak = 0;
 	if (self.position == 1 || self.position == 2)
 		player_diec1 ();
 	else

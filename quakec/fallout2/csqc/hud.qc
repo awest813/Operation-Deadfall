@@ -9,10 +9,10 @@ LAYOUT (at default 640×480 resolution)
 ───────────────────────────────────────────────────────────────────────────
   Top-centre    │ ROUND <n> label + state banner
   Top-right     │ Zombies remaining (alive + queued)
-  Bottom-left   │ Health  │  Armor
+  Bottom-left   │ Health  │  Armor  │  Kill Streak (when ≥ 3)
   Bottom-right  │ Ammo count + ammo-type name
-  Bottom-centre │ Kill count
-  Full-screen   │ Game-over overlay (RSTATE_GAMEOVER)
+  Bottom-centre │ Kill count + Points balance
+  Full-screen   │ Game-over overlay (RSTATE_GAMEOVER) with score summary
   Full-screen   │ Semi-transparent round-transition message
 
 COLOUR CONVENTIONS
@@ -140,20 +140,72 @@ void(float sw, float sh) HUD_DrawAmmo =
 };
 
 // --------------------------------------------------------------------------
-// Bottom-centre: Kill count
+// Bottom-centre: Kill count and points balance
 // --------------------------------------------------------------------------
 void(float sw, float sh) HUD_DrawKills =
 {
-    float kills;
-    string s;
+    float kills, pts;
+    string s_kills, s_pts;
     vector base;
 
-    kills = getstati(STAT_KILLS);
-    s     = strcat("KILLS: ", ftos(kills));
-    base  = (sw * 0.5 - strlen(s) * 0.5 * HUD_FONT_NORMAL_x) * '1 0 0'
-            + (sh - HUD_PADDING - 12) * '0 1 0';
-    HUD_DrawBack(base, (strlen(s) * HUD_FONT_NORMAL_x + 4) * '1 0 0' + '0 10 0');
-    drawstring(base, s, HUD_FONT_NORMAL, HUD_COL_YELLOW, 1);
+    kills  = getstati(STAT_KILLS);
+    pts    = getstati(STAT_POINTS);
+
+    s_kills = strcat("KILLS: ", ftos(kills));
+    s_pts   = strcat("PTS: ",   ftos(pts));
+
+    // Two-line block: kills on the top row, points just below it.
+    // 22 = 12 px (NORMAL font row) + 10 px (SMALL font row) — total block height.
+    base = (sw * 0.5 - strlen(s_kills) * 0.5 * HUD_FONT_NORMAL_x) * '1 0 0'
+           + (sh - HUD_PADDING - 22) * '0 1 0';
+    HUD_DrawBack(base, (strlen(s_kills) * HUD_FONT_NORMAL_x + 4) * '1 0 0' + '0 22 0');
+    drawstring(base, s_kills, HUD_FONT_NORMAL, HUD_COL_YELLOW, 1);
+
+    base_y = base_y + 12;   // step down past the 12 px NORMAL-font kills row
+    base_x = sw * 0.5 - strlen(s_pts) * 0.5 * HUD_FONT_SMALL_x;
+    drawstring(base, s_pts, HUD_FONT_SMALL, HUD_COL_GREEN, 1);
+};
+
+// --------------------------------------------------------------------------
+// Top-left (below health/armor): Kill streak indicator (shown when ≥ 3)
+// --------------------------------------------------------------------------
+void(float sw, float sh) HUD_DrawStreak =
+{
+    float streak;
+    string s;
+    vector base, col;
+
+    streak = getstati(STAT_STREAK);
+    if (streak < 3)
+        return;
+
+    // Pick colour and label based on streak tier.
+    if (streak >= 20)
+    {
+        s   = strcat("RAMPAGE  x", ftos(streak));
+        col = HUD_COL_RED;
+    }
+    else if (streak >= 10)
+    {
+        s   = strcat("UNSTOPPABLE  x", ftos(streak));
+        col = HUD_COL_ORANGE;
+    }
+    else if (streak >= 5)
+    {
+        s   = strcat("SPREE  x", ftos(streak));
+        col = HUD_COL_YELLOW;
+    }
+    else
+    {
+        s   = strcat("STREAK  x", ftos(streak));
+        col = HUD_COL_NORMAL;
+    }
+
+    // 42 = 24 px (health/armor block) + 8 px padding + 10 px (this strip) — sits
+    // directly below the health/armor row in the bottom-left corner.
+    base = HUD_PADDING * '1 0 0' + (sh - HUD_PADDING - 42) * '0 1 0';
+    HUD_DrawBack(base, (strlen(s) * HUD_FONT_SMALL_x + 4) * '1 0 0' + '0 10 0');
+    drawstring(base, s, HUD_FONT_SMALL, col, 1);
 };
 
 // --------------------------------------------------------------------------
@@ -252,8 +304,8 @@ void(float sw) HUD_DrawZombies =
 void(float sw, float sh) HUD_DrawGameOver =
 {
     float cx, cy;
-    string title, sub, reached;
-    float rnd;
+    string title, sub, reached, score_str;
+    float rnd, kills, pts;
 
     // Dark semi-transparent vignette.
     drawfill('0 0 0', sw * '1 0 0' + sh * '0 1 0', '0 0 0', 0.55);
@@ -266,7 +318,7 @@ void(float sw, float sh) HUD_DrawGameOver =
 
     // Title.
     drawstring((cx - strlen(title) * HUD_FONT_HUGE_x * 0.5) * '1 0 0'
-               + (cy - 30) * '0 1 0',
+               + (cy - 40) * '0 1 0',
                title, HUD_FONT_HUGE, HUD_COL_RED, 1);
 
     // Round reached — only shown when the round system was active.
@@ -275,13 +327,21 @@ void(float sw, float sh) HUD_DrawGameOver =
     {
         reached = strcat("Reached Round  ", ftos(rnd));
         drawstring((cx - strlen(reached) * HUD_FONT_NORMAL_x * 0.5) * '1 0 0'
-                   + (cy - 4) * '0 1 0',
+                   + (cy - 10) * '0 1 0',
                    reached, HUD_FONT_NORMAL, HUD_COL_YELLOW, 0.9);
     }
 
+    // Score summary: kills and total points earned.
+    kills = getstati(STAT_KILLS);
+    pts   = getstati(STAT_POINTS);
+    score_str = strcat("Kills: ", ftos(kills), "   Score: ", ftos(pts), " pts");
+    drawstring((cx - strlen(score_str) * HUD_FONT_SMALL_x * 0.5) * '1 0 0'
+               + (cy + 6) * '0 1 0',
+               score_str, HUD_FONT_SMALL, HUD_COL_GREEN, 0.9);
+
     // Sub-line.
     drawstring((cx - strlen(sub) * HUD_FONT_SMALL_x * 0.5) * '1 0 0'
-               + (cy + 14) * '0 1 0',
+               + (cy + 22) * '0 1 0',
                sub, HUD_FONT_SMALL, HUD_COL_NORMAL, 0.85);
 };
 
@@ -429,6 +489,7 @@ void() HUD_Draw =
     HUD_DrawHealthArmor(sw, sh);
     HUD_DrawAmmo(sw, sh);
     HUD_DrawKills(sw, sh);
+    HUD_DrawStreak(sw, sh);
 
     // ---------- Full-screen overlays (drawn last, on top) ----------
     if (rstate == RSTATE_GAMEOVER)

@@ -401,9 +401,27 @@ void() RoundManager_Think =
 
         if (zombies_alive <= 0 && zombies_queued <= 0)
         {
+            local entity rp;
+            local float  clear_bonus;
+
             round_state = RSTATE_INTERMISSION;
             round_timer = time + ROUND_INTERMISSION;
             self.cnt    = 0;    // intermission tick counter (used for countdown)
+
+            // Round-clear bonus: reward all live players for surviving the wave.
+            // Scales with round number so late-game rounds feel more rewarding.
+            clear_bonus = 200 + current_round * 50;
+            rp = find(world, classname, "player");
+            while (rp)
+            {
+                if (rp.health > 0)
+                {
+                    EC_GivePoints(rp, clear_bonus);
+                    sprint(rp, PRINT_HIGH, strcat("^3ROUND CLEAR BONUS: ^2+", ftos(clear_bonus), " pts\n"));
+                }
+                rp = find(rp, classname, "player");
+            }
+
             bprint(2, "^4** ^bROUND ");
             bprint(2, ftos(current_round));
             bprint(2, " COMPLETE!^b **\n");
@@ -431,22 +449,41 @@ void() RoundManager_Think =
         // regardless of slight timing variations.
         self.cnt = self.cnt + 1;
         if (self.cnt == ROUND_INTERMISSION - 3)
+        {
             bprint(2, "^4** 3 **\n");
+            RM_SoundAll("misc/menu1.wav", 0.8);   // audible countdown tick
+        }
         if (self.cnt == ROUND_INTERMISSION - 2)
+        {
             bprint(2, "^4** 2 **\n");
+            RM_SoundAll("misc/menu1.wav", 0.8);
+        }
         if (self.cnt == ROUND_INTERMISSION - 1)
+        {
             bprint(2, "^4** 1 **\n");
+            RM_SoundAll("misc/menu1.wav", 1.0);   // louder on the final tick
+        }
 
         if (time >= round_timer)
         {
             current_round = current_round + 1;
             round_state   = RSTATE_INTRO;
             round_timer   = time + ROUND_INTRO_DURATION;
-            bprint(2, "^4** ^bROUND ");
-            bprint(2, ftos(current_round));
-            bprint(2, " BEGINS!^b **\n");
+
+            // Milestone rounds (every 5th) get a special fanfare.
+            if (current_round > 1 && (current_round % 5) == 0)
+            {
+                bprint(2, strcat("^3** ^bMILESTONE — ROUND ", ftos(current_round), "!^b **\n"));
+                RM_SoundAll("misc/menu3.wav", 1.0);
+            }
+            else
+            {
+                bprint(2, "^4** ^bROUND ");
+                bprint(2, ftos(current_round));
+                bprint(2, " BEGINS!^b **\n");
+                RM_SoundAll("misc/power.wav", 0.5);
+            }
             RM_CenterprintAll(strcat("ROUND ", ftos(current_round), "\nBegins now!"));
-            RM_SoundAll("misc/power.wav", 0.5);
             dprint("RM: INTERMISSION→INTRO  round=");
             dprint(ftos(current_round));
             dprint("\n");
