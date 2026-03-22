@@ -72,8 +72,11 @@ the global perf_preset (PERF_LOW=0 / PERF_MEDIUM=1 / PERF_HIGH=2).
               1 gib per kill (instead of 3), gib/head lifetime 5 s.
              Best for older hardware or high player-count servers.
   Med  (1) — ROUND_MAX_CONCURRENT = 24  (default, unchanged behaviour),
+              no per-zombie dynamic lights,
               3 gibs per kill, head lifetime 10 s, gib lifetime 8 s.
-  High (2) — ROUND_MAX_CONCURRENT = 24  with full glow effects and
+  High (2) — ROUND_MAX_CONCURRENT = 24  with full glow effects:
+             EF_DIMLIGHT active when enemy is within attack range (RANGE_NEAR/MID);
+             automatically suppressed at RANGE_FAR to cap GPU cost.
              3 gibs per kill, head lifetime 15 s, gib lifetime 10-20 s.
              Use on high-end machines.
 
@@ -94,13 +97,29 @@ TOP PERFORMANCE BOTTLENECKS & FIXES
    the result is never used for attack decisions.
    Fix: range() checked first; visible() skipped for RANGE_FAR enemies (ai.qc).
 
-4. [EXISTING] Concurrent cap — ROUND_MAX_CONCURRENT limits active AI count
+4. [FIXED] Attack-sound pile-up — ZombieFireGrenade fired z_shot1.wav with no
+   throttle; 24 simultaneous grenade throws = 24 sounds in one frame.
+   Fix: zombie_attack_sound_time global caps at ~10 attack sounds/sec
+   (zombie.qc; mirrors zombie_idle_sound_time / zombie_pain_sound_time).
+
+5. [FIXED] Redundant cvar() reads — CSQC_UpdateView read vid_conwidth/height
+   then HUD_Draw re-read the same cvars every single frame.
+   Fix: dimensions passed as HUD_Draw(sw, sh) parameters (main.qc / hud.qc).
+
+6. [FIXED] High-preset dynamic-light waste — EF_DIMLIGHT was set once at spawn
+   and never revisited; all 24 zombies emitted lights even when far away.
+   Fix: zombie_run1 checks enemy_range each run cycle and clears EF_DIMLIGHT
+   when the enemy is at RANGE_FAR on PERF_HIGH preset (zombie.qc).
+
+7. [EXISTING] Concurrent cap — ROUND_MAX_CONCURRENT limits active AI count
    (12 on Low, 24 on Med/High).
 
-5. [EXISTING] Dynamic lights — EF_DIMLIGHT suppressed on Low preset.
+8. [EXISTING] Dynamic lights — EF_DIMLIGHT suppressed on Low/Medium presets;
+   distance-culled on High preset (see item 6 above).
 
-6. [EXISTING] Audio throttle — zombie idle/pain sounds server-rate-limited
-   (zombie_idle_sound_time / zombie_pain_sound_time globals, zombie.qc).
+9. [EXISTING] Audio throttle — zombie idle/pain sounds server-rate-limited
+   (zombie_idle_sound_time / zombie_pain_sound_time / zombie_attack_sound_time
+   globals, zombie.qc).
 
 REMAINING HOTSPOTS (not yet addressed)
 ───────────────────────────────────────────────────────────────────────────

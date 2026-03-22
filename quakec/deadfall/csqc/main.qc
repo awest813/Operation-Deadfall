@@ -66,7 +66,9 @@ void(float do2d) CSQC_UpdateView =
 	renderscene();
 
 	// Draw the custom HUD over the rendered scene.
-	HUD_Draw();
+	// Pass the already-read dimensions to avoid a redundant cvar() re-read
+	// inside HUD_Draw every frame.
+	HUD_Draw(width, height);
 
 	if (show_inventory)
 		Invent_Draw();

@@ -69,8 +69,9 @@ float ZOMBIE_STUCK_YAW_RANGE  = 90;   // random yaw range added on top of base (
 // These server-wide timestamps prevent audio events from piling up when
 // many zombies are active simultaneously (high-round heavy combat).
 // ─────────────────────────────────────────────────────────────────────────
-float zombie_idle_sound_time;  // earliest time any zombie may emit an ambient idle sound
-float zombie_pain_sound_time;  // earliest time any zombie may emit a pain vocalization
+float zombie_idle_sound_time;    // earliest time any zombie may emit an ambient idle sound
+float zombie_pain_sound_time;    // earliest time any zombie may emit a pain vocalization
+float zombie_attack_sound_time;  // earliest time any zombie may fire its attack-throw sound (z_shot1.wav)
 
 //=============================================================================
 
@@ -146,6 +147,19 @@ if (self.attack_finished < time)
 self.oldorg = self.origin;
 ai_run(6);
 self.inpain = 0;
+// On High preset, cull EF_DIMLIGHT from zombies that are too far away to
+// be worth a per-frame dynamic-light computation.  At RANGE_FAR (>1000 units)
+// the light contributes nothing visible; suppressing it on distant zombies
+// cuts the per-frame dynamic-light budget meaningfully in late-game rounds.
+// enemy_range was updated by ai_run() just above, so the check is free.
+// Bitwise add/remove preserves any other effect flags the zombie may carry.
+if (perf_preset == PERF_HIGH)
+{
+	if (self.enemy && enemy_range != RANGE_FAR)
+		self.effects = self.effects | EF_DIMLIGHT;
+	else
+		self.effects = self.effects - (self.effects & EF_DIMLIGHT);
+}
 };
 void() zombie_run2		=[	$run2,		zombie_run3	] {ai_run(6);};
 void() zombie_run3		=[	$run3,		zombie_run4	] {ai_run(6);};
@@ -222,7 +236,13 @@ void(vector st) ZombieFireGrenade =
 	local	entity missile;
 	local	vector	org;
 
-	sound (self, CHAN_WEAPON, "zombie/z_shot1.wav", 1, ATTN_NORM);
+	// Throttle the throw-bark to ≤10/sec across all zombies — prevents audio
+	// pile-ups when a group of zombies fires in the same server frame.
+	if (zombie_attack_sound_time < time)
+	{
+		sound (self, CHAN_WEAPON, "zombie/z_shot1.wav", 1, ATTN_NORM);
+		zombie_attack_sound_time = time + 0.1;
+	}
 
 	missile = spawn ();
 	missile.owner = self;
@@ -585,6 +605,11 @@ void() zombie_die =
 		self.enemy.last_kill_time = time;
 
 		EC_GivePoints(self.enemy, pts);
+		// Brief yellow screen flash on each kill — instant visual kill-confirm
+		// feedback.  The flash field suppresses the normal cshift cycle for
+		// 0.15 s so the tint resolves cleanly without being stomped immediately.
+		stuffcmd(self.enemy, "v_cshift 220 220 0 25\n");
+		self.enemy.flash = time + 0.15;
 		// Notify the killer of their points reward so each kill feels tangible.
 		sprint(self.enemy, PRINT_HIGH, strcat("^2+", ftos(pts), " pts\n"));
 
