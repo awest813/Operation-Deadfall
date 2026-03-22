@@ -1,7 +1,7 @@
 /*
 ==============================================================================
 
-ECONOMY — Operation Deadfall                    quakec/fallout2/economy.qc
+ECONOMY — Operation Deadfall                    quakec/deadfall/economy.qc
 
 Centralized kill-reward and purchase-cost constants for the COD Zombies-style
 progression loop.  Edit this file to rebalance the game without touching any

@@ -20,7 +20,7 @@
 | Shotgun        | Winchester, Mossberg, Jackhammer | Close-range burst; differ in pellet count/speed |
 | Assault Rifle  | AK112, AK74, Moonlight (M4), SA80 | Mid-range backbone; each has unique cadence  |
 | Battle Rifle   | FNFAL, Rangemaster, DKS-1   | Long-range semi-auto; high damage, slow fire      |
-| Special        | Pipe Rifle, Alien Blaster, Rocket Launcher | Situational/power                |
+| Special        | Improvised Rifle, Vril Pistol, Rocket Launcher | Situational/power                |
 
 ---
 
@@ -90,7 +90,7 @@ Mag: Jackhammer 10 → 12 (auto-shotgun needs the extra rounds).
 ### Special
 | Weapon      | Old Dam | New Dam | Old Rate | New Rate | Notes                        |
 |-------------|---------|---------|----------|----------|------------------------------|
-| Pipe Rifle  | 18      | 22      | 0.10 s   | 0.65 s   | Single-shot; was auto-rate, now properly slow |
+| Improvised Rifle | 18      | 22      | 0.10 s   | 0.65 s   | Single-shot; was auto-rate, now properly slow |
 
 ### Magazine Capacity
 | Weapon | Old | New | Rationale                                |
@@ -111,9 +111,9 @@ Mag: Jackhammer 10 → 12 (auto-shotgun needs the extra rounds).
 ## Files Changed
 | File                              | What Changed                                               |
 |-----------------------------------|------------------------------------------------------------|
-| `quakec/fallout2/weapons.qc`      | Melee dmg, W_Attack fire calls, FirePistol spread/recoil, FireSMG spread, FireAssaultRifle blood+recoil+screenshake, ReloadWeapon fast-reload tier, Deagle screenshake; **milestone**: Alien Blaster damage+speed, Vibroblade/PowerAxe energy hit sound, per-shot hit-confirm ric cue |
-| `quakec/fallout2/inventory.qc`    | WeaponMagQuant: USP 12→15, Jackhammer 10→12, MP7 30→25    |
-| `quakec/fallout2/zombie.qc`       | **milestone**: tiered ammo drop on zombie death (10mm r1-7, 5.56mm r8-14, 7.62mm r15+) |
+| `quakec/deadfall/weapons.qc`      | Melee dmg, W_Attack fire calls, FirePistol spread/recoil, FireSMG spread, FireAssaultRifle blood+recoil+screenshake, ReloadWeapon fast-reload tier, Deagle screenshake; **milestone**: Vril Pistol damage+speed, Vibroblade/PowerAxe energy hit sound, per-shot hit-confirm ric cue |
+| `quakec/deadfall/inventory.qc`    | WeaponMagQuant: USP 12→15, Jackhammer 10→12, MP7 30→25    |
+| `quakec/deadfall/zombie.qc`       | **milestone**: tiered ammo drop on zombie death (10mm r1-7, 5.56mm r8-14, 7.62mm r15+) |
 
 ---
 
@@ -123,6 +123,6 @@ Mag: Jackhammer 10 → 12 (auto-shotgun needs the extra rounds).
 2. **Muzzle flash / tracer effects** – No visual muzzle flash is spawned for hitscan weapons. A simple temporary light entity at the muzzle on each shot would greatly improve readability.
 3. ~~**Hit markers**~~ – **Implemented**: `weapons/ric1.wav` is played as a quiet per-shot sound cue to the shooter on confirmed entity hits in `FirePistol`, `FireSMG`, and `FireAssaultRifle`.
 4. ~~**Ammo pick-up economy**~~ – **Implemented**: `zombie_die` drops tiered ammo (60 % chance) based on `current_round`: 18×10mm (rounds 1-7), 15×5.56mm (rounds 8-14), 12×7.62mm (rounds 15+).
-5. ~~**Pipe Rifle single-shot reload**~~ – **Already done**: `IID_WP_PIPERIFLE` uses the shell-insert (`weapons/shell.wav`, 1 s lock) path in `ReloadWeapon` alongside Winchester/Mossberg.
-6. ~~**Alien Blaster tuning**~~ – **Implemented**: `PlasmaBolt` base damage raised 30 → 50 (range 50–80); `FireAlienBlaster` projectile speed raised 1700 → 2200.
+5. ~~**Improvised Rifle single-shot reload**~~ – **Already done**: `IID_WP_PIPERIFLE` uses the shell-insert (`weapons/shell.wav`, 1 s lock) path in `ReloadWeapon` alongside Winchester/Mossberg.
+6. ~~**Vril Pistol tuning**~~ – **Implemented**: `PlasmaBolt` base damage raised 30 → 50 (range 50–80); `FireAlienBlaster` projectile speed raised 1700 → 2200.
 7. ~~**Power Axe / Vibroblade hit sound**~~ – **Implemented**: `FireMelee` accepts an optional `entsnd` string; `W_FireMelee` passes `"enforcer/enfstop.wav"` for both energy melee weapons.

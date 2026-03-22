@@ -29,7 +29,7 @@ inventory.qc     — IID_* constants, item name/model/weight lookup functions
 weapons.qc       — W_Precache, W_Attack (fire dispatch), FirePistol/SMG/AR/…
 mod_buy.qc       — world-interaction entities (wallbuy, mystery box, perk machine)
 round_manager.qc — wave state machine, spawn logic, per-round tuning tables
-zombie.qc        — zombie AI, AI tuning constants, spawn_zombie / ighoul
+zombie.qc        — zombie AI, AI tuning constants, spawn_zombie
 client.qc        — perk effects, PlayerPreThink / PlayerPostThink
 ```
 
@@ -217,9 +217,9 @@ FireMelee(float damage, float dist, float rate, string entsnd)
 
 ## Adding an Enemy Type
 
-All round-managed enemies follow the **zombie / ighoul** pattern:
+All round-managed enemies follow the **zombie** pattern:
 
-### 1. Create `quakec/fallout2/your_enemy.qc`
+### 1. Create `quakec/deadfall/your_enemy.qc`
 
 Copy the structure from `zombie.qc` as a starting point:
 
@@ -279,7 +279,7 @@ if (self.classname == "monster_yourenemy")
 | `zombies_alive`       | Incremented by `spawn_zombie` | Count for victory check |
 
 When your enemy dies it must call `zombies_alive = zombies_alive - 1;`
-(see `ighoul_die` in `zombie.qc` for the pattern).
+(see `zombie_die` in `zombie.qc` for the pattern).
 
 ---
 
@@ -430,7 +430,7 @@ change difficulty progression beyond round 25.
    still manual.  Future work: replace with a compact array declaration if
    FTEQCC array support is added to the project.
 
-3. **Only `monster_zombie` and `ighoul` are round-managed** (`round_manager.qc`).
+3. **Only `monster_zombie` and `izombie` are round-managed** (`round_manager.qc`).
    A second enemy type requires explicit changes to `RM_TrySpawnOne` and
    careful coordination of the `zombies_alive` counter.
 

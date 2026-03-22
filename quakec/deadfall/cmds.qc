@@ -150,12 +150,12 @@ void(string arg1) Cmd_InvUse =
 		if (self.equipment_slot == slotno)
 		{
 			self.equipment_slot = 0;
-			sprint(self, PRINT_HIGH, "stealthboy deactivated\n");
+			sprint(self, PRINT_HIGH, "stealth device deactivated\n");
 		}
 		else
 		{
 			self.equipment_slot = slotno;
-			sprint(self, PRINT_HIGH, "stealthboy activated, fading into the shadows\n");
+			sprint(self, PRINT_HIGH, "stealth device activated, fading into the shadows\n");
 		}
 		return;
 	}

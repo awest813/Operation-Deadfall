@@ -551,8 +551,8 @@ void() zombie_die =
 	ThrowGib ("progs/gib1.mdl", self.health);
 	ThrowGib ("progs/gib2.mdl", self.health);
 	ThrowGib ("progs/gib3.mdl", self.health);
-	// Notify round manager when a wave-spawned ghoul is killed.
-	if (self.classname == "ighoul")
+	// Notify round manager when a wave-spawned zombie is killed.
+	if (self.classname == "izombie")
 		RM_ZombieDied();
 	// Award kill-reward points and tiered ammo drop to the killing player.
 	if (self.enemy.classname == "player")
@@ -649,7 +649,7 @@ void(entity attacker, float take) zombie_pain =
 	local float r;
 
 	// Reset to the zombie's resilience threshold.
-	// Round-managed ghouls (max_health > 0) use the per-round value;
+	// Round-managed zombies (max_health > 0) use the per-round value;
 	// map-placed monster_zombie entities fall back to the classic 60 HP.
 	if (self.max_health > 0)
 		self.health = self.max_health;
@@ -709,7 +709,7 @@ void (entity stuff) spawn_zombie =
 	te = findradius (stuff.origin, 80);
 	while (te)
 	{
-		if (te.classname == "player" || (te.classname == "ighoul" && te.health > 0))
+		if (te.classname == "player" || (te.classname == "izombie" && te.health > 0))
 			return;
 
 		te = te.chain;
@@ -726,8 +726,8 @@ void (entity stuff) spawn_zombie =
 	// round_zombie_health is initialized to 60 (classic value) and updated
 	// each round by RT_ZombieHealth in RoundManager_Think (round_manager.qc).
 	self.health = round_zombie_health;
-	self.classname = "ighoul";
-	self.netname = "ghoul";
+	self.classname = "izombie";
+	self.netname = "zombie";
 	self.max_health = round_zombie_health;  // zombie_pain uses max_health to reset
 	self.th_stand = zombie_stand1;
 	self.th_walk = zombie_walk1;
@@ -739,11 +739,11 @@ void (entity stuff) spawn_zombie =
 	self.target = stuff.target;
 	walkmonster_start_go ();
 
-	// Atmospheric presentation: give wave ghouls a dim ambient glow and
+	// Atmospheric presentation: give wave zombies a dim ambient glow and
 	// emit a teleport-ring particle burst at the spawn origin so nearby
 	// players get a visible + audio warning of the new enemy.
 	// On Low preset the dynamic lights are suppressed to reduce per-frame
-	// rendering cost (24 active ghouls × 1 dynamic light each is significant).
+	// rendering cost (24 active zombies × 1 dynamic light each is significant).
 	if (perf_preset >= PERF_MEDIUM)
 		self.effects = EF_DIMLIGHT;
 	WriteByte (MSG_MULTICAST, SVC_TEMPENTITY);
@@ -754,7 +754,7 @@ void (entity stuff) spawn_zombie =
 	multicast (self.origin, MULTICAST_PVS);
 	sound (self, CHAN_BODY, "misc/r_tele1.wav", 0.7, ATTN_NORM);
 
-	// Track how many ghouls are currently alive for the round manager.
+	// Track how many zombies are currently alive for the round manager.
 	zombies_alive = zombies_alive + 1;
 };
 

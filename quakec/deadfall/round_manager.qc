@@ -1,7 +1,7 @@
 /*
 ==============================================================================
 
-ROUND MANAGER  —  quakec/fallout2/round_manager.qc
+ROUND MANAGER  —  quakec/deadfall/round_manager.qc
 
 COD Nazi Zombies-inspired wave-survival round loop.
 
@@ -68,7 +68,7 @@ The server cvar od_perf_preset (0/1/2) is read in worldspawn and stored in
 the global perf_preset (PERF_LOW=0 / PERF_MEDIUM=1 / PERF_HIGH=2).
 
   Low  (0) — ROUND_MAX_CONCURRENT = 12  (halved zombie AI budget),
-              no per-ghoul dynamic lights, reduced blood particles.
+              no per-zombie dynamic lights, reduced blood particles.
              Best for older hardware or high player-count servers.
   Med  (1) — ROUND_MAX_CONCURRENT = 24  (default, unchanged behaviour).
   High (2) — ROUND_MAX_CONCURRENT = 24  with full glow effects and
@@ -241,7 +241,7 @@ entity() RM_PickSpawnPoint =
 
 // Attempt to spawn one zombie.
 // Returns TRUE if the spawn was attempted (queued slot consumed).
-// Increments zombies_alive only if spawn_zombie actually placed a ghoul.
+// Increments zombies_alive only if spawn_zombie actually placed a zombie.
 float() RM_TrySpawnOne =
 {
     local entity spot, saved_self;
@@ -497,14 +497,14 @@ void() RoundManager_Think =
 };
 
 // ---------------------------------------------------------------------------
-// Called by zombie_die (zombie.qc) when a round-manager ghoul is killed.
+// Called by zombie_die (zombie.qc) when a round-manager zombie is killed.
 // ---------------------------------------------------------------------------
 void() RM_ZombieDied =
 {
     if (zombies_alive > 0)
         zombies_alive = zombies_alive - 1;
 
-    dprint("RM: ghoul killed  alive=");
+    dprint("RM: zombie killed  alive=");
     dprint(ftos(zombies_alive));
     dprint("  queued=");
     dprint(ftos(zombies_queued));
@@ -549,15 +549,15 @@ void() RM_Init =
 
 // ---------------------------------------------------------------------------
 // info_zombie_spawn — map entity.
-//   Place instances in the map to define where ghouls can enter the level.
+//   Place instances in the map to define where zombies can enter the level.
 //   Optionally set 'target' to a path_corner for patrol-path following.
 //   If no instances are placed the manager falls back to
 //   info_player_deathmatch and then info_player_start entities.
 // ---------------------------------------------------------------------------
 /*QUAKED info_zombie_spawn (1 0.5 0) (-16 -16 -24) (16 16 24)
 Zombie wave spawn point.  The round manager selects among all placed
-instances (uniform random) when deciding where to enter each ghoul.
-Set 'target' to a path_corner to give spawned ghouls a patrol route.
+instances (uniform random) when deciding where to enter each zombie.
+Set 'target' to a path_corner to give spawned zombies a patrol route.
 */
 void() info_zombie_spawn =
 {

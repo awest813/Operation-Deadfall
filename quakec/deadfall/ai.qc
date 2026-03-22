@@ -585,7 +585,7 @@ float() CheckAnyAttack =
 {
 	if (!enemy_vis)
 		return FALSE;
-	if (self.classname == "monster_zombie" || self.classname == "ighoul")
+	if (self.classname == "monster_zombie" || self.classname == "izombie")
 		return ZombieCheckAttack ();
 	if (self.classname == "monster_army")
 		return SoldierCheckAttack ();

@@ -868,9 +868,9 @@ string(float iid) GetItemName =
 	if (iid == IID_WP_NEEDLER)
 		return "needler";
 	if (iid == IID_WP_ALIENBLASTER)
-		return "alien blaster (energy)";
+		return "vril pistol (energy)";
 	if (iid == IID_WP_PIPERIFLE)
-		return "pipe rifle (10mm)";
+		return "improvised rifle (10mm)";
 	if (iid == IID_WP_WINCHESTER)
 		return "winchester (12g)";
 	if (iid == IID_WP_MOSSBERG)
@@ -949,7 +949,7 @@ string(float iid) GetItemName =
 	if (iid == IID_ARM_COMBAT)
 		return "combat armor";
 	if (iid == IID_ARM_BROTHERHOOD)
-		return "brotherhood armor";
+		return "prototype armor";
 	if (iid == IID_ARM_FORCE)
 		return "force armor";
 	if (iid == IID_ARM_LPOWER)
@@ -957,11 +957,11 @@ string(float iid) GetItemName =
 
 
 	if (iid == IID_CHEM_STIMPACK)
-		return "stimpack";
+		return "medpack";
 	if (iid == IID_CHEM_MEDICALBAG)
 		return "medical bag";
 	if (iid == IID_CHEM_SUPERSTIM)
-		return "superstim";
+		return "super medpack";
 	if (iid == IID_CHEM_ADRENALINE)
 		return "adrenaline";
 	if (iid == IID_CHEM_PSYCHO)
@@ -971,7 +971,7 @@ string(float iid) GetItemName =
 
 
 	if (iid == IID_BUILD_MRAMMO)
-		return "mr. ammo";
+		return "field forge";
 	if (iid == IID_BUILD_SHIELDGEN)
 		return "shield-gen";
 	if (iid == IID_BUILD_AUTODOC)
@@ -988,7 +988,7 @@ string(float iid) GetItemName =
 	if (iid == IID_EQUIP_CLIMBINGGEAR)
 		return "climbing gear";
 	if (iid == IID_EQUIP_STEALTHBOY)
-		return "stealthboy";
+		return "stealth device";
 	if (iid == IID_EQUIP_SPRINTKIT)
 		return "lucozade sport!";
 	if (iid == IID_EQUIP_HOVERBOOTS)
@@ -1005,11 +1005,11 @@ string(float iid) GetItemDesc =
 
 
 	if (iid == IID_WP_TOOLKIT)
-		return "a wattz(tm) brand toolkit consisting of many handy instruments, including a wrench. this kit is a repairman's dream, and allows those with the proper knowledge to perform technical tasks.";
+		return "a standard-issue toolkit consisting of many handy instruments, including a wrench. this kit allows those with the proper knowledge to perform technical tasks.";
 	if (iid == IID_WP_AK74)
-		return "the ak74 is the predecessor of the legendary ak-47. it is still the same old killing machine, except that it uses the 5.45mm high-velocity round that was common in the latest assault rifles just before the war.";
+		return "the ak74 is the predecessor of the legendary ak-47. it is still the same old killing machine, except that it uses the 5.45mm high-velocity round favoured by late-model assault rifles.";
 	if (iid == IID_BUILD_MRAMMO)
-		return "a military prototype, the mr. ammo was designed to allow soldiers an extra source of ammunition in remote areas, as the handy little machine is capable of churning out ammo from things such as rocks, debris, and metal scraps.";
+		return "a military prototype, the field forge was designed to allow soldiers an extra source of ammunition in remote areas, as the handy little machine is capable of churning out ammo from things such as rocks, debris, and metal scraps.";
 	if (iid == IID_EQUIP_CLIMBINGGEAR)
 		return "FIXME:\nActivate, and then run at and up a wall. Don't look too far away from the wall!";
 
@@ -1191,10 +1191,14 @@ float(string itname) ItemIDOfName =
 		return IID_WP_DEAGLE;
 	if (itname == "needler")
 		return IID_WP_NEEDLER;
+	if (itname == "vril pistol")
+		return IID_WP_ALIENBLASTER;
 	if (itname == "alien blaster")
 		return IID_WP_ALIENBLASTER;
 	if (itname == "blaster")
 		return IID_WP_ALIENBLASTER;
+	if (itname == "improvised rifle")
+		return IID_WP_PIPERIFLE;
 	if (itname == "pipe rifle")
 		return IID_WP_PIPERIFLE;
 	if (itname == "winchester")
@@ -1245,12 +1249,18 @@ float(string itname) ItemIDOfName =
 		return IID_ARM_METAL;
 	if (itname == "combat armor")
 		return IID_ARM_COMBAT;
+	if (itname == "prototype armor")
+		return IID_ARM_BROTHERHOOD;
 	if (itname == "brotherhood armor")
 		return IID_ARM_BROTHERHOOD;
 	if (itname == "force armor")
 		return IID_ARM_FORCE;
 	if (itname == "light power armor")
 		return IID_ARM_LPOWER;
+	if (itname == "medpacks")
+		return IID_CHEM_STIMPACK;
+	if (itname == "medpack")
+		return IID_CHEM_STIMPACK;
 	if (itname == "stimpacks")
 		return IID_CHEM_STIMPACK;
 	if (itname == "stimpack")
@@ -1259,6 +1269,8 @@ float(string itname) ItemIDOfName =
 		return IID_CHEM_MEDICALBAG;
 	if (itname == "bandages")
 		return IID_CHEM_MEDICALBAG;
+	if (itname == "super medpacks")
+		return IID_CHEM_SUPERSTIM;
 	if (itname == "superstims")
 		return IID_CHEM_SUPERSTIM;
 	if (itname == "adrenaline")
@@ -1267,6 +1279,8 @@ float(string itname) ItemIDOfName =
 		return IID_CHEM_PSYCHO;
 	if (itname == "beserk")
 		return IID_CHEM_BESERK;
+	if (itname == "field forge")
+		return IID_BUILD_MRAMMO;
 	if (itname == "mr.ammo")
 		return IID_BUILD_MRAMMO;
 	if (itname == "mrammo")
@@ -1287,6 +1301,8 @@ float(string itname) ItemIDOfName =
 		return IID_EQUIP_CLIMBINGGEAR;
 	if (itname == "gear")
 		return IID_EQUIP_CLIMBINGGEAR;
+	if (itname == "stealth device")
+		return IID_EQUIP_STEALTHBOY;
 	if (itname == "stealthboy")
 		return IID_EQUIP_STEALTHBOY;
 
