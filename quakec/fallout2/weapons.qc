@@ -9,6 +9,7 @@ void (float rec, float number, float dam, float var, float ran, float auto) W_Fi
 void (float dam, float rec, string snd, float rng, float rate) FireAssaultRifle;
 void (float dam, float rec, string snd, float rng, float rate) FirePistol;
 void (float dam, float rec, string snd, float rng, float rate) FireSMG;
+void (float damage, float dist, float rate, string entsnd) FireMelee;
 float() FireToolkit;
 void () FireAlienBlaster;
 void () W_PlayerMenu;
@@ -39,6 +40,7 @@ float(float slotno) DecreaseDestroySlot;
 void () DropAmmo;
 
 #define weightx() (self.weight)
+#define SND_ENERGY_MELEE_HIT "enforcer/enfstop.wav"
 
 
 // called by worldspawn
@@ -58,6 +60,7 @@ void() W_Precache =
 	precache_sound ("weapons/grenade.wav"); // grenade launcher
 	precache_sound ("weapons/bounce.wav");          // grenade bounce
 	precache_sound ("weapons/shotgn2.wav"); // super shotgun
+	precache_sound (SND_ENERGY_MELEE_HIT); // energy melee hit sound (Vibroblade, Power Axe)
 };
 
 float() crandom =
@@ -70,7 +73,7 @@ float() crandom =
 W_FireMelee
 ================
 */
-void(float damage, float dist, float rate) FireMelee =
+void(float damage, float dist, float rate, string entsnd) FireMelee =
 {
 	local   vector  source;
 	local   vector  org;
@@ -88,7 +91,10 @@ void(float damage, float dist, float rate) FireMelee =
 		trace_ent.axhitme = 1;
 		SpawnBlood (org, 1);
 		T_Damage (trace_ent, self, self, damage+random()*damage);
-		sound (self, CHAN_WEAPON, trace_ent.armornoise, 1, ATTN_NORM);
+		if (entsnd != "")
+			sound (self, CHAN_WEAPON, entsnd, 1, ATTN_NORM);
+		else
+			sound (self, CHAN_WEAPON, trace_ent.armornoise, 1, ATTN_NORM);
 	}
 	else
 	{       // hit wall
@@ -108,17 +114,17 @@ void() W_FireMelee =
 	local float iid;
 	iid = ToIID(self.(SlotField(self.current_slot)));
 	if (iid == IID_NONE)
-		FireMelee(8, 32, 0.6);
+		FireMelee(8, 32, 0.6, "");
 	else if (iid == IID_WP_TOOLKIT)
-		FireMelee(8, 32, 0.2);
+		FireMelee(8, 32, 0.2, "");
 	else if (iid == IID_WP_KNIFE)
-		FireMelee(18, 32, 0.2);
+		FireMelee(18, 32, 0.2, "");
 	else if (iid == IID_WP_AXE)
-		FireMelee(30, 64, 0.2);
-	else if (iid == IID_WP_VIBROBLADE)	
-		FireMelee(50, 64, 0.2);
+		FireMelee(30, 64, 0.2, "");
+	else if (iid == IID_WP_VIBROBLADE)
+		FireMelee(50, 64, 0.2, SND_ENERGY_MELEE_HIT);
 	else if (iid == IID_WP_POWERAXE)
-		FireMelee(100, 96, 0.2);
+		FireMelee(100, 96, 0.2, SND_ENERGY_MELEE_HIT);
 
 	else if (iid == IID_CHEM_STIMPACK ||
 		   iid == IID_CHEM_MEDICALBAG ||
@@ -2119,6 +2125,9 @@ void (float dam, float rec, string snd, float rng, float rate) FirePistol =
 			X_Damage (trace_ent, self, self, dam);
 		else
 			T_Damage (trace_ent, self, self, dam);
+		// Subtle hit-confirmation cue for the shooter.
+		if (trace_ent.solid != SOLID_BSP)
+			sound (self, CHAN_ITEM, "weapons/ric1.wav", 0.5, ATTN_NORM);
 
 		self.critical = 0;
 	}
@@ -2217,6 +2226,9 @@ void (float dam, float rec, string snd, float rng, float rate) FireSMG =
 
 		dam = dam + random()*dam;
 		T_Damage (trace_ent, self, self, dam);
+		// Subtle hit-confirmation cue for the shooter.
+		if (trace_ent.solid != SOLID_BSP)
+			sound (self, CHAN_ITEM, "weapons/ric1.wav", 0.5, ATTN_NORM);
 		self.critical = 0;
 
 		if (trace_ent.solid == SOLID_BSP)
@@ -2349,6 +2361,9 @@ void (float dam, float rec, string snd, float rng, float rate) FireAssaultRifle 
 			T_Damage (trace_ent, self, self, dam);
 		else if (weap == IID_WP_DKS1 || weap == IID_WP_FNFAL)
 			X_Damage (trace_ent, self, self, dam);
+		// Subtle hit-confirmation cue for the shooter.
+		if (trace_ent.solid != SOLID_BSP)
+			sound (self, CHAN_ITEM, "weapons/ric1.wav", 0.5, ATTN_NORM);
 		self.critical = 0;
 
 		if (trace_ent.solid == SOLID_BSP)
@@ -3966,7 +3981,7 @@ void () PlasmaBolt =
 
 	if (other.takedamage)
 	{
-		dam = 30 + (random () * 30);
+		dam = 50 + (random () * 30);
 
 		T_Damage (other, self, self.owner, dam);
 		WriteByte (MSG_MULTICAST, SVC_TEMPENTITY);
@@ -4018,8 +4033,8 @@ void () FireAlienBlaster =
 
 
 	{
-		newmis.velocity = aim (self, 1700);
-		newmis.velocity = newmis.velocity * 1700;
+		newmis.velocity = aim (self, 2200);
+		newmis.velocity = newmis.velocity * 2200;
 		newmis.angles = vectoangles (newmis.velocity);
 		newmis.nextthink = time + 1.4;
 		sound (self, CHAN_WEAPON, "weapons/blaster.wav", WEAPON_SHOTGUN, ATTN_NORM);

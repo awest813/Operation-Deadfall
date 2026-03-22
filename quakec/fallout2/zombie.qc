@@ -67,6 +67,9 @@ float ZOMBIE_STUCK_YAW_RANGE  = 90;   // random yaw range added on top of base (
 
 //=============================================================================
 
+// Forward declaration — AddStackable is defined later in mod_buy.qc.
+void(entity to, float iid, float amount) AddStackable;
+
 .float inpain;
 
 void() zombie_stand1	=[	$stand1,		zombie_stand2	] {ai_stand();};
@@ -482,6 +485,10 @@ void() zombie_paine30	=[	$paine30,	zombie_run1		] {};
 
 void() zombie_die =
 {
+	local float drop_iid, drop_qty;
+	drop_iid = 0;
+	drop_qty = 0;
+
 	sound (self, CHAN_VOICE, "zombie/z_gib.wav", 1, ATTN_NORM);
 	ThrowHead ("progs/h_zombie.mdl", self.health);
 	ThrowGib ("progs/gib1.mdl", self.health);
@@ -490,9 +497,37 @@ void() zombie_die =
 	// Notify round manager when a wave-spawned ghoul is killed.
 	if (self.classname == "ighoul")
 		RM_ZombieDied();
-	// Award kill-reward points to whoever dealt the killing blow.
+	// Award kill-reward points and tiered ammo drop to the killing player.
 	if (self.enemy.classname == "player")
+	{
 		EC_GivePoints(self.enemy, EC_KillReward());
+		// Tiered ammo drop: type escalates with current round so the player
+		// always gets ammo relevant to the weapons available at that stage.
+		// Earlier rounds: common pistol/SMG ammo (10mm)
+		// Mid rounds: rifle ammo (5.56mm)
+		// Late rounds: heavy rifle ammo (7.62mm)
+		// Only drop if the round system is active (current_round > 0).
+		if (current_round > 0)
+		{
+			if (current_round <= 7)
+			{
+				drop_iid = IID_AM_10MM;
+				drop_qty = 18;
+			}
+			else if (current_round <= 14)
+			{
+				drop_iid = IID_AM_556MM;
+				drop_qty = 15;
+			}
+			else
+			{
+				drop_iid = IID_AM_762MM;
+				drop_qty = 12;
+			}
+			if (random() < 0.6)
+				AddStackable(self.enemy, drop_iid, drop_qty);
+		}
+	}
 };
 
 /*
