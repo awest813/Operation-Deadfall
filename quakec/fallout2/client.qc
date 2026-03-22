@@ -1358,6 +1358,15 @@ void() PlayerPreThink =
 				stuffcmd(self, "v_cshift 75 0 0 75\n");
 			else if (self.sneak > 0)
 				stuffcmd(self, "v_cshift 0 75 0 75\n");
+			else if (self.health <= 25 && self.health > 0)
+			{
+				// Pulse screen red at ~1 Hz when critically wounded.
+				if (self.low_health_pulse)
+					stuffcmd(self, "v_cshift 140 0 0 65\n");
+				else
+					stuffcmd(self, "v_cshift 30 0 0 15\n");
+				self.low_health_pulse = 1 - self.low_health_pulse;
+			}
 			else
 				stuffcmd(self, "v_cshift 0 0 0 0\n");
 		}
@@ -1758,6 +1767,8 @@ void() ClientConnect =
 	
 
 	stuffcmd(self, "v_damagecshift 1\n");
+	// Subtle atmospheric fog for tension on all maps.
+	stuffcmd(self, "fog 0.025 0.04 0.04 0.04\n");
 	stuffcmd(self, "alias duck impulse 200\n");
 	stuffcmd(self, "alias prone impulse 201\n");
 	stuffcmd(self, "alias reload impulse 50\n");

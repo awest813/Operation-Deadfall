@@ -85,6 +85,21 @@ void(string msg) RM_CenterprintAll =
 };
 
 // ---------------------------------------------------------------------------
+// Helper — play a sound to every live player (ATTN_NONE = heard everywhere).
+// ---------------------------------------------------------------------------
+void(string snd, float vol) RM_SoundAll =
+{
+    local entity p;
+    p = find(world, classname, "player");
+    while (p)
+    {
+        if (p.health > 0)
+            sound(p, CHAN_AUTO, snd, vol, ATTN_NONE);
+        p = find(p, classname, "player");
+    }
+};
+
+// ---------------------------------------------------------------------------
 // Tuning constants — edit here to rebalance without touching game logic.
 // ---------------------------------------------------------------------------
 float ROUND_INTRO_DURATION  =  5;   // seconds of fanfare before first spawn
@@ -270,6 +285,7 @@ void() RoundManager_Think =
             dprint("RM: player detected — starting Round 1 in 5 s\n");
             bprint(2, "^4** ^bROUND 1 BEGINS IN 5 SECONDS^b **\n");
             RM_CenterprintAll("ROUND 1\nBegins in 5 seconds...");
+            RM_SoundAll("misc/power.wav", 0.5);
         }
         self.nextthink = time + 1;
         return;
@@ -376,6 +392,7 @@ void() RoundManager_Think =
             bprint(2, ftos(current_round));
             bprint(2, " COMPLETE!^b **\n");
             RM_CenterprintAll(strcat("ROUND ", ftos(current_round), " COMPLETE!\nNext round in 10 seconds..."));
+            RM_SoundAll("items/protect2.wav", 0.8);
             dprint("RM: ACTIVE→INTERMISSION\n");
         }
         self.nextthink = time + 1;
@@ -413,6 +430,7 @@ void() RoundManager_Think =
             bprint(2, ftos(current_round));
             bprint(2, " BEGINS!^b **\n");
             RM_CenterprintAll(strcat("ROUND ", ftos(current_round), "\nBegins now!"));
+            RM_SoundAll("misc/power.wav", 0.5);
             dprint("RM: INTERMISSION→INTRO  round=");
             dprint(ftos(current_round));
             dprint("\n");

@@ -299,6 +299,54 @@ void(float sw, float sh) HUD_DrawFlash =
 };
 
 // --------------------------------------------------------------------------
+// Full-screen danger vignette — pulsing red border strips when HP ≤ 25.
+// Uses sin(time) for a smooth breathing pulse at ~2 Hz.
+// Drawn before the round-flash overlay so transitions always show on top.
+// --------------------------------------------------------------------------
+void(float sw, float sh) HUD_DrawDangerVignette =
+{
+    float hp, base_alpha, pulse_alpha;
+    float vw;   // vignette strip width
+    vector red;
+
+    hp = getstati(STAT_HEALTH);
+    if (hp <= 0 || hp > 25)  // threshold matches low_health_pulse in client.qc
+        return;
+
+    red = HUD_COL_RED;
+
+    // Strip width: ~6.5% of screen width feels proportional at all resolutions.
+    vw = sw * 0.065;
+
+    // Brighter pulsing the closer to death.
+    if (hp <= 10)
+        base_alpha = 0.38;
+    else
+        base_alpha = 0.22;
+
+    // Smooth 2 Hz breathing: oscillates between ~0 and base_alpha.
+    // 12.56 ≈ 4π, giving one full sin cycle per 0.5 s (2 Hz).
+    pulse_alpha = base_alpha * (0.5 + 0.5 * sin(time * 12.56));
+
+    // Left strip
+    drawfill('0 0 0',
+             vw * '1 0 0' + sh * '0 1 0',
+             red, pulse_alpha);
+    // Right strip
+    drawfill((sw - vw) * '1 0 0',
+             vw * '1 0 0' + sh * '0 1 0',
+             red, pulse_alpha);
+    // Top strip
+    drawfill('0 0 0',
+             sw * '1 0 0' + vw * '0 1 0',
+             red, pulse_alpha);
+    // Bottom strip
+    drawfill((sh - vw) * '0 1 0',
+             sw * '1 0 0' + vw * '0 1 0',
+             red, pulse_alpha);
+};
+
+// --------------------------------------------------------------------------
 // Trigger a flash message.
 // --------------------------------------------------------------------------
 void(string msg, vector col) HUD_Flash =
@@ -370,5 +418,6 @@ void() HUD_Draw =
     if (rstate == RSTATE_GAMEOVER)
         HUD_DrawGameOver(sw, sh);
 
+    HUD_DrawDangerVignette(sw, sh);
     HUD_DrawFlash(sw, sh);
 };

@@ -668,6 +668,7 @@ float          red_armor;
 .float          grenadetoggle;
 .float          kills;
 .float          milestone_kills;
+.float          low_health_pulse;   // toggles each 0.5 s cycle for HP danger flash
 .float          materialize;
 .float          vote_time;
 .float          vote_on;
