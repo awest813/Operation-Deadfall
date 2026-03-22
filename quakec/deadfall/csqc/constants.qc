@@ -78,6 +78,9 @@ float INPUT_MOUSEMOVE = 2;
 #define STAT_BEST_STREAK        71   // peak kill streak reached this session
 #define STAT_INTRO_SECS         72   // countdown seconds remaining during RSTATE_INTRO (0 otherwise)
 #define STAT_POWER              73   // 1 once the map power switch has been activated
+#define STAT_DEATHS             74   // this player's death count this session
+#define STAT_LIVE_PLAYERS       75   // number of live players currently in the game
+#define STAT_ROUND_TOTAL        76   // total zombies queued at the start of this round
 
 // Round state constants (must match round_manager.qc values).
 #define RSTATE_WAITING      0

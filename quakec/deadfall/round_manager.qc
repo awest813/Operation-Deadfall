@@ -379,13 +379,17 @@ void() RoundManager_Think =
     {
         if (RM_LivePlayerCount() > 0)
         {
+            local float rnd1_count;
             current_round = 1;
             round_state   = RSTATE_INTRO;
             round_timer   = time + ROUND_INTRO_DURATION;
             self.cnt      = 0;   // reset intro countdown tick counter
+            rnd1_count    = RT_ZombieCount(1);
             dprint("RM: player detected — starting Round 1 in 5 s\n");
-            bprint(2, "^4** ^bROUND 1 BEGINS IN 5 SECONDS^b **\n");
-            RM_CenterprintAll("ROUND 1\nBegins in 5 seconds...");
+            bprint(2, strcat("^4** ^bROUND 1 BEGINS IN 5 SECONDS  [",
+                             ftos(rnd1_count), " zombies]^b **\n"));
+            RM_CenterprintAll(strcat("ROUND 1\nBegins in 5 seconds...\n(",
+                                     ftos(rnd1_count), " zombies)"));
             RM_SoundAll("misc/power.wav", 0.5);
         }
         self.nextthink = time + 1;
@@ -425,6 +429,7 @@ void() RoundManager_Think =
         {
             // Transition → SPAWNING: prime the queue from the tuning table.
             zombies_queued      = RT_ZombieCount(current_round);
+            zombies_round_total = zombies_queued;   // snapshot for HUD spawn-progress display
             zombies_alive       = 0;
             round_zombie_health = RT_ZombieHealth(current_round);
             round_state         = RSTATE_SPAWNING;
@@ -571,25 +576,28 @@ void() RoundManager_Think =
 
         if (time >= round_timer)
         {
+            local float next_count;
             current_round = current_round + 1;
             round_state   = RSTATE_INTRO;
             round_timer   = time + ROUND_INTRO_DURATION;
             self.cnt      = 0;   // reset intro countdown tick counter
+            next_count    = RT_ZombieCount(current_round);
 
             // Milestone rounds (every 5th) get a special fanfare.
             if (current_round > 1 && (current_round % 5) == 0)
             {
-                bprint(2, strcat("^3** ^bMILESTONE — ROUND ", ftos(current_round), "!^b **\n"));
+                bprint(2, strcat("^3** ^bMILESTONE — ROUND ", ftos(current_round),
+                                 "!  [", ftos(next_count), " zombies]^b **\n"));
                 RM_SoundAll("misc/menu3.wav", 1.0);
             }
             else
             {
-                bprint(2, "^4** ^bROUND ");
-                bprint(2, ftos(current_round));
-                bprint(2, " BEGINS!^b **\n");
+                bprint(2, strcat("^4** ^bROUND ", ftos(current_round),
+                                 " BEGINS!  [", ftos(next_count), " zombies]^b **\n"));
                 RM_SoundAll("misc/power.wav", 0.5);
             }
-            RM_CenterprintAll(strcat("ROUND ", ftos(current_round), "\nBegins now!"));
+            RM_CenterprintAll(strcat("ROUND ", ftos(current_round),
+                                     "\nBegins now!\n(", ftos(next_count), " zombies)"));
             dprint("RM: INTERMISSION→INTRO  round=");
             dprint(ftos(current_round));
             dprint("\n");
@@ -625,13 +633,14 @@ void() RM_Init =
     local entity rm;
 
     // Initialise all round globals to safe defaults.
-    current_round       = 0;
-    zombies_queued      = 0;
-    zombies_alive       = 0;
-    round_zombie_health = 60;  // classic kill-threshold; overwritten each round
-    round_state         = RSTATE_WAITING;
-    round_timer         = 0;
-    power_on            = 0;   // power starts off; activate func_power_switch to enable perks/box
+    current_round        = 0;
+    zombies_queued       = 0;
+    zombies_alive        = 0;
+    zombies_round_total  = 0;
+    round_zombie_health  = 60;  // classic kill-threshold; overwritten each round
+    round_state          = RSTATE_WAITING;
+    round_timer          = 0;
+    power_on             = 0;   // power starts off; activate func_power_switch to enable perks/box
 
     // Apply the performance preset to the concurrent-zombie hard cap.
     // Low preset halves the AI budget to keep frame times stable at high rounds.

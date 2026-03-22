@@ -683,8 +683,6 @@ has been twice in two seconds, otherwise it goes into one of the four
 fast pain frames.
 
 A hit of less than 10 points of damage (winged by a shotgun) will be ignored.
-
-FIXME: don't use pain_finished because of nightmare hack
 =================
 */
 void(entity attacker, float take) zombie_pain =
@@ -716,11 +714,11 @@ void(entity attacker, float take) zombie_pain =
 	if (self.inpain)
 	{
 // if hit again in next gre seconds while not in pain frames, definately drop
-		self.pain_finished = time + 3;
+		self.zombie_pain_cooldown = time + 3;
 		return;			// currently going through an animation, don't change
 	}
 	
-	if (self.pain_finished > time)
+	if (self.zombie_pain_cooldown > time)
 	{
 // hit again, so drop down
 		self.inpain = 2;
