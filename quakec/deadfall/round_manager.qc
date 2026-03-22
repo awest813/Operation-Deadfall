@@ -56,11 +56,10 @@ BALANCE TABLE (rounds 1-25)
 KNOWN ISSUES
 ───────────────────────────────────────────────────────────────────────────
 • If ALL map info_zombie_spawn / info_player_deathmatch spawn points are
-  permanently blocked (solid geometry overlap), the spawn attempt silently
-  skips that slot; fewer-than-expected zombies will appear that round.
-• Mid-round player-disconnects are not tracked; if the last player drops
-  and reconnects before GameControl restarts, round_state stays GAMEOVER
-  until a map restart clears it.
+  permanently blocked (solid geometry overlap), the manager now retries a
+  blocked slot several times before forfeiting it. This avoids transient
+  blockage causing accidental zombie loss, but a truly broken map can still
+  lose a slot after the retry limit rather than stalling forever.
 
 PERFORMANCE PRESETS  (od_perf_preset cvar — see defs.qc)
 ───────────────────────────────────────────────────────────────────────────
@@ -201,6 +200,8 @@ void(string snd, float vol) RM_SoundAll =
 float ROUND_INTRO_DURATION  =  5;   // seconds of fanfare before first spawn
 float ROUND_INTERMISSION    = 10;   // seconds of rest between rounds
 float ROUND_MAX_CONCURRENT  = 24;   // hard cap on zombies alive at once (set by preset)
+float ROUND_SPAWN_RETRY     = 0.25; // blocked spawn-point retry interval
+float ROUND_SPAWN_FAIL_MAX  = 8;    // retries before a permanently blocked slot is skipped
 float ROUND_STUCK_TIMEOUT   = 300;  // auto-end a hung active phase (seconds)
 float ROUND_TABLE_MAX       = 25;   // highest round in explicit tuning table
 
@@ -282,6 +283,38 @@ float() RM_LivePlayerCount =
     return count;
 };
 
+// Return the number of connected players, alive or dead.
+float() RM_PlayerCount =
+{
+    local entity te;
+    local float  count;
+
+    count = 0;
+    te = find(world, classname, "player");
+    while (te)
+    {
+        count = count + 1;
+        te = find(te, classname, "player");
+    }
+    return count;
+};
+
+// Reset the round loop to its idle pre-game state.
+// Used when everyone disconnects so the next join starts cleanly from round 1
+// instead of being stranded in GAMEOVER or a half-finished wave.
+void() RM_ResetToWaiting =
+{
+    current_round        = 0;
+    zombies_queued       = 0;
+    zombies_alive        = 0;
+    zombies_round_total  = 0;
+    round_spawn_failures = 0;
+    round_state          = RSTATE_WAITING;
+    round_timer          = 0;
+    self.cnt             = 0;
+    dprint("RM: reset to WAITING (no connected players)\n");
+};
+
 // Pick a random zombie spawn point using reservoir sampling.
 // Priority: info_zombie_spawn > info_player_deathmatch > info_player_start.
 // count is deliberately not reset between fallback tiers: the early-return
@@ -329,6 +362,7 @@ entity() RM_PickSpawnPoint =
 float() RM_TrySpawnOne =
 {
     local entity spot, saved_self;
+    local float  alive_before;
 
     if (zombies_queued <= 0)
         return FALSE;
@@ -350,14 +384,32 @@ float() RM_TrySpawnOne =
 
     // spawn_zombie reassigns the global `self` — save and restore it.
     // On success spawn_zombie increments zombies_alive (see zombie.qc).
-    // If the spawn point is blocked it returns early and the count is
-    // silently forfeit to avoid stalling the queue indefinitely.
+    // If the chosen point is blocked by a player/zombie, retry a few times
+    // before forfeiting the slot so transient congestion does not shrink the
+    // wave, while permanently broken maps still fail safe instead of stalling.
     saved_self = self;
+    alive_before = zombies_alive;
     spawn_zombie(spot);
     self = saved_self;
 
-    zombies_queued = zombies_queued - 1;
-    return TRUE;
+    if (zombies_alive > alive_before)
+    {
+        round_spawn_failures = 0;
+        zombies_queued = zombies_queued - 1;
+        return TRUE;
+    }
+
+    round_spawn_failures = round_spawn_failures + 1;
+    if (round_spawn_failures >= ROUND_SPAWN_FAIL_MAX)
+    {
+        dprint("RM: spawn point stayed blocked, forfeiting queued slot\n");
+        round_spawn_failures = 0;
+        zombies_queued = zombies_queued - 1;
+        return TRUE;
+    }
+
+    dprint("RM: spawn blocked, retrying shortly\n");
+    return FALSE;
 };
 
 // ---------------------------------------------------------------------------
@@ -370,6 +422,8 @@ void() RoundManager_Think =
     // ---- GAMEOVER: idle until GameControl issues a map restart ----
     if (round_state == RSTATE_GAMEOVER)
     {
+        if (RM_PlayerCount() <= 0)
+            RM_ResetToWaiting();
         self.nextthink = time + 1;
         return;
     }
@@ -399,6 +453,13 @@ void() RoundManager_Think =
     // ---- INTRO: fanfare countdown before first spawn ----
     if (round_state == RSTATE_INTRO)
     {
+        if (RM_PlayerCount() <= 0)
+        {
+            RM_ResetToWaiting();
+            self.nextthink = time + 1;
+            return;
+        }
+
         if (RM_LivePlayerCount() == 0)
         {
             round_state = RSTATE_GAMEOVER;
@@ -431,6 +492,7 @@ void() RoundManager_Think =
             zombies_queued      = RT_ZombieCount(current_round);
             zombies_round_total = zombies_queued;   // snapshot for HUD spawn-progress display
             zombies_alive       = 0;
+            round_spawn_failures = 0;
             round_zombie_health = RT_ZombieHealth(current_round);
             round_state         = RSTATE_SPAWNING;
             round_timer         = time; // spawn on very next tick
@@ -451,6 +513,13 @@ void() RoundManager_Think =
     // ---- SPAWNING: trickle zombies in at the configured rate ----
     if (round_state == RSTATE_SPAWNING)
     {
+        if (RM_PlayerCount() <= 0)
+        {
+            RM_ResetToWaiting();
+            self.nextthink = time + 1;
+            return;
+        }
+
         if (RM_LivePlayerCount() == 0)
         {
             round_state = RSTATE_GAMEOVER;
@@ -469,8 +538,8 @@ void() RoundManager_Think =
                 }
                 else
                 {
-                    // Concurrent cap hit — retry in 1 s.
-                    round_timer = time + 1;
+                    // Concurrent cap or blocked spawn — retry soon.
+                    round_timer = time + ROUND_SPAWN_RETRY;
                 }
             }
 
@@ -493,6 +562,13 @@ void() RoundManager_Think =
     // ---- ACTIVE: wait for all zombies to die ----
     if (round_state == RSTATE_ACTIVE)
     {
+        if (RM_PlayerCount() <= 0)
+        {
+            RM_ResetToWaiting();
+            self.nextthink = time + 1;
+            return;
+        }
+
         if (RM_LivePlayerCount() == 0)
         {
             round_state = RSTATE_GAMEOVER;
@@ -546,6 +622,13 @@ void() RoundManager_Think =
     // ---- INTERMISSION: count down before next round ----
     if (round_state == RSTATE_INTERMISSION)
     {
+        if (RM_PlayerCount() <= 0)
+        {
+            RM_ResetToWaiting();
+            self.nextthink = time + 1;
+            return;
+        }
+
         if (RM_LivePlayerCount() == 0)
         {
             round_state = RSTATE_GAMEOVER;
@@ -637,6 +720,7 @@ void() RM_Init =
     zombies_queued       = 0;
     zombies_alive        = 0;
     zombies_round_total  = 0;
+    round_spawn_failures = 0;
     round_zombie_health  = 60;  // classic kill-threshold; overwritten each round
     round_state          = RSTATE_WAITING;
     round_timer          = 0;

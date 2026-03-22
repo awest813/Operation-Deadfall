@@ -511,6 +511,7 @@ float           current_round;         // current round number (0 = pre-game)
 float           zombies_queued;        // zombies still to be spawned this round
 float           zombies_alive;         // currently alive round-manager zombies
 float           zombies_round_total;   // total zombies queued at the start of this round
+float           round_spawn_failures;  // consecutive blocked-spawn retries in the current wave
 float           round_zombie_health;   // per-round kill threshold (set by tuning table)
 float           round_state;           // current state-machine state (RSTATE_* constants)
 float           round_timer;           // real-time deadline for next state transition
@@ -928,7 +929,6 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage;
 float (entity e, float healamount, float ignore) T_Heal; // health function
 
 float(entity targ, entity inflictor) CanDamage;
-
 
 
 
