@@ -3192,7 +3192,7 @@ void () station_think =
 		}
 	}
 
-	if (self.buildtype == IID_BUILD_MRAMMO)//mr. ammo
+	if (self.buildtype == IID_BUILD_MRAMMO)//field forge
 	{
 		te = findradius (self.origin, 60);
 		while (te)
@@ -3404,7 +3404,7 @@ float (float iid) spawn_station =
 			sprint (self, 2, "can't build at spawn.\n");
 			return false;
 		}
-		if (te.classname == "ghoul")
+		if (te.classname == "izombie")
 		{
 			sprint (self, 2, "somethings in the way.\n");
 			return false;
@@ -3448,7 +3448,7 @@ float (float iid) spawn_station =
 	self.chemcount = 75;
 
 	if (self.buildtype == IID_BUILD_MRAMMO)
-		self.netname = "mr. ammo";
+		self.netname = "field forge";
 	if (self.buildtype == IID_BUILD_SHIELDGEN)
 		self.netname = "shield generator";
 	if (self.buildtype == IID_BUILD_AUTODOC)
@@ -3770,7 +3770,7 @@ void () UseEquipment =
 	}
 	if (self.equipment == 1)
 	{
-		centerprint(self, "�� medic's bag ��\nlets you carry more stimpacks\n");
+		centerprint(self, "�� medic's bag ��\nlets you carry more medpacks\n");
 		return;
 	}
 	if (self.equipment == 4)
@@ -4020,7 +4020,7 @@ void () PlasmaBolt =
 	remove (self);
 };
 
-//the alien blaster
+//the vril pistol
 void () FireAlienBlaster =
 {
 	local float tmp;

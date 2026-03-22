@@ -509,7 +509,7 @@ float           endgame_timer;
 // ---------------------------------------------------------------------------
 float           current_round;       // current round number (0 = pre-game)
 float           zombies_queued;      // zombies still to be spawned this round
-float           zombies_alive;       // currently alive round-manager ghouls
+float           zombies_alive;       // currently alive round-manager zombies
 float           round_zombie_health; // per-round kill threshold (set by tuning table)
 float           round_state;         // current state-machine state (RSTATE_* constants)
 float           round_timer;         // real-time deadline for next state transition
@@ -520,7 +520,7 @@ float           power_on;            // 1 once the map power switch has been act
 // ---------------------------------------------------------------------------
 // Performance preset — controls quality/cost tradeoffs at runtime.
 // Set od_perf_preset on the server (e.g. "set od_perf_preset 0" in server.cfg).
-//   0 = Low    — reduced zombie cap (12), no per-ghoul dynamic lights,
+//   0 = Low    — reduced zombie cap (12), no per-zombie dynamic lights,
 //                fewer blood particles. Best for older/low-end hardware.
 //   1 = Medium — default balanced settings; unchanged gameplay feel.
 //   2 = High   — maximum concurrent zombies (24), full glow effects,

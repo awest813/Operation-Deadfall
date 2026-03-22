@@ -650,7 +650,7 @@ void() worldspawn =
 	precache_model ("progs/backpack.mdl");
 
 	precache_model ("progs/zom_gib.mdl");
-	// Round-manager ighoul assets — precached here so maps that rely only on
+	// Round-manager zombie assets — precached here so maps that rely only on
 	// info_zombie_spawn (no monster_zombie entities) still load them correctly.
 	precache_model ("progs/h_zombie.mdl");
 	precache_sound ("zombie/z_idle.wav");

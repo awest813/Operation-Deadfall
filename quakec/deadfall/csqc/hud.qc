@@ -1,7 +1,7 @@
 /*
 ==============================================================================
 
-HUD  —  quakec/fallout2/csqc/hud.qc
+HUD  —  quakec/deadfall/csqc/hud.qc
 
 Client-side HUD for Operation Deadfall.
 

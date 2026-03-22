@@ -2,7 +2,7 @@
 
 A **COD Zombies-inspired wave-survival game** built on a fork of the
 [FTEQW](https://fte.triptohell.info/about) Quake engine, set in a
-post-apocalyptic Fallout-flavoured world.  Survive endless waves of undead,
+sci-fi WWII world inspired by Wolfenstein.  Survive endless waves of undead,
 earn points, unlock new areas, and arm yourself from wall buys and the mystery
 box — all driven by a fully custom QuakeC game module.
 
@@ -33,7 +33,7 @@ Weapons span seven classes with distinct combat feels:
 | Shotgun        | Winchester, Mossberg, Jackhammer                  |
 | Assault Rifle  | AK112, AK74, Moonlight M4, SA80                   |
 | Battle Rifle   | FN FAL, Rangemaster, DKS-1                        |
-| Special        | Pipe Rifle, Alien Blaster, Rocket Launcher        |
+| Special        | Improvised Rifle, Vril Pistol, Rocket Launcher    |
 
 ### 🧪 Perks
 Nine passive perks purchasable at powered perk machines:
@@ -68,7 +68,7 @@ zombie AI budget for the host machine:
 
 | Preset | Max concurrent zombies | Notes                         |
 |--------|------------------------|-------------------------------|
-| Low    | 12                     | Disables glow on ghoul enemies|
+| Low    | 12                     | Disables glow on zombie enemies|
 | Medium | 24                     | Default                       |
 | High   | 24                     | Full effects enabled          |
 
@@ -133,14 +133,14 @@ launch options, configuration paths, and a troubleshooting guide.
 ```
 engine/          FTEQW engine source (C)
 quakec/
-└── fallout2/    Operation Deadfall game module (QuakeC)
+└── deadfall/    Operation Deadfall game module (QuakeC)
     ├── defs.qc            Engine globals, entity fields, compile-time constants
     ├── economy.qc         Point costs, perk IDs, kill-reward helpers
     ├── inventory.qc       IID_* constants, item name/model/weight lookups
     ├── weapons.qc         Fire functions, W_Attack dispatch, BuyMenu
     ├── mod_buy.qc         World-interaction entities (wall buy, box, perks)
     ├── round_manager.qc   Wave state machine, spawn logic, per-round tables
-    ├── zombie.qc          Zombie / ghoul AI, AI tuning constants
+    ├── zombie.qc          Zombie AI, AI tuning constants
     ├── client.qc          Perk effects, PlayerPreThink / PlayerPostThink
     └── csqc/hud.qc        Client-side HUD (CSQC)
 specs/

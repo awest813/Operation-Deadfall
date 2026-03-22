@@ -326,7 +326,7 @@ void () health_touch =
 			self.spamdelay = time + 1;
 			return;
 		}
-		sprint (other, PRINT_HIGH, "picked up a stimpack.\n");
+		sprint (other, PRINT_HIGH, "picked up a medpack.\n");
 
 		if (random()*4 <= 2)
 			sound (other, CHAN_ITEM, "misc/item1.wav", 1, ATTN_NORM);
@@ -885,7 +885,7 @@ void() ammo_touch =
 	best = W_BestWeapon();
 	self = stemp;
 
-	sprint (other, 2, "a pre-war military ammo cache.\n");
+	sprint (other, 2, "a military ammo cache.\n");
 	sprint (other, 2, "found ");
 
 	ammotype = GetRandomAmmo();
@@ -916,7 +916,7 @@ void() ammo_touch =
 				if (coop == 1 && total_players == 1)
 					other.ammo_shells = other.ammo_shells + 2;
 
-			sprint (other, 2, " and bottle caps.\n");
+			sprint (other, 2, " and dog tags.\n");
 		}
 		else
 			sprint (other, 2, "\n");
@@ -936,7 +936,7 @@ void() ammo_touch =
 		if (random()*20 <= 10)
 		{
 			other.ammo_shells = other.ammo_shells + 2;
-			sprint (other, 2, " and bottle caps.\n");
+			sprint (other, 2, " and dog tags.\n");
 		}
 		else
 			sprint (other, 2, "\n");
@@ -955,7 +955,7 @@ void() ammo_touch =
 		if (random()*20 <= 10)
 		{
 			other.ammo_shells = other.ammo_shells + 2;
-			sprint (other, 2, " and bottle caps.\n");
+			sprint (other, 2, " and dog tags.\n");
 		}
 		else
 			sprint (other, 2, "\n");
@@ -975,7 +975,7 @@ void() ammo_touch =
 		if (random()*20 <= 10)
 		{
 			other.ammo_shells = other.ammo_shells + 2;
-			sprint (other, 2, " and bottle caps.\n");
+			sprint (other, 2, " and dog tags.\n");
 		}
 		else
 			sprint (other, 2, "\n");
@@ -1590,7 +1590,7 @@ void() BackpackTouch =
 	if (random()*4 <= 2)
 	{
 		self.ammo_shells = self.ammo_shells + 3;
-		sprint(other, 2, " and some caps.\n");
+		sprint(other, 2, " and some dog tags.\n");
 		if (total_players == 1)
 			self.ammo_shells = self.ammo_shells + 3;
 	}

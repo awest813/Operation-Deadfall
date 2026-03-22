@@ -1797,8 +1797,8 @@ void() ClientConnect =
 	stuffcmd(self, "alias info impulse 56\n");
 	stuffcmd(self, "alias equip impulse 57\n");
 
-	stuffcmd(self, "alias stimpack \"cmd invuse superstims+stimpack+bandages\"\n");
-	stuffcmd(self, "alias bandages \"cmd invuse bandages+superstims+stimpack\"\n");
+	stuffcmd(self, "alias medpack \"cmd invuse super medpack+medpack+bandages\"\n");
+	stuffcmd(self, "alias bandages \"cmd invuse bandages+super medpack+medpack\"\n");
 
 	stuffcmd(self, "alias toolkit \"cmd invswap toolkit 2;impulse 2\"\n");
 
@@ -1807,13 +1807,13 @@ void() ClientConnect =
 	stuffcmd(self, "bind e exit\n");
 	stuffcmd(self, "bind z special\n");
 	stuffcmd(self, "bind r reload\n");
-	stuffcmd(self, "bind x stimpack\n");
+	stuffcmd(self, "bind x medpack\n");
 	stuffcmd(self, "bind b buy\n");
 	stuffcmd(self, "bind q info\n");
 	stuffcmd(self, "bind shift prone\n");
 	stuffcmd(self, "bind ctrl duck\n");
 
-	stuffcmd(self, "exec fallout.cfg\n");
+	stuffcmd(self, "exec deadfall.cfg\n");
 
 // a client connecting during an intermission can cause problems
 	if (intermission_running)
@@ -1902,9 +1902,9 @@ void(entity targ, entity attacker) ClientObituary =
 			attacker.kills = attacker.kills + 1;
 			CheckKillMilestone(attacker);
 		}
-		else if (targ.classname == "monster" || targ.classname == "ighoul")
+		else if (targ.classname == "monster" || targ.classname == "izombie")
 		{
-			// "ighoul" is the classname used by round-manager wave zombies.
+			// "izombie" is the classname used by round-manager wave zombies.
 			attacker.kills = attacker.kills + 1;
 			CheckKillMilestone(attacker);
 		}
