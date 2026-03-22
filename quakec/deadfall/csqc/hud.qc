@@ -468,13 +468,12 @@ void() HUD_CheckTransitions =
 
 // --------------------------------------------------------------------------
 // Main draw entry-point — called from CSQC_UpdateView.
+// sw / sh are the virtual console dimensions, passed in from CSQC_UpdateView
+// to avoid a redundant cvar("vid_conwidth/height") re-read every frame.
 // --------------------------------------------------------------------------
-void() HUD_Draw =
+void(float sw, float sh) HUD_Draw =
 {
-    float sw, sh, rstate;
-
-    sw = cvar("vid_conwidth");
-    sh = cvar("vid_conheight");
+    float rstate;
 
     rstate = getstati(STAT_ROUND_STATE);
 

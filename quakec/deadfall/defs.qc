@@ -524,8 +524,9 @@ float           power_on;            // 1 once the map power switch has been act
 //                head entity cleaned up in 5 s. Best for low-end hardware.
 //   1 = Medium — zombie cap 24, no dynamic lights, 3 gibs/kill (lifetime 8 s),
 //                head entity cleaned up in 10 s. Recommended default.
-//   2 = High   — zombie cap 24, dynamic lights (EF_DIMLIGHT), 3 gibs/kill
-//                (lifetime 10-20 s), head entity cleaned up in 15 s.
+//   2 = High   — zombie cap 24, dynamic lights (EF_DIMLIGHT on zombies within
+//                attack range; suppressed at RANGE_FAR to cap GPU cost),
+//                3 gibs/kill (lifetime 10-20 s), head entity cleaned up in 15 s.
 //                For high-end hardware with rendering headroom.
 // Read in worldspawn (world.qc) before create_referees() initialises the
 // round manager so all subsystems see the correct preset from round 1.
