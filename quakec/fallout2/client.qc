@@ -1712,6 +1712,31 @@ void() PlayerPostThink =
 //dprint ("post think\n");
 	if (self.view_ofs == '0 0 0')
 		return;         // intermission or finale
+
+	// Sync round-manager globals into per-player stat fields so the
+	// CSQC HUD can read them via getstati().  Done before the deadflag
+	// check so dead/spectating players still see current round info.
+	self.hud_kills          = self.kills;
+	self.hud_round          = current_round;
+	self.hud_round_state    = round_state;
+	self.hud_zombies_alive  = zombies_alive;
+	self.hud_zombies_queued = zombies_queued;
+	self.hud_points         = self.ammo_shells;
+	self.hud_streak         = self.kill_streak;
+	// Countdown seconds for the intermission break.
+	if (round_state == RSTATE_INTERMISSION)
+	{
+		local float secs;
+		secs = round_timer - time;
+		if (secs < 0)
+			secs = 0;
+		self.hud_intermission_secs = secs;
+	}
+	else
+	{
+		self.hud_intermission_secs = 0;
+	}
+
 	if (self.deadflag)
 		return;
 
@@ -1738,29 +1763,6 @@ void() PlayerPostThink =
 	CheckPowerups ();
 
 	W_WeaponFrame ();
-
-	// Sync round-manager globals into per-player stat fields so the
-	// CSQC HUD can read them via getstati().
-	self.hud_kills          = self.kills;
-	self.hud_round          = current_round;
-	self.hud_round_state    = round_state;
-	self.hud_zombies_alive  = zombies_alive;
-	self.hud_zombies_queued = zombies_queued;
-	self.hud_points         = self.ammo_shells;
-	self.hud_streak         = self.kill_streak;
-	// Countdown seconds for the intermission break.
-	if (round_state == RSTATE_INTERMISSION)
-	{
-		local float secs;
-		secs = round_timer - time;
-		if (secs < 0)
-			secs = 0;
-		self.hud_intermission_secs = secs;
-	}
-	else
-	{
-		self.hud_intermission_secs = 0;
-	}
 
 };
 
@@ -1900,8 +1902,9 @@ void(entity targ, entity attacker) ClientObituary =
 			attacker.kills = attacker.kills + 1;
 			CheckKillMilestone(attacker);
 		}
-		else if (targ.classname == "monster")
+		else if (targ.classname == "monster" || targ.classname == "ighoul")
 		{
+			// "ighoul" is the classname used by round-manager wave zombies.
 			attacker.kills = attacker.kills + 1;
 			CheckKillMilestone(attacker);
 		}

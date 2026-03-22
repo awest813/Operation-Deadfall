@@ -709,7 +709,7 @@ void (entity stuff) spawn_zombie =
 	te = findradius (stuff.origin, 80);
 	while (te)
 	{
-		if (te.classname == "player" || te.classname == "ighoul" && te.health > 0)
+		if (te.classname == "player" || (te.classname == "ighoul" && te.health > 0))
 			return;
 
 		te = te.chain;

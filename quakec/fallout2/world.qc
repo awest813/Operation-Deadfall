@@ -215,6 +215,8 @@ void () GameControl =
 		{
 			dprint("GameControl: all players dead, starting restart countdown\n");
 			bprint(2, "^4** ^bTHE PLAYERS WERE SLAIN^b **\n");
+			// Play the sting once when the game-over condition is first detected.
+			sound (world, CHAN_BODY, "misc/menu3.wav", 1, ATTN_NONE);
 		}
 		if (endgame_timer == 1)
 			bprint(2, "^4** ^bTHIS AREA WILL RESTART^b **\n");
@@ -229,8 +231,6 @@ void () GameControl =
 			dprint("GameControl: issuing map restart\n");
 			localcmd("restart\n");
 		}
-
-		sound (world, CHAN_BODY, "misc/menu3.wav", 1, ATTN_NONE);
 	}
 
 	if (pcount == 0 && pdead > 0)
@@ -650,6 +650,19 @@ void() worldspawn =
 	precache_model ("progs/backpack.mdl");
 
 	precache_model ("progs/zom_gib.mdl");
+	// Round-manager ighoul assets — precached here so maps that rely only on
+	// info_zombie_spawn (no monster_zombie entities) still load them correctly.
+	precache_model ("progs/h_zombie.mdl");
+	precache_sound ("zombie/z_idle.wav");
+	precache_sound ("zombie/z_idle1.wav");
+	precache_sound ("zombie/z_shot1.wav");
+	precache_sound ("zombie/z_gib.wav");
+	precache_sound ("zombie/z_pain.wav");
+	precache_sound ("zombie/z_pain1.wav");
+	precache_sound ("zombie/z_fall.wav");
+	precache_sound ("zombie/z_miss.wav");
+	precache_sound ("zombie/z_hit.wav");
+	precache_sound ("zombie/idle_w2.wav");
 
 	precache_model ("progs/v_light.mdl");
 	
