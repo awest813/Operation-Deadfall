@@ -121,6 +121,36 @@ TOP PERFORMANCE BOTTLENECKS & FIXES
    (zombie_idle_sound_time / zombie_pain_sound_time / zombie_attack_sound_time
    globals, zombie.qc).
 
+POLISH IMPROVEMENTS  (see also hud.qc, player.qc, zombie.qc, client.qc)
+───────────────────────────────────────────────────────────────────────────
+1. [NEW] 3-2-1 countdown during INTRO phase — fires misc/menu1.wav ticks and
+   bprint messages at 3/2/1 s before the first zombie spawn.  Builds tension
+   and mirrors the intermission countdown already present before this change.
+   The INTRO state now tracks self.cnt (same pattern as intermission).
+
+2. [NEW] Intro countdown in HUD — STAT_INTRO_SECS (stat 72) is synced by
+   client.qc during RSTATE_INTRO, allowing the CSQC HUD to show
+   "INCOMING!  3s" rather than a static label.
+
+3. [NEW] Best-streak tracking — player.best_streak updated live in zombie_die
+   and on death in player.qc.  Shown on the game-over screen (hud.qc) and
+   synced via STAT_BEST_STREAK (stat 71).
+
+4. [NEW] Power-on indicator — STAT_POWER (stat 73) mirrors the power_on global
+   so the CSQC HUD can show "PWR: OFF" (red) / "PWR: ON" (green) in the
+   top-left corner without polling the server every frame.
+
+5. [NEW] Zombie count alive/queued split — HUD now shows "ZOMBIES: 5 + 10"
+   (alive + still-spawning) instead of a single total, giving tactical info
+   about how many are already on the map.
+
+6. [NEW] Milestone round flash colour — HUD_CheckTransitions detects rounds
+   divisible by 5 and fires a gold "ROUND X  MILESTONE!" flash instead of the
+   standard orange, making milestone rounds feel special.
+
+7. [NEW] Reserve ammo colour warnings — SH/NL/RK/CE reserve rows in the HUD
+   ammo display turn red when critically low, giving at-a-glance warnings.
+
 REMAINING HOTSPOTS (not yet addressed)
 ───────────────────────────────────────────────────────────────────────────
 • findradius() in spawn_zombie — small per-spawn cost (0.6 s+ interval).
@@ -352,6 +382,7 @@ void() RoundManager_Think =
             current_round = 1;
             round_state   = RSTATE_INTRO;
             round_timer   = time + ROUND_INTRO_DURATION;
+            self.cnt      = 0;   // reset intro countdown tick counter
             dprint("RM: player detected — starting Round 1 in 5 s\n");
             bprint(2, "^4** ^bROUND 1 BEGINS IN 5 SECONDS^b **\n");
             RM_CenterprintAll("ROUND 1\nBegins in 5 seconds...");
@@ -371,6 +402,25 @@ void() RoundManager_Think =
             return;
         }
 
+        // Integer tick counter drives the 3-2-1 countdown (same pattern as
+        // intermission).  self.cnt is reset to 0 when entering INTRO state.
+        self.cnt = self.cnt + 1;
+        if (self.cnt == ROUND_INTRO_DURATION - 3)
+        {
+            bprint(2, "^4** 3 **\n");
+            RM_SoundAll("misc/menu1.wav", 0.8);
+        }
+        if (self.cnt == ROUND_INTRO_DURATION - 2)
+        {
+            bprint(2, "^4** 2 **\n");
+            RM_SoundAll("misc/menu1.wav", 0.8);
+        }
+        if (self.cnt == ROUND_INTRO_DURATION - 1)
+        {
+            bprint(2, "^4** 1 **\n");
+            RM_SoundAll("misc/menu1.wav", 1.0);
+        }
+
         if (time >= round_timer)
         {
             // Transition → SPAWNING: prime the queue from the tuning table.
@@ -379,6 +429,7 @@ void() RoundManager_Think =
             round_zombie_health = RT_ZombieHealth(current_round);
             round_state         = RSTATE_SPAWNING;
             round_timer         = time; // spawn on very next tick
+            self.cnt            = 0;    // reset for next intro use
 
             dprint("RM: INTRO→SPAWNING  round=");
             dprint(ftos(current_round));
@@ -523,6 +574,7 @@ void() RoundManager_Think =
             current_round = current_round + 1;
             round_state   = RSTATE_INTRO;
             round_timer   = time + ROUND_INTRO_DURATION;
+            self.cnt      = 0;   // reset intro countdown tick counter
 
             // Milestone rounds (every 5th) get a special fanfare.
             if (current_round > 1 && (current_round % 5) == 0)

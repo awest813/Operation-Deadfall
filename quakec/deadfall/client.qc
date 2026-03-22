@@ -1723,6 +1723,8 @@ void() PlayerPostThink =
 	self.hud_zombies_queued = zombies_queued;
 	self.hud_points         = self.ammo_shells;
 	self.hud_streak         = self.kill_streak;
+	self.hud_best_streak    = self.best_streak;
+	self.hud_power          = power_on;
 	// Countdown seconds for the intermission break.
 	if (round_state == RSTATE_INTERMISSION)
 	{
@@ -1735,6 +1737,19 @@ void() PlayerPostThink =
 	else
 	{
 		self.hud_intermission_secs = 0;
+	}
+	// Countdown seconds remaining in the pre-round intro phase.
+	if (round_state == RSTATE_INTRO)
+	{
+		local float isecs;
+		isecs = round_timer - time;
+		if (isecs < 0)
+			isecs = 0;
+		self.hud_intro_secs = isecs;
+	}
+	else
+	{
+		self.hud_intro_secs = 0;
 	}
 
 	if (self.deadflag)

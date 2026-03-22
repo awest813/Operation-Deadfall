@@ -7,10 +7,11 @@ Client-side HUD for Operation Deadfall.
 
 LAYOUT (at default 640×480 resolution)
 ───────────────────────────────────────────────────────────────────────────
-  Top-centre    │ ROUND <n> label + state banner
-  Top-right     │ Zombies remaining (alive + queued)
+  Top-centre    │ ROUND <n> label + state banner (with countdown seconds)
+  Top-right     │ Zombies remaining (alive shown separately from queued)
+  Top-left      │ PWR indicator (OFF/ON status of the map power switch)
   Bottom-left   │ Health  │  Armor  │  Kill Streak (when ≥ 3)
-  Bottom-right  │ Ammo count + ammo-type name
+  Bottom-right  │ Ammo count + ammo-type name (reserve rows colour-coded)
   Bottom-centre │ Kill count + Points balance
   Full-screen   │ Game-over overlay (RSTATE_GAMEOVER) with score summary
   Full-screen   │ Semi-transparent round-transition message
@@ -31,6 +32,13 @@ COLOUR CONVENTIONS
 #define HUD_CHAR_W  8   // default character width
 #define HUD_CHAR_H  8   // default character height
 #define HUD_PADDING 8   // padding from screen edges
+
+// Ammo reserve warning thresholds (values below these turn red/yellow on HUD).
+#define HUD_AMMO_WARN_SHELLS   20   // red when shell reserve < this value
+#define HUD_AMMO_WARN_NAILS    25   // red when nail reserve < this value
+#define HUD_AMMO_CRIT_ROCKETS   4   // red when rocket reserve < this value
+#define HUD_AMMO_WARN_ROCKETS   8   // yellow when rocket reserve < this value
+#define HUD_AMMO_WARN_CELLS    20   // red when cell reserve < this value
 
 // Colours used throughout the HUD.
 vector HUD_COL_NORMAL  = '1 1 1';
@@ -111,6 +119,7 @@ void(float sw, float sh) HUD_DrawAmmo =
     float ammo, shells, nails, rockets, cells;
     vector base;
     vector ammo_col;
+    vector sh_col, nl_col, rk_col, ce_col;
     string s;
 
     ammo    = getstati(STAT_AMMO);
@@ -129,14 +138,21 @@ void(float sw, float sh) HUD_DrawAmmo =
         ammo_col = HUD_COL_RED;
     drawstring(base + '36 0 0', s, HUD_FONT_LARGE, ammo_col, 1);
 
-    // Reserve ammo — smaller row.
+    // Reserve ammo — smaller row.  Colour-code reserves when critically low
+    // so the player gets an at-a-glance warning before the next reload.
+    sh_col = (shells  < HUD_AMMO_WARN_SHELLS)   ? HUD_COL_RED    : HUD_COL_NORMAL;
+    nl_col = (nails   < HUD_AMMO_WARN_NAILS)    ? HUD_COL_RED    : HUD_COL_NORMAL;
+    rk_col = (rockets < HUD_AMMO_CRIT_ROCKETS)  ? HUD_COL_RED    :
+             (rockets < HUD_AMMO_WARN_ROCKETS)  ? HUD_COL_YELLOW : HUD_COL_NORMAL;
+    ce_col = (cells   < HUD_AMMO_WARN_CELLS)    ? HUD_COL_RED    : HUD_COL_NORMAL;
+
     base_y = base_y + 24;
     base_x = sw - HUD_PADDING - 160;
     HUD_DrawBack(base, '160 12 0');
-    drawstring(base,              strcat("SH:", ftos(shells)),  HUD_FONT_SMALL, HUD_COL_NORMAL, 1);
-    drawstring(base + '40 0 0',   strcat("NL:", ftos(nails)),   HUD_FONT_SMALL, HUD_COL_NORMAL, 1);
-    drawstring(base + '80 0 0',   strcat("RK:", ftos(rockets)), HUD_FONT_SMALL, HUD_COL_NORMAL, 1);
-    drawstring(base + '120 0 0',  strcat("CE:", ftos(cells)),   HUD_FONT_SMALL, HUD_COL_NORMAL, 1);
+    drawstring(base,              strcat("SH:", ftos(shells)),  HUD_FONT_SMALL, sh_col, 1);
+    drawstring(base + '40 0 0',   strcat("NL:", ftos(nails)),   HUD_FONT_SMALL, nl_col, 1);
+    drawstring(base + '80 0 0',   strcat("RK:", ftos(rockets)), HUD_FONT_SMALL, rk_col, 1);
+    drawstring(base + '120 0 0',  strcat("CE:", ftos(cells)),   HUD_FONT_SMALL, ce_col, 1);
 };
 
 // --------------------------------------------------------------------------
@@ -230,7 +246,13 @@ void(float sw) HUD_DrawRoundInfo =
     }
     else if (rstate == RSTATE_INTRO)
     {
-        state_str = "INCOMING!";
+        // Show the live countdown so players know exactly when to brace.
+        float isecs;
+        isecs = getstati(STAT_INTRO_SECS);
+        if (isecs > 0)
+            state_str = strcat("INCOMING!  ", ftos(rint(isecs)), "s");
+        else
+            state_str = "INCOMING!";
         col = HUD_COL_ORANGE;
     }
     else if (rstate == RSTATE_SPAWNING)
@@ -275,7 +297,7 @@ void(float sw) HUD_DrawRoundInfo =
 };
 
 // --------------------------------------------------------------------------
-// Top-right: Zombies remaining (alive + queued)
+// Top-right: Zombies remaining (alive shown separately from still-queued)
 // --------------------------------------------------------------------------
 void(float sw) HUD_DrawZombies =
 {
@@ -288,7 +310,14 @@ void(float sw) HUD_DrawZombies =
     queued = getstati(STAT_ZOMBIES_QUEUED);
     total  = alive + queued;
 
-    s   = strcat("ZOMBIES: ", ftos(total));
+    // When zombies are still spawning, show "5 + 10" so the player knows
+    // how many are already on the map vs still entering.  Once all are
+    // out, show the plain count to keep the display clean.
+    if (queued > 0)
+        s = strcat("ZOMBIES: ", ftos(alive), " + ", ftos(queued));
+    else
+        s = strcat("ZOMBIES: ", ftos(alive));
+
     col = HUD_COL_RED;
     if (total == 0)
         col = HUD_COL_GREEN;
@@ -304,8 +333,8 @@ void(float sw) HUD_DrawZombies =
 void(float sw, float sh) HUD_DrawGameOver =
 {
     float cx, cy;
-    string title, sub, reached, score_str;
-    float rnd, kills, pts;
+    string title, sub, reached, score_str, streak_str;
+    float rnd, kills, pts, best;
 
     // Dark semi-transparent vignette.
     drawfill('0 0 0', sw * '1 0 0' + sh * '0 1 0', '0 0 0', 0.55);
@@ -339,9 +368,19 @@ void(float sw, float sh) HUD_DrawGameOver =
                + (cy + 6) * '0 1 0',
                score_str, HUD_FONT_SMALL, HUD_COL_GREEN, 0.9);
 
+    // Best kill streak achieved — gives the player a personal record to beat.
+    best = getstati(STAT_BEST_STREAK);
+    if (best >= 3)
+    {
+        streak_str = strcat("Best streak: ", ftos(best), " kills");
+        drawstring((cx - strlen(streak_str) * HUD_FONT_SMALL_x * 0.5) * '1 0 0'
+                   + (cy + 18) * '0 1 0',
+                   streak_str, HUD_FONT_SMALL, HUD_COL_YELLOW, 0.9);
+    }
+
     // Sub-line.
     drawstring((cx - strlen(sub) * HUD_FONT_SMALL_x * 0.5) * '1 0 0'
-               + (cy + 22) * '0 1 0',
+               + (cy + (best >= 3 ? 32 : 22)) * '0 1 0',
                sub, HUD_FONT_SMALL, HUD_COL_NORMAL, 0.85);
 };
 
@@ -448,7 +487,11 @@ void() HUD_CheckTransitions =
             if (hud_last_round_state == RSTATE_WAITING
                 || hud_last_round_state == RSTATE_INTERMISSION)
             {
-                HUD_Flash(strcat("ROUND  ", ftos(rnd)), HUD_COL_ORANGE);
+                // Milestone rounds (every 5th) use gold text and a special label.
+                if (rnd > 1 && (rnd % 5) == 0)
+                    HUD_Flash(strcat("ROUND  ", ftos(rnd), "  MILESTONE!"), HUD_COL_YELLOW);
+                else
+                    HUD_Flash(strcat("ROUND  ", ftos(rnd)), HUD_COL_ORANGE);
             }
         }
         else if (rstate == RSTATE_INTERMISSION)
@@ -461,9 +504,44 @@ void() HUD_CheckTransitions =
     else if (rnd != hud_last_round && rstate == RSTATE_INTRO)
     {
         // Round number changed while already in INTRO (e.g. fast restart).
-        HUD_Flash(strcat("ROUND  ", ftos(rnd)), HUD_COL_ORANGE);
+        if (rnd > 1 && (rnd % 5) == 0)
+            HUD_Flash(strcat("ROUND  ", ftos(rnd), "  MILESTONE!"), HUD_COL_YELLOW);
+        else
+            HUD_Flash(strcat("ROUND  ", ftos(rnd)), HUD_COL_ORANGE);
         hud_last_round = rnd;
     }
+};
+
+// --------------------------------------------------------------------------
+// Top-left: Power switch status indicator.
+// Shows "PWR: OFF" (red) or "PWR: ON" (green) so players know whether
+// perks and the mystery box are available yet.
+// --------------------------------------------------------------------------
+void() HUD_DrawPower =
+{
+    float  pwr;
+    string s;
+    vector col;
+    float  lw;
+    vector base;
+
+    pwr = getstati(STAT_POWER);
+
+    if (pwr)
+    {
+        s   = "PWR: ON";
+        col = HUD_COL_GREEN;
+    }
+    else
+    {
+        s   = "PWR: OFF";
+        col = HUD_COL_RED;
+    }
+
+    lw   = strlen(s) * HUD_FONT_SMALL_x;
+    base = HUD_PADDING * '1 0 0' + HUD_PADDING * '0 1 0';
+    HUD_DrawBack(base, lw * '1 0 0' + '0 10 0');
+    drawstring(base, s, HUD_FONT_SMALL, col, 1);
 };
 
 // --------------------------------------------------------------------------
@@ -483,6 +561,7 @@ void(float sw, float sh) HUD_Draw =
     // ---------- Top HUD ----------
     HUD_DrawRoundInfo(sw);
     HUD_DrawZombies(sw);
+    HUD_DrawPower();
 
     // ---------- Bottom HUD ----------
     HUD_DrawHealthArmor(sw, sh);

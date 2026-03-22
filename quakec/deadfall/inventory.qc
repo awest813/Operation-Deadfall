@@ -130,6 +130,9 @@ float(float slotno, float iid) FitsInSlot;
 .float          hud_intermission_secs;   // stat 68 – seconds until next round (INTERMISSION only)
 .float          hud_points;              // stat 69 – this player's currency (ammo_shells)
 .float          hud_streak;             // stat 70 – current kill streak
+.float          hud_best_streak;         // stat 71 – peak kill streak this session
+.float          hud_intro_secs;          // stat 72 – countdown seconds during RSTATE_INTRO
+.float          hud_power;              // stat 73 – 1 when map power switch is active
 
 void(float stnum, float sttype, .float fieldname) clientstatf = #232;
 void() SetupStats =
@@ -166,6 +169,9 @@ void() SetupStats =
 	clientstatf(68, 2, hud_intermission_secs);
 	clientstatf(69, 2, hud_points);
 	clientstatf(70, 2, hud_streak);
+	clientstatf(71, 2, hud_best_streak);
+	clientstatf(72, 2, hud_intro_secs);
+	clientstatf(73, 2, hud_power);
 };
 
 float(entity e, float slotno) ItemInSlot =
