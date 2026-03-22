@@ -65,6 +65,13 @@ float ZOMBIE_STUCK_THRESHOLD  = 8;    // units of movement before zombie is un-s
 float ZOMBIE_STUCK_YAW_BASE   = 45;   // minimum yaw jitter when stuck (degrees)
 float ZOMBIE_STUCK_YAW_RANGE  = 90;   // random yaw range added on top of base (degrees)
 
+// ── Performance throttle globals ─────────────────────────────────────────
+// These server-wide timestamps prevent audio events from piling up when
+// many zombies are active simultaneously (high-round heavy combat).
+// ─────────────────────────────────────────────────────────────────────────
+float zombie_idle_sound_time;  // earliest time any zombie may emit an ambient idle sound
+float zombie_pain_sound_time;  // earliest time any zombie may emit a pain vocalization
+
 //=============================================================================
 
 // Forward declaration — AddStackable is defined later in mod_buy.qc.
@@ -117,8 +124,16 @@ void() zombie_walk17	=[	$walk17,	zombie_walk18	] {ai_walk(0);};
 void() zombie_walk18	=[	$walk18,	zombie_walk19	] {ai_walk(0);};
 void() zombie_walk19	=[	$walk19,	zombie_walk1	] {
 ai_walk(0);
-if (random() < 0.2)
-	sound (self, CHAN_VOICE, "zombie/z_idle.wav", 1, ATTN_IDLE);};
+// Throttle ambient idle calls to at most one across all zombies every 0.75 s.
+// With 24 zombies in the walk cycle this would otherwise fire ~2.7×/sec.
+if (zombie_idle_sound_time < time)
+{
+	if (random() < 0.2)
+	{
+		sound (self, CHAN_VOICE, "zombie/z_idle.wav", 1, ATTN_IDLE);
+		zombie_idle_sound_time = time + 0.75;
+	}
+}};
 
 void() zombie_run1		=[	$run1,		zombie_run2	] {
 // Stuck recovery: if the zombie hasn't moved since the last run cycle and
@@ -150,11 +165,27 @@ void() zombie_run16		=[	$run16,		zombie_run17	] {ai_run(8);};
 void() zombie_run17		=[	$run17,		zombie_run18	] {ai_run(7);};
 void() zombie_run18		=[	$run18,		zombie_run1	] {
 ai_run(8);
-if (random() < 0.2)
-	sound (self, CHAN_VOICE, "zombie/z_idle.wav", 1, ATTN_IDLE);
-if (random() > 0.8)
-	sound (self, CHAN_VOICE, "zombie/z_idle1.wav", 1, ATTN_IDLE);
-};
+// Throttle ambient idle calls to at most one across all zombies every 0.75 s.
+// With 24 zombies in the run cycle, the original two independent rolls would
+// fire roughly 5-6 idle sounds per second; the throttle keeps it to ~1/sec.
+// Each roll is checked independently (matching original probability semantics),
+// but the throttle gate prevents both from firing in the same window.
+if (zombie_idle_sound_time < time)
+{
+	if (random() < 0.2)
+	{
+		sound (self, CHAN_VOICE, "zombie/z_idle.wav", 1, ATTN_IDLE);
+		zombie_idle_sound_time = time + 0.75;
+	}
+}
+if (zombie_idle_sound_time < time)
+{
+	if (random() > 0.8)
+	{
+		sound (self, CHAN_VOICE, "zombie/z_idle1.wav", 1, ATTN_IDLE);
+		zombie_idle_sound_time = time + 0.75;
+	}
+}};
 
 /*
 =============================================================================
@@ -351,7 +382,14 @@ PAIN
 =============================================================================
 */
 
-void() zombie_paina1	=[	$paina1,	zombie_paina2	] {sound (self, CHAN_VOICE, "zombie/z_pain.wav", 1, ATTN_NORM);};
+void() zombie_paina1	=[	$paina1,	zombie_paina2	] {
+// Throttle pain vocalisations: cap at ~8 per second across all zombies to
+// avoid audio pile-ups when a burst-fire weapon hits multiple zombies at once.
+if (zombie_pain_sound_time < time)
+{
+	sound (self, CHAN_VOICE, "zombie/z_pain.wav", 1, ATTN_NORM);
+	zombie_pain_sound_time = time + 0.12;
+}};
 void() zombie_paina2	=[	$paina2,	zombie_paina3	] {ai_painforward(3);};
 void() zombie_paina3	=[	$paina3,	zombie_paina4	] {ai_painforward(1);};
 void() zombie_paina4	=[	$paina4,	zombie_paina5	] {ai_pain(1);};
@@ -364,7 +402,12 @@ void() zombie_paina10	=[	$paina10,	zombie_paina11	] {};
 void() zombie_paina11	=[	$paina11,	zombie_paina12	] {};
 void() zombie_paina12	=[	$paina12,	zombie_run1		] {};
 
-void() zombie_painb1	=[	$painb1,	zombie_painb2	] {sound (self, CHAN_VOICE, "zombie/z_pain1.wav", 1, ATTN_NORM);};
+void() zombie_painb1	=[	$painb1,	zombie_painb2	] {
+if (zombie_pain_sound_time < time)
+{
+	sound (self, CHAN_VOICE, "zombie/z_pain1.wav", 1, ATTN_NORM);
+	zombie_pain_sound_time = time + 0.12;
+}};
 void() zombie_painb2	=[	$painb2,	zombie_painb3	] {ai_pain(2);};
 void() zombie_painb3	=[	$painb3,	zombie_painb4	] {ai_pain(8);};
 void() zombie_painb4	=[	$painb4,	zombie_painb5	] {ai_pain(6);};
@@ -393,7 +436,12 @@ void() zombie_painb26	=[	$painb26,	zombie_painb27	] {};
 void() zombie_painb27	=[	$painb27,	zombie_painb28	] {};
 void() zombie_painb28	=[	$painb28,	zombie_run1		] {};
 
-void() zombie_painc1	=[	$painc1,	zombie_painc2	] {sound (self, CHAN_VOICE, "zombie/z_pain1.wav", 1, ATTN_NORM);};
+void() zombie_painc1	=[	$painc1,	zombie_painc2	] {
+if (zombie_pain_sound_time < time)
+{
+	sound (self, CHAN_VOICE, "zombie/z_pain1.wav", 1, ATTN_NORM);
+	zombie_pain_sound_time = time + 0.12;
+}};
 void() zombie_painc2	=[	$painc2,	zombie_painc3	] {};
 void() zombie_painc3	=[	$painc3,	zombie_painc4	] {ai_pain(3);};
 void() zombie_painc4	=[	$painc4,	zombie_painc5	] {ai_pain(1);};
@@ -412,7 +460,12 @@ void() zombie_painc16	=[	$painc16,	zombie_painc17	] {};
 void() zombie_painc17	=[	$painc17,	zombie_painc18	] {};
 void() zombie_painc18	=[	$painc18,	zombie_run1	] {};
 
-void() zombie_paind1	=[	$paind1,	zombie_paind2	] {sound (self, CHAN_VOICE, "zombie/z_pain.wav", 1, ATTN_NORM);};
+void() zombie_paind1	=[	$paind1,	zombie_paind2	] {
+if (zombie_pain_sound_time < time)
+{
+	sound (self, CHAN_VOICE, "zombie/z_pain.wav", 1, ATTN_NORM);
+	zombie_pain_sound_time = time + 0.12;
+}};
 void() zombie_paind2	=[	$paind2,	zombie_paind3	] {};
 void() zombie_paind3	=[	$paind3,	zombie_paind4	] {};
 void() zombie_paind4	=[	$paind4,	zombie_paind5	] {};
@@ -427,7 +480,11 @@ void() zombie_paind12	=[	$paind12,	zombie_paind13	] {};
 void() zombie_paind13	=[	$paind13,	zombie_run1	] {};
 
 void() zombie_paine1	=[	$paine1,	zombie_paine2	] {
-sound (self, CHAN_VOICE, "zombie/z_pain.wav", 1, ATTN_NORM);
+if (zombie_pain_sound_time < time)
+{
+	sound (self, CHAN_VOICE, "zombie/z_pain.wav", 1, ATTN_NORM);
+	zombie_pain_sound_time = time + 0.12;
+}
 self.health = 60;
 };
 void() zombie_paine2	=[	$paine2,	zombie_paine3	] {ai_pain(8);};
@@ -647,7 +704,10 @@ void (entity stuff) spawn_zombie =
 	// Atmospheric presentation: give wave ghouls a dim ambient glow and
 	// emit a teleport-ring particle burst at the spawn origin so nearby
 	// players get a visible + audio warning of the new enemy.
-	self.effects = EF_DIMLIGHT;
+	// On Low preset the dynamic lights are suppressed to reduce per-frame
+	// rendering cost (24 active ghouls × 1 dynamic light each is significant).
+	if (perf_preset >= PERF_MEDIUM)
+		self.effects = EF_DIMLIGHT;
 	WriteByte (MSG_MULTICAST, SVC_TEMPENTITY);
 	WriteByte (MSG_MULTICAST, TE_TELEPORT);
 	WriteCoord (MSG_MULTICAST, self.origin_x);

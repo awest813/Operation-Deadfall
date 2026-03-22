@@ -378,6 +378,17 @@ void() worldspawn =
 	lastspawn = world;
 	InitBodyQue ();
 	coop = !cvar("deathmatch");
+
+	// Read performance preset before create_referees() so the round manager
+	// and all subsystems start with the correct settings.
+	// Server operators can tune this via: set od_perf_preset 0|1|2
+	perf_preset = cvar("od_perf_preset");
+	if (perf_preset < PERF_LOW || perf_preset > PERF_HIGH)
+		perf_preset = PERF_MEDIUM;
+	dprint("worldspawn: perf_preset=");
+	dprint(ftos(perf_preset));
+	dprint(" (0=Low 1=Medium 2=High)\n");
+
 	create_referees();
 	SetupStats();
 

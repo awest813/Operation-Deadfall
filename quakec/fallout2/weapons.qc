@@ -44,6 +44,9 @@ void () DropAmmo;
 // Fraction of damage value used to scale TE_BLOOD particle count in SpawnBlood().
 // damage * BLOOD_PARTICLE_SCALE, clamped 1–8 (e.g. knife=18 → 2, Power Axe=100 → 8).
 #define BLOOD_PARTICLE_SCALE 0.15
+// Hard ceiling on TE_BLOOD particle count for both SpawnBlood() and Multi_Finish().
+// Keeps multi-pellet shotgun blasts from exceeding expected byte ranges.
+#define MAX_BLOOD_PARTICLES 8
 
 
 // called by worldspawn
@@ -204,7 +207,7 @@ void(vector org, float damage) SpawnBlood =
 	// Scale particle count with the incoming damage for more impactful hits.
 	count = floor(damage * BLOOD_PARTICLE_SCALE);
 	if (count < 1)  count = 1;
-	if (count > 8)  count = 8;
+	if (count > MAX_BLOOD_PARTICLES)  count = MAX_BLOOD_PARTICLES;
 	WriteByte (MSG_MULTICAST, SVC_TEMPENTITY);
 	WriteByte (MSG_MULTICAST, TE_BLOOD);
 	WriteByte (MSG_MULTICAST, count);
@@ -291,6 +294,10 @@ void() Multi_Finish =
 
 	if (blood_count)
 	{
+		// Cap blood particle count to keep network/rendering cost bounded.
+		// A single shotgun blast can register 7+ pellet hits; without the cap
+		// blood_count would exceed the TE_BLOOD byte range on dense shots.
+		if (blood_count > MAX_BLOOD_PARTICLES) blood_count = MAX_BLOOD_PARTICLES;
 		WriteByte (MSG_MULTICAST, SVC_TEMPENTITY);
 		WriteByte (MSG_MULTICAST, TE_BLOOD);
 		WriteByte (MSG_MULTICAST, blood_count);
