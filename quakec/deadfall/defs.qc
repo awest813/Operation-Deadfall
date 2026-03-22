@@ -520,11 +520,13 @@ float           power_on;            // 1 once the map power switch has been act
 // ---------------------------------------------------------------------------
 // Performance preset — controls quality/cost tradeoffs at runtime.
 // Set od_perf_preset on the server (e.g. "set od_perf_preset 0" in server.cfg).
-//   0 = Low    — reduced zombie cap (12), no per-zombie dynamic lights,
-//                fewer blood particles. Best for older/low-end hardware.
-//   1 = Medium — default balanced settings; unchanged gameplay feel.
-//   2 = High   — maximum concurrent zombies (24), full glow effects,
-//                dense particles. For high-end hardware with headroom.
+//   0 = Low    — zombie cap 12, no dynamic lights, 1 gib/kill (lifetime 5 s),
+//                head entity cleaned up in 5 s. Best for low-end hardware.
+//   1 = Medium — zombie cap 24, no dynamic lights, 3 gibs/kill (lifetime 8 s),
+//                head entity cleaned up in 10 s. Recommended default.
+//   2 = High   — zombie cap 24, dynamic lights (EF_DIMLIGHT), 3 gibs/kill
+//                (lifetime 10-20 s), head entity cleaned up in 15 s.
+//                For high-end hardware with rendering headroom.
 // Read in worldspawn (world.qc) before create_referees() initialises the
 // round manager so all subsystems see the correct preset from round 1.
 // ---------------------------------------------------------------------------

@@ -1018,7 +1018,14 @@ void(string gibname, float dm) ThrowGib =
 //	new.avelocity_z = random()*600;
 	new.think = SUB_Remove;
 	new.ltime = time;
-	new.nextthink = time + 10 + random()*10;
+	// Preset-scaled lifetime: shorter on Low to free entity slots faster under
+	// heavy load (many concurrent zombies dying in a burst-fire fight).
+	if (perf_preset == PERF_LOW)
+		new.nextthink = time + 5;
+	else if (perf_preset == PERF_MEDIUM)
+		new.nextthink = time + 8;
+	else
+		new.nextthink = time + 10 + random()*10;
 	new.frame = 0;
 	new.flags = 0;
 };
@@ -1056,7 +1063,13 @@ void (string gibname, float dm) ThrowGib2 =
 //	new.avelocity_z = random()*600;
 	new.think = SUB_Remove;
 	new.ltime = time;
-	new.nextthink = time + 10 + random()*10;
+	// Match ThrowGib preset-scaled lifetime for consistency.
+	if (perf_preset == PERF_LOW)
+		new.nextthink = time + 5;
+	else if (perf_preset == PERF_MEDIUM)
+		new.nextthink = time + 8;
+	else
+		new.nextthink = time + 10 + random()*10;
 	new.frame = 0;
 	new.flags = 0;
 };

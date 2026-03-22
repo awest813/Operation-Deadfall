@@ -68,11 +68,46 @@ The server cvar od_perf_preset (0/1/2) is read in worldspawn and stored in
 the global perf_preset (PERF_LOW=0 / PERF_MEDIUM=1 / PERF_HIGH=2).
 
   Low  (0) — ROUND_MAX_CONCURRENT = 12  (halved zombie AI budget),
-              no per-zombie dynamic lights, reduced blood particles.
+              no per-zombie dynamic lights,
+              1 gib per kill (instead of 3), gib/head lifetime 5 s.
              Best for older hardware or high player-count servers.
-  Med  (1) — ROUND_MAX_CONCURRENT = 24  (default, unchanged behaviour).
+  Med  (1) — ROUND_MAX_CONCURRENT = 24  (default, unchanged behaviour),
+              3 gibs per kill, head lifetime 10 s, gib lifetime 8 s.
   High (2) — ROUND_MAX_CONCURRENT = 24  with full glow effects and
-             maximum particle density.  Use on high-end machines.
+             3 gibs per kill, head lifetime 15 s, gib lifetime 10-20 s.
+             Use on high-end machines.
+
+TOP PERFORMANCE BOTTLENECKS & FIXES
+───────────────────────────────────────────────────────────────────────────
+1. [FIXED] ThrowHead entity leak — zombie head entities had nextthink=-1
+   (never expired), permanently consuming entity slots every round.
+   Fix: schedule SUB_Remove after 5/10/15 s based on preset (zombie.qc).
+
+2. [FIXED] Gib entity accumulation — 3 bounce-physics entities × 24 kills
+   per round × 10-20 s lifetime = hundreds of live gib entities at high rounds.
+   Fix: Low preset spawns 1 gib per kill instead of 3 (zombie.qc);
+        all presets use shorter lifetimes: Low=5s, Med=8s, High=10-20s
+        (ThrowGib/ThrowGib2 in player.qc; head entity in zombie.qc).
+
+3. [FIXED] ai_run() traceline waste — visible() fires a full traceline every
+   monster think frame regardless of distance.  At RANGE_FAR (>1000 units)
+   the result is never used for attack decisions.
+   Fix: range() checked first; visible() skipped for RANGE_FAR enemies (ai.qc).
+
+4. [EXISTING] Concurrent cap — ROUND_MAX_CONCURRENT limits active AI count
+   (12 on Low, 24 on Med/High).
+
+5. [EXISTING] Dynamic lights — EF_DIMLIGHT suppressed on Low preset.
+
+6. [EXISTING] Audio throttle — zombie idle/pain sounds server-rate-limited
+   (zombie_idle_sound_time / zombie_pain_sound_time globals, zombie.qc).
+
+REMAINING HOTSPOTS (not yet addressed)
+───────────────────────────────────────────────────────────────────────────
+• findradius() in spawn_zombie — small per-spawn cost (0.6 s+ interval).
+• RM_LivePlayerCount() find() loop — runs at 1 s intervals, acceptable.
+• walkmove / movetogoal C-side path cost scales with entity count at very
+  high rounds (25+) on maps with complex geometry.
 
 ==============================================================================
 */
