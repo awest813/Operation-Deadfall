@@ -72,6 +72,145 @@ void(vector pos, vector sz) HUD_DrawBack =
 };
 
 // --------------------------------------------------------------------------
+// Helpers: weapon/ammo descriptors for the HUD ammo panel.
+// --------------------------------------------------------------------------
+float(float iid) HUD_UsesMagazineAmmo =
+{
+    if (iid == IID_NONE
+        || iid == IID_WP_TOOLKIT
+        || iid == IID_WP_KNIFE
+        || iid == IID_WP_AXE
+        || iid == IID_WP_VIBROBLADE
+        || iid == IID_WP_POWERAXE)
+        return FALSE;
+
+    return TRUE;
+};
+
+string(float iid) HUD_WeaponLabel =
+{
+    if (iid == IID_NONE)                return "Fists";
+    if (iid == IID_WP_TOOLKIT)          return "Toolkit";
+    if (iid == IID_WP_KNIFE)            return "Knife";
+    if (iid == IID_WP_AXE)              return "Axe";
+    if (iid == IID_WP_VIBROBLADE)       return "Vibroblade";
+    if (iid == IID_WP_POWERAXE)         return "Power Axe";
+    if (iid == IID_WP_USP)              return "1911";
+    if (iid == IID_WP_DEAGLE)           return "Deagle";
+    if (iid == IID_WP_NEEDLER)          return "Needler";
+    if (iid == IID_WP_ALIENBLASTER)     return "Vril Pistol";
+    if (iid == IID_WP_PIPERIFLE)        return "Improvised Rifle";
+    if (iid == IID_WP_WINCHESTER)       return "Winchester";
+    if (iid == IID_WP_MOSSBERG)         return "Mossberg";
+    if (iid == IID_WP_JACKHAMMER)       return "Jackhammer";
+    if (iid == IID_WP_MP9)              return "MP9";
+    if (iid == IID_WP_MP7)              return "Grease Gun";
+    if (iid == IID_WP_RANGEMASTER)      return "Rangemaster";
+    if (iid == IID_WP_AK112)            return "AK-112";
+    if (iid == IID_WP_AK74)             return "AK-74";
+    if (iid == IID_WP_DKS1)             return "DKS-1";
+    if (iid == IID_WP_MOONLIGHT)        return "Moonlight";
+    if (iid == IID_WP_SA80)             return "SA-80";
+    if (iid == IID_WP_GAUSERIFLE)       return "Gauss Rifle";
+    if (iid == IID_WP_PULSERIFLE)       return "Laser Carbine";
+    if (iid == IID_WP_FNFAL)            return "FN FAL";
+    if (iid == IID_WP_ROCKETLAUNCHER)   return "Rocket Launcher";
+    if (iid == IID_GREN_FRAG)           return "Frag Grenade";
+    if (iid == IID_GREN_EMP)            return "EMP Grenade";
+    if (iid == IID_GREN_SMOKE)          return "Smoke Grenade";
+    if (iid == IID_GREN_FLASH)          return "Flash Grenade";
+
+    return "Unknown";
+};
+
+string(float iid) HUD_AmmoFamilyLabel =
+{
+    if (iid == IID_WP_WINCHESTER
+        || iid == IID_WP_MOSSBERG
+        || iid == IID_WP_JACKHAMMER)
+        return "12G";
+
+    if (iid == IID_WP_NEEDLER
+        || iid == IID_WP_MP9
+        || iid == IID_WP_MP7
+        || iid == IID_WP_USP
+        || iid == IID_WP_PIPERIFLE)
+        return "10MM";
+
+    if (iid == IID_WP_DEAGLE)
+        return ".44";
+
+    if (iid == IID_WP_RANGEMASTER
+        || iid == IID_WP_MOONLIGHT
+        || iid == IID_WP_SA80)
+        return "5.56";
+
+    if (iid == IID_WP_AK112
+        || iid == IID_WP_AK74)
+        return "5MM";
+
+    if (iid == IID_WP_DKS1
+        || iid == IID_WP_FNFAL)
+        return "7.62";
+
+    if (iid == IID_WP_GAUSERIFLE)
+        return "2MM";
+
+    if (iid == IID_WP_ALIENBLASTER
+        || iid == IID_WP_PULSERIFLE)
+        return "CELL";
+
+    if (iid == IID_WP_ROCKETLAUNCHER)
+        return "RKT";
+
+    if (iid == IID_GREN_FRAG
+        || iid == IID_GREN_EMP
+        || iid == IID_GREN_SMOKE
+        || iid == IID_GREN_FLASH)
+        return "GREN";
+
+    if (iid == IID_NONE
+        || iid == IID_WP_TOOLKIT
+        || iid == IID_WP_KNIFE
+        || iid == IID_WP_AXE
+        || iid == IID_WP_VIBROBLADE
+        || iid == IID_WP_POWERAXE)
+        return "MELEE";
+
+    return "AMMO";
+};
+
+vector(float iid, float shells, float nails, float rockets, float cells) HUD_ActiveAmmoColor =
+{
+    if (iid == IID_WP_WINCHESTER
+        || iid == IID_WP_MOSSBERG
+        || iid == IID_WP_JACKHAMMER)
+        return (shells < HUD_AMMO_WARN_SHELLS) ? HUD_COL_RED : HUD_COL_GREEN;
+
+    if (iid == IID_WP_ROCKETLAUNCHER)
+        return (rockets < HUD_AMMO_CRIT_ROCKETS) ? HUD_COL_RED :
+               (rockets < HUD_AMMO_WARN_ROCKETS) ? HUD_COL_YELLOW : HUD_COL_GREEN;
+
+    if (iid == IID_WP_ALIENBLASTER
+        || iid == IID_WP_PULSERIFLE)
+        return (cells < HUD_AMMO_WARN_CELLS) ? HUD_COL_RED : HUD_COL_GREEN;
+
+    if (iid == IID_NONE
+        || iid == IID_WP_TOOLKIT
+        || iid == IID_WP_KNIFE
+        || iid == IID_WP_AXE
+        || iid == IID_WP_VIBROBLADE
+        || iid == IID_WP_POWERAXE
+        || iid == IID_GREN_FRAG
+        || iid == IID_GREN_EMP
+        || iid == IID_GREN_SMOKE
+        || iid == IID_GREN_FLASH)
+        return HUD_COL_BLUE;
+
+    return (nails < HUD_AMMO_WARN_NAILS) ? HUD_COL_RED : HUD_COL_GREEN;
+};
+
+// --------------------------------------------------------------------------
 // Bottom-left: Health and Armor
 // --------------------------------------------------------------------------
 void(float sw, float sh) HUD_DrawHealthArmor =
@@ -116,27 +255,43 @@ void(float sw, float sh) HUD_DrawHealthArmor =
 // --------------------------------------------------------------------------
 void(float sw, float sh) HUD_DrawAmmo =
 {
-    float ammo, shells, nails, rockets, cells;
+    float ammo, shells, nails, rockets, cells, cur_iid;
     vector base;
-    vector ammo_col;
+    vector ammo_col, active_col;
     vector sh_col, nl_col, rk_col, ce_col;
-    string s;
+    string s, weapon_name, ammo_family;
 
     ammo    = getstati(STAT_AMMO);
     shells  = getstati(STAT_SHELLS);
     nails   = getstati(STAT_NAILS);
     rockets = getstati(STAT_ROCKETS);
     cells   = getstati(STAT_CELLS);
+    cur_iid = getstati(STAT_CURRENT_WEAPON);
 
-    // Current-weapon ammo — big display.
-    s = ftos(ammo);
-    base = (sw - HUD_PADDING - 80) * '1 0 0' + (sh - HUD_PADDING - 24) * '0 1 0';
+    // Current-weapon ammo — big display with contextual weapon/ammo labels.
+    if (HUD_UsesMagazineAmmo(cur_iid))
+        s = ftos(ammo);
+    else
+        s = "--";
+
+    weapon_name = HUD_WeaponLabel(cur_iid);
+    ammo_family = HUD_AmmoFamilyLabel(cur_iid);
+
+    base = (sw - HUD_PADDING - 80) * '1 0 0' + (sh - HUD_PADDING - 48) * '0 1 0';
     HUD_DrawBack(base, '80 22 0');
     drawstring(base, "AMMO  ", HUD_FONT_SMALL,  HUD_COL_BLUE,   1);
     ammo_col = HUD_COL_NORMAL;
-    if (ammo <= 10)
+    if (HUD_UsesMagazineAmmo(cur_iid) && ammo <= 10)
         ammo_col = HUD_COL_RED;
     drawstring(base + '36 0 0', s, HUD_FONT_LARGE, ammo_col, 1);
+
+    base_x = sw - HUD_PADDING - 160;
+    base_y = base_y + 24;
+    HUD_DrawBack(base, '160 12 0');
+    drawstring(base, weapon_name, HUD_FONT_SMALL, HUD_COL_NORMAL, 1);
+    active_col = HUD_ActiveAmmoColor(cur_iid, shells, nails, rockets, cells);
+    drawstring(base + (160 - strlen(ammo_family) * HUD_FONT_SMALL_x) * '1 0 0',
+               ammo_family, HUD_FONT_SMALL, active_col, 1);
 
     // Reserve ammo — smaller row.  Colour-code reserves when critically low
     // so the player gets an at-a-glance warning before the next reload.
@@ -146,8 +301,17 @@ void(float sw, float sh) HUD_DrawAmmo =
              (rockets < HUD_AMMO_WARN_ROCKETS)  ? HUD_COL_YELLOW : HUD_COL_NORMAL;
     ce_col = (cells   < HUD_AMMO_WARN_CELLS)    ? HUD_COL_RED    : HUD_COL_NORMAL;
 
-    base_y = base_y + 24;
-    base_x = sw - HUD_PADDING - 160;
+    // Highlight the reserve pool that matters to the currently equipped weapon.
+    if (ammo_family == "12G")
+        sh_col = active_col;
+    else if (ammo_family == "RKT")
+        rk_col = active_col;
+    else if (ammo_family == "CELL")
+        ce_col = active_col;
+    else if (ammo_family != "MELEE" && ammo_family != "GREN")
+        nl_col = active_col;
+
+    base_y = base_y + 14;
     HUD_DrawBack(base, '160 12 0');
     drawstring(base,              strcat("SH:", ftos(shells)),  HUD_FONT_SMALL, sh_col, 1);
     drawstring(base + '40 0 0',   strcat("NL:", ftos(nails)),   HUD_FONT_SMALL, nl_col, 1);

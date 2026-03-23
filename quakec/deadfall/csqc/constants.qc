@@ -81,6 +81,7 @@ float INPUT_MOUSEMOVE = 2;
 #define STAT_DEATHS             74   // this player's death count this session
 #define STAT_LIVE_PLAYERS       75   // number of live players currently in the game
 #define STAT_ROUND_TOTAL        76   // total zombies queued at the start of this round
+#define STAT_CURRENT_WEAPON     77   // exact IID of the currently equipped item/weapon
 
 // Round state constants (must match round_manager.qc values).
 #define RSTATE_WAITING      0
@@ -89,6 +90,38 @@ float INPUT_MOUSEMOVE = 2;
 #define RSTATE_ACTIVE       3
 #define RSTATE_INTERMISSION 4
 #define RSTATE_GAMEOVER     5
+
+// Deadfall item IDs used by the CSQC HUD for weapon/ammo context.
+#define IID_NONE                0
+#define IID_WP_TOOLKIT        400
+#define IID_WP_KNIFE          401
+#define IID_WP_AXE            402
+#define IID_WP_VIBROBLADE     403
+#define IID_WP_POWERAXE       404
+#define IID_WP_USP            405
+#define IID_WP_DEAGLE         406
+#define IID_WP_NEEDLER        407
+#define IID_WP_ALIENBLASTER   408
+#define IID_WP_PIPERIFLE      409
+#define IID_WP_WINCHESTER     410
+#define IID_WP_MOSSBERG       411
+#define IID_WP_JACKHAMMER     412
+#define IID_WP_MP9            413
+#define IID_WP_MP7            414
+#define IID_WP_RANGEMASTER    415
+#define IID_WP_AK112          416
+#define IID_WP_AK74           417
+#define IID_WP_DKS1           418
+#define IID_WP_MOONLIGHT      419
+#define IID_WP_SA80           420
+#define IID_WP_GAUSERIFLE     421
+#define IID_WP_PULSERIFLE     422
+#define IID_WP_FNFAL          423
+#define IID_WP_ROCKETLAUNCHER 430
+#define IID_GREN_FRAG         101
+#define IID_GREN_EMP          102
+#define IID_GREN_SMOKE        103
+#define IID_GREN_FLASH        104
 
 
 #define FL_ONGROUND 1
@@ -128,4 +161,3 @@ enumflags {
 	RF_ADDATIVE,
 	RF_USEAXIS
 };
-

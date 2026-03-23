@@ -1727,6 +1727,7 @@ void() PlayerPostThink =
 	self.hud_power          = power_on;
 	self.hud_deaths         = self.dead;
 	self.hud_round_total    = zombies_round_total;
+	self.hud_current_iid    = ToIID(ItemInSlot(self, self.current_slot));
 	// Live player count — iterate all players once per tick.
 	{
 		local entity lp;
