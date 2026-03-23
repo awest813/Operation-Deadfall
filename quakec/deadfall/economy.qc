@@ -130,11 +130,11 @@ float(float streak) EC_StreakReward =
     if (streak == 3)
         return floor(pts * 0.5);
     if (streak == 5)
-        return pts;
+        return floor(pts);
     if (streak == 10)
-        return pts * 2;
+        return floor(pts * 2);
     if (streak == 20)
-        return pts * 4;
+        return floor(pts * 4);
     return 0;
 };
 
