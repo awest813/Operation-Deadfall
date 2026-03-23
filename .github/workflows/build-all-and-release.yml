@@ -144,7 +144,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pc-nzp-win32
-          path: ./engine/release/nzportable-sdl.exe
+          path: |
+            ./engine/release/nzportable-sdl.exe
+            ./engine/release/SDL2.dll
   Compile-Windows32-noSDL2:
     runs-on: ubuntu-latest
     container:
@@ -176,7 +178,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pc-nzp-win64
-          path: ./engine/release/nzportable-sdl64.exe
+          path: |
+            ./engine/release/nzportable-sdl64.exe
+            ./engine/release/SDL2.dll
   Compile-Windows64-noSDL2:
     runs-on: ubuntu-latest
     container:

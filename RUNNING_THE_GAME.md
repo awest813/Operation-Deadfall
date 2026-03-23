@@ -73,8 +73,12 @@ nzportable-sdl64.exe
 ```
 
 > **SDL2.dll note:** The SDL2 build requires `SDL2.dll` in the same folder as the `.exe`. It is
-> included in the release ZIP archives. If you built from source you can copy it from your SDL2
-> installation or from the `engine/libs-win64_SDL2/` directory that `make makelibs` creates.
+> included in the release ZIP archives. If you built from source, `make makelibs` downloads the
+> MinGW SDL2 package; copy `SDL2.dll` from
+> `engine/libs-x86_64-w64-mingw32/SDL2-2.30.7/x86_64-w64-mingw32/bin/SDL2.dll`
+> (win64) or `engine/libs-i686-w64-mingw32/SDL2-2.30.7/i686-w64-mingw32/bin/SDL2.dll` (win32)
+> to the same directory as the `.exe`. The top-level `build.bat` and `build.sh` do this
+> automatically.
 
 ### Dedicated server
 

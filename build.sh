@@ -105,6 +105,19 @@ case "$FTE_TARGET" in
         echo ""
         echo "--> (SDL2 Windows link-order workaround) re-running make m-rel..."
         make m-rel FTE_TARGET="$FTE_TARGET" FTE_CONFIG=nzportable -j"$JOBS"
+
+        # Copy SDL2.dll next to the exe so the game is immediately runnable on Windows.
+        if [[ "$FTE_TARGET" == "win64_SDL2" ]]; then
+            SDL2_DLL="libs-x86_64-w64-mingw32/SDL2-2.30.7/x86_64-w64-mingw32/bin/SDL2.dll"
+        else
+            SDL2_DLL="libs-i686-w64-mingw32/SDL2-2.30.7/i686-w64-mingw32/bin/SDL2.dll"
+        fi
+        if [[ -f "$SDL2_DLL" ]]; then
+            echo "--> Copying SDL2.dll to release/"
+            cp "$SDL2_DLL" release/
+        else
+            echo "WARNING: SDL2.dll not found at $SDL2_DLL – users will need to supply it manually." >&2
+        fi
         ;;
 esac
 

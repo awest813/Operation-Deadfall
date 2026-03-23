@@ -123,9 +123,14 @@ make makelibs FTE_TARGET=win64_SDL2
 make m-rel FTE_TARGET=win64_SDL2 FTE_CONFIG=nzportable -j$(nproc)
 # Running make a second time works around an SDL2 link-order issue:
 make m-rel FTE_TARGET=win64_SDL2 FTE_CONFIG=nzportable -j$(nproc)
+# Copy SDL2.dll next to the exe (required to run the game on Windows):
+cp libs-x86_64-w64-mingw32/SDL2-2.30.7/x86_64-w64-mingw32/bin/SDL2.dll release/
 ```
 
-Output: `engine/release/nzportable-sdl64.exe`
+Output: `engine/release/nzportable-sdl64.exe` + `engine/release/SDL2.dll`
+
+> **Tip:** The top-level `./build.sh --target win64` script performs all of the above steps
+> automatically, including copying `SDL2.dll`.
 
 For 32-bit Windows replace `win64_SDL2` with `win32_SDL2` (or `win64` / `win32` for no-SDL builds).
 
