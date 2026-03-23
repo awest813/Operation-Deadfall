@@ -1,6 +1,6 @@
 COMMON_OBJS=comprout.o hash.o qcc_cmdlib.o qcd_main.o
 QCC_OBJS=qccmain.o qcc_pr_comp.o qcc_pr_lex.o packager.o
-VM_OBJS=pr_exec.o pr_edict.o pr_multi.o initlib.o qcdecomp.o
+VM_OBJS=pr_exec.o pr_edict.o pr_multi.o initlib.o qcdecomp.o decomp.o
 GTKGUI_OBJS=qcc_gtk.o qccguistuff.o
 WIN32GUI_OBJS=qccgui.o qccguistuff.o packager.o
 TUI_OBJS=qcctui.o
@@ -48,8 +48,8 @@ nocyg:
 win:
 	$(MAKE) USEGUI_CFLAGS="-DUSEGUI -DQCCONLY" R_win
 
-R_qcc: $(QCC_OBJS) $(COMMON_OBJS) $(TUI_OBJS)
-	$(CC) $(BASE_CFLAGS) -o fteqcc.bin -O3 $(QCC_OBJS) $(TUI_OBJS) $(COMMON_OBJS) $(BASE_LDFLAGS) -lm
+R_qcc: $(QCC_OBJS) $(COMMON_OBJS) $(TUI_OBJS) decomp.o
+	$(CC) $(BASE_CFLAGS) -o fteqcc.bin -O3 $(QCC_OBJS) $(TUI_OBJS) $(COMMON_OBJS) decomp.o $(BASE_LDFLAGS) -lm
 qcc:
 	$(MAKE) USEGUI_CFLAGS="" R_qcc
 
