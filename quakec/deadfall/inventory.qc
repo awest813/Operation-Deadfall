@@ -136,6 +136,7 @@ float(float slotno, float iid) FitsInSlot;
 .float          hud_deaths;             // stat 74 – this player's death count this session
 .float          hud_live_players;       // stat 75 – number of live players currently in the game
 .float          hud_round_total;        // stat 76 – total zombies queued at round start
+.float          hud_current_iid;        // stat 77 – exact IID of the currently equipped item/weapon
 
 void(float stnum, float sttype, .float fieldname) clientstatf = #232;
 void() SetupStats =
@@ -178,6 +179,7 @@ void() SetupStats =
 	clientstatf(74, 2, hud_deaths);
 	clientstatf(75, 2, hud_live_players);
 	clientstatf(76, 2, hud_round_total);
+	clientstatf(77, 2, hud_current_iid);
 };
 
 float(entity e, float slotno) ItemInSlot =
