@@ -9,6 +9,14 @@ void(entity stuff) spawn_zombie;
 void() GameControl;
 void() VoteBoy;
 
+void() VoteBoy =
+{
+	// Deadfall currently does not use the old vote controller logic.
+	// Keep the thinker alive as a harmless no-op so the QC module links.
+	self.nextthink = time + 1;
+	self.think = VoteBoy;
+};
+
 void () create_referees =
 {
 	newmis = spawn ();
@@ -769,5 +777,4 @@ void(entity ent) CopyToBodyQue =
 	setsize (bodyque_head, ent.mins, ent.maxs);
 	bodyque_head = bodyque_head.owner;
 };
-
 
