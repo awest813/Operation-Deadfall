@@ -267,6 +267,9 @@ float(float r) RT_SpawnInterval =
 // ---------------------------------------------------------------------------
 
 // Return the number of currently alive players.
+// Only counts players who have selected a class (class > 0); spectators
+// waiting at the class-selection menu are excluded so the round does not
+// start or end prematurely while testers are still choosing their loadout.
 float() RM_LivePlayerCount =
 {
     local entity te;
@@ -276,7 +279,7 @@ float() RM_LivePlayerCount =
     te = find(world, classname, "player");
     while (te)
     {
-        if (te.health > 0)
+        if (te.health > 0 && te.class > 0)
             count = count + 1;
         te = find(te, classname, "player");
     }
@@ -600,7 +603,7 @@ void() RoundManager_Think =
             rp = find(world, classname, "player");
             while (rp)
             {
-                if (rp.health > 0)
+                if (rp.health > 0 && rp.class > 0)
                 {
                     EC_GivePoints(rp, clear_bonus);
                     sprint(rp, PRINT_HIGH, strcat("^3ROUND CLEAR BONUS: ^2+", ftos(clear_bonus), " pts\n"));
