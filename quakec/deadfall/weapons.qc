@@ -2885,7 +2885,7 @@ void () DisplayMenu =
 		if (self.class == 2)
 			centerprint (self, "�your class will be�\n\nAssassin - OK?\n�1� Yes     \n�2� No      \n");
 		if (self.class == 3)
-			centerprint (self, "�your class will be�\n\nSoldiier - OK?\n�1� Yes     \n�2� No      \n");
+			centerprint (self, "�your class will be�\n\nSoldier - OK?\n�1� Yes     \n�2� No      \n");
 		if (self.class == 4)
 			centerprint (self, "�your class will be�\n\nScientist - OK?\n�1� Yes     \n�2� No      \n");
 	}

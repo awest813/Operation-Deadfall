@@ -394,7 +394,7 @@ void () W_GetClass =
 			self.max_health = 100;
 			self.class = 3;
 			self.currentmenu = "confirm_skill";
-			centerprint (self, "�your class will be�\n\nSoldiier - OK?\n�1� Yes     \n�2� No      \n");
+			centerprint (self, "�your class will be�\n\nSoldier - OK?\n�1� Yes     \n�2� No      \n");
 			self.ghost = 0;
 			return;
 		}
@@ -706,6 +706,33 @@ void() W_PlayerMenu =
 			self.team = 2;
 			return;
 		}
+		if (self.impulse == 3)
+		{
+			// Auto-assign: join the smaller team; break ties toward Rangers.
+			local entity te;
+			local float  r_count, ra_count;
+			r_count  = 0;
+			ra_count = 0;
+			te = find(world, classname, "player");
+			while (te)
+			{
+				if (te.team == 1) r_count  = r_count  + 1;
+				if (te.team == 2) ra_count = ra_count + 1;
+				te = find(te, classname, "player");
+			}
+			if (ra_count < r_count)
+				self.team = 2;
+			else
+				self.team = 1;
+			bprint(2, self.netname);
+			if (self.team == 1)
+				bprint(2, " has joined the rangers.\n");
+			else
+				bprint(2, " has joined the raiders.\n");
+			self.currentmenu = "confirm_team";
+			DisplayMenu();
+			return;
+		}
 
 	}
 
@@ -739,7 +766,7 @@ void() W_PlayerMenu =
 			self.max_health = 100;
 			self.class = 3;
 			self.currentmenu = "confirm_skill";
-			centerprint (self, "�your class will be�\n\nSoldiier - OK?\n�1� Yes     \n�2� No      \n");
+			centerprint (self, "�your class will be�\n\nSoldier - OK?\n�1� Yes     \n�2� No      \n");
 			self.ghost = 0;
 			return;
 		}
