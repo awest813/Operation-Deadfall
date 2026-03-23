@@ -562,7 +562,7 @@ void() zombie_paine30	=[	$paine30,	zombie_run1		] {};
 
 void() zombie_die =
 {
-	local float drop_iid, drop_qty, pts, bonus;
+	local float drop_iid, drop_qty, pts, bonus, streak_bonus;
 	drop_iid = 0;
 	drop_qty = 0;
 
@@ -618,25 +618,36 @@ void() zombie_die =
 		// Keep best_streak up to date in real time (not only on death).
 		if (self.enemy.kill_streak > self.enemy.best_streak)
 			self.enemy.best_streak = self.enemy.kill_streak;
+		streak_bonus = 0;
 		if (self.enemy.kill_streak == 3)
 		{
+			streak_bonus = EC_StreakReward(self.enemy.kill_streak);
 			sprint(self.enemy, PRINT_HIGH, "^3TRIPLE KILL!\n");
 			sound(self.enemy, CHAN_AUTO, "misc/menu2.wav", 0.7, ATTN_NONE);
 		}
 		else if (self.enemy.kill_streak == 5)
 		{
+			streak_bonus = EC_StreakReward(self.enemy.kill_streak);
 			sprint(self.enemy, PRINT_HIGH, "^3KILLING SPREE!\n");
 			sound(self.enemy, CHAN_AUTO, "misc/menu2.wav", 0.9, ATTN_NONE);
 		}
 		else if (self.enemy.kill_streak == 10)
 		{
+			streak_bonus = EC_StreakReward(self.enemy.kill_streak);
 			bprint(2, strcat("^3** ", self.enemy.netname, " is UNSTOPPABLE! **\n"));
 			sound(self.enemy, CHAN_AUTO, "misc/menu3.wav", 1, ATTN_NONE);
 		}
 		else if (self.enemy.kill_streak == 20)
 		{
+			streak_bonus = EC_StreakReward(self.enemy.kill_streak);
 			bprint(2, strcat("^1** ", self.enemy.netname, " is on a RAMPAGE! **\n"));
 			sound(self.enemy, CHAN_AUTO, "misc/menu3.wav", 1, ATTN_NONE);
+		}
+		if (streak_bonus > 0)
+		{
+			EC_GivePoints(self.enemy, streak_bonus);
+			sprint(self.enemy, PRINT_HIGH,
+			       strcat("^2STREAK BONUS: +", ftos(streak_bonus), " pts\n"));
 		}
 
 		// Tiered ammo drop: type escalates with current round so the player

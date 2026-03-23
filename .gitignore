@@ -12,14 +12,20 @@ plugins/cef/cef_linux64/
 plugins/cef/cef_windows64/
 
 #quakec build artifacts...
+build/qc/
+engine/qclib/fteqcc.bin
 quakec/csaddon/csaddon.dat
 quakec/csaddon/csaddon.lno
 quakec/csqctest/csprogs.dat
 quakec/csqctest/csprogs.lno
 quakec/csqctest/progs.dat
 quakec/csqctest/progs.lno
+quakec/csprogs.dat
+quakec/csprogs.lno
 quakec/menu.dat
 quakec/menu.lno
+quakec/qwprogs.dat
+quakec/qwprogs.lno
 
 # clangd artifacts
 compile_commands.json
@@ -39,4 +45,3 @@ engine/droid/build.xml
 engine/droid/ftekeystore
 engine/droid/proguard-project.txt
 engine/droid/project.properties
-
