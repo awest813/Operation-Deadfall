@@ -12,6 +12,14 @@ engine binary. See [BUILD.md](BUILD.md) for compilation instructions.
 Either build it yourself (see [BUILD.md](BUILD.md)) or download a pre-built binary from the
 [Releases](https://github.com/awest813/Operation-Deadfall/releases/tag/bleeding-edge) page.
 
+If you built locally with the wrapper scripts, the easiest place to start is the packaged output:
+
+- Linux 64-bit: `engine/dist/linux64/`
+- Windows 11 / 64-bit: `engine/dist/win11/`
+
+Those folders contain the runnable executable plus any supporting runtime files that had to be
+copied during the build.
+
 ### 2. Game assets (`nzp` folder)
 
 The engine is **not** bundled with game assets. You need the `nzp` game-data folder, which
@@ -27,10 +35,11 @@ installation of Nazi Zombies: Portable.
 
 Place the engine binary next to the `nzp` folder:
 
-```
+```text
 game-directory/
-├── nzportable64-sdl          ← engine binary (Linux)
-├── nzportable-sdl64.exe      ← engine binary (Windows)
+├── nzportable64-sdl          ← engine binary (Linux alias created by build.sh)
+├── nzportable-sdl64.exe      ← engine binary (Windows 11 / 64-bit)
+├── SDL2.dll                  ← Windows SDL2 runtime (copied automatically by wrapper builds)
 └── nzp/                      ← game-data folder (required)
     ├── pak0.pak              ← base game data
     ├── progs.dat             ← server-side QuakeC bytecode
@@ -52,8 +61,17 @@ game-directory/
 
 ### Linux
 
+If you used the packaged wrapper output:
+
 ```bash
-cd /path/to/game-directory
+cd /path/to/Operation-Deadfall/engine/dist/linux64
+./nzportable-sdl2
+```
+
+If you prefer the compatibility alias in `engine/release/`:
+
+```bash
+cd /path/to/Operation-Deadfall/engine/release
 ./nzportable64-sdl
 ```
 
@@ -65,12 +83,14 @@ For the X11-direct (no-SDL) build:
 
 ### Windows
 
-Double-click `nzportable-sdl64.exe`, or from a command prompt:
+If you used the packaged wrapper output:
 
 ```bat
-cd C:\path\to\game-directory
+cd C:\path\to\Operation-Deadfall\engine\dist\win11
 nzportable-sdl64.exe
 ```
+
+Or run the same executable from `engine\release\`.
 
 > **SDL2.dll note:** The SDL2 build requires `SDL2.dll` in the same folder as the `.exe`. It is
 > included in the release ZIP archives. If you built from source, `make makelibs` downloads the
@@ -78,7 +98,7 @@ nzportable-sdl64.exe
 > `engine/libs-x86_64-w64-mingw32/SDL2-2.30.7/x86_64-w64-mingw32/bin/SDL2.dll`
 > (win64) or `engine/libs-i686-w64-mingw32/SDL2-2.30.7/i686-w64-mingw32/bin/SDL2.dll` (win32)
 > to the same directory as the `.exe`. The top-level `build.bat` and `build.sh` do this
-> automatically.
+> automatically for SDL2 wrapper builds.
 
 ### Dedicated server
 
@@ -129,7 +149,7 @@ file (or the whole directory).
 |---------|-------------|-----|
 | `Couldn't find game directory` | `nzp/` folder missing or not next to the binary | Ensure the `nzp` folder is in the same directory as the binary |
 | Blank/black screen on startup | Missing `progs.dat` or `pak0.pak` | Verify game-data files are present in `nzp/` |
-| `SDL2.dll not found` (Windows) | DLL not next to `.exe` | Copy `SDL2.dll` from the release ZIP or MinGW/SDL2 installation |
+| `SDL2.dll not found` (Windows) | DLL not next to `.exe` | Copy `SDL2.dll` from the release ZIP or use the wrapper `--package` output |
 | Crash on map load | Corrupted `.bsp` or mismatched `.dat` bytecode | Re-download game assets; rebuild QuakeC if self-compiled |
 | No audio | OpenAL not installed (Linux) | `sudo apt install libopenal1` |
 | `vid_renderer vk` crash | Vulkan driver missing or unsupported | Fall back with `+vid_renderer gl` |
