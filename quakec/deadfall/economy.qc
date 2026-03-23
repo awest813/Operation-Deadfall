@@ -26,6 +26,13 @@ KILL REWARDS  (ammo_shells awarded per zombie kill)
   Per-round   : +EC_KILL_PER_RND (2 pts/round) up to EC_KILL_MAX (60 pts)
   Examples    :  Round 1 → 12,  Round 5 → 20,  Round 10 → 30, Round 25 → 60
 
+KILL-STREAK BONUSES  (awarded on exact streak thresholds)
+───────────────────────────────────────────────────
+  Triple Kill (3) : 0.5 × EC_KillReward()
+  Spree       (5) : 1.0 × EC_KillReward()
+  Unstoppable (10): 2.0 × EC_KillReward()
+  Rampage     (20): 4.0 × EC_KillReward()
+
 ZONE DOOR UNLOCK COST (EC_DOOR_COST)
 ───────────────────────────────────────────────────
   Default 750 pts, overrideable per door via the 'buy_cost' map key.
@@ -112,6 +119,23 @@ float() EC_KillReward =
     if (pts > EC_KILL_MAX)
         pts = EC_KILL_MAX;
     return pts;
+};
+
+// Bonus points awarded on exact kill-streak milestones.
+float(float streak) EC_StreakReward =
+{
+    local float pts;
+
+    pts = EC_KillReward();
+    if (streak == 3)
+        return floor(pts * 0.5);
+    if (streak == 5)
+        return pts;
+    if (streak == 10)
+        return pts * 2;
+    if (streak == 20)
+        return pts * 4;
+    return 0;
 };
 
 // Return the point cost for a perk by its ID (use PERK_ID_* constants).

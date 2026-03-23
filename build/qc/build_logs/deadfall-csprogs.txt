@@ -1,0 +1,22 @@
+FTEQCC: Mar 23 2026
+Source file: csprogs.src
+outputfile: ../csprogs.dat
+compiling csqc/system.qc
+compiling csqc/stdbuiltins.qc
+compiling csqc/builtins.qc
+compiling csqc/stdconstants.qc
+compiling csqc/constants.qc
+compiling csqc/invent.qc
+in function Invent_Draw (line 53),
+csqc/invent.qc:60: warning F333: cvar: cvar("vid_conheight") is deprecated and is likely to give some hacky value to work around old API usage which does not necessarily reflect the actual cvar value. Use getviewprop(VF_SCREENVSIZE) for the screen's virtual use, or use ftos+cvar_string to read the actual value of the cvar, or cast to variant to mute this warning.
+in function CalcScrollPos (line 152),
+csqc/invent.qc:153: warning F333: cvar: cvar("vid_conheight") is deprecated and is likely to give some hacky value to work around old API usage which does not necessarily reflect the actual cvar value. Use getviewprop(VF_SCREENVSIZE) for the screen's virtual use, or use ftos+cvar_string to read the actual value of the cvar, or cast to variant to mute this warning.
+compiling csqc/hud.qc
+compiling csqc/main.qc
+in function CSQC_UpdateView (line 47),
+csqc/main.qc:49: warning F333: cvar: cvar("vid_conwidth") is deprecated and is likely to give some hacky value to work around old API usage which does not necessarily reflect the actual cvar value. Use getviewprop(VF_SCREENVSIZE) for the screen's virtual use, or use ftos+cvar_string to read the actual value of the cvar, or cast to variant to mute this warning.
+csqc/main.qc:50: warning F333: cvar: cvar("vid_conheight") is deprecated and is likely to give some hacky value to work around old API usage which does not necessarily reflect the actual cvar value. Use getviewprop(VF_SCREENVSIZE) for the screen's virtual use, or use ftos+cvar_string to read the actual value of the cvar, or cast to variant to mute this warning.
+:: warning F211: Recognised progs as outdated CSQC module
+Writing ../csprogs.dat
+Compile finished: ../csprogs.dat (id format)
+Done. 5 warnings

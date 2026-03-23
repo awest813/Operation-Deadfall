@@ -562,7 +562,7 @@ void() zombie_paine30	=[	$paine30,	zombie_run1		] {};
 
 void() zombie_die =
 {
-	local float drop_iid, drop_qty, pts, bonus;
+	local float drop_iid, drop_qty, pts, bonus, streak_bonus;
 	drop_iid = 0;
 	drop_qty = 0;
 
@@ -618,6 +618,7 @@ void() zombie_die =
 		// Keep best_streak up to date in real time (not only on death).
 		if (self.enemy.kill_streak > self.enemy.best_streak)
 			self.enemy.best_streak = self.enemy.kill_streak;
+		streak_bonus = EC_StreakReward(self.enemy.kill_streak);
 		if (self.enemy.kill_streak == 3)
 		{
 			sprint(self.enemy, PRINT_HIGH, "^3TRIPLE KILL!\n");
@@ -637,6 +638,12 @@ void() zombie_die =
 		{
 			bprint(2, strcat("^1** ", self.enemy.netname, " is on a RAMPAGE! **\n"));
 			sound(self.enemy, CHAN_AUTO, "misc/menu3.wav", 1, ATTN_NONE);
+		}
+		if (streak_bonus > 0)
+		{
+			EC_GivePoints(self.enemy, streak_bonus);
+			sprint(self.enemy, PRINT_HIGH,
+			       strcat("^2STREAK BONUS: +", ftos(streak_bonus), " pts\n"));
 		}
 
 		// Tiered ammo drop: type escalates with current round so the player

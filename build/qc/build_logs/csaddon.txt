@@ -1,0 +1,22 @@
+FTEQCC: Mar 23 2026
+Source file: csaddon.src
+Outputfile: ../csaddon.dat
+including csplat.qc
+including csfixups.qc
+including editor_lights.qc
+including editor_terrain.qc
+including brush_selection.qc
+including brush_history.qc
+including brush_manip.qc
+including brush_draw.qc
+including brush_vertedit.qc
+including editor_brushes.qc
+including editor_ents.qc
+including textfield.qc
+including editor_particles.qc
+including menu.qc
+including cam.qc
+including csaddon.qc
+Writing ../csaddon.dat
+Compile finished: ../csaddon.dat (fte format)
+Done. 0 warnings

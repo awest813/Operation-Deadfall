@@ -1,0 +1,105 @@
+FTEQCC: Mar 23 2026
+Source file: progs.src
+outputfile: ../qwprogs.dat
+compiling defs.qc
+compiling economy.qc
+compiling inventory.qc
+compiling subs.qc
+compiling fight.qc
+compiling tf.qc
+compiling ai.qc
+compiling combat.qc
+compiling items.qc
+compiling name.qc
+compiling menus.qc
+compiling weapons.qc
+compiling round_manager.qc
+in function RM_Init (line 715),
+round_manager.qc:732: warning Q106: Assignment to const
+round_manager.qc:202:    const float ROUND_MAX_CONCURRENT = 24 is defined here
+round_manager.qc:732: warning Q106: Assignment to constant ROUND_MAX_CONCURRENT
+round_manager.qc:202:    const float ROUND_MAX_CONCURRENT = 24 is defined here
+round_manager.qc:734: warning Q106: Assignment to const
+round_manager.qc:202:    const float ROUND_MAX_CONCURRENT = 24 is defined here
+round_manager.qc:734: warning Q106: Assignment to constant ROUND_MAX_CONCURRENT
+round_manager.qc:202:    const float ROUND_MAX_CONCURRENT = 24 is defined here
+compiling world.qc
+compiling client.qc
+in function PutClientInServer (line 496),
+client.qc:604: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+compiling server.qc
+compiling player.qc
+compiling monsters.qc
+compiling doors.qc
+in function fd_secret_use (line 551),
+doors.qc:563: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+in function fd_secret_done (line 642),
+doors.qc:647: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+in function func_door_secret (line 684),
+doors.qc:733: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+compiling buttons.qc
+compiling triggers.qc
+compiling plats.qc
+compiling hos.qc
+compiling zombie.qc
+compiling enforcer.qc
+compiling soldier.qc
+in function spawn_live_grunt (line 1226),
+soldier.qc:1243: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+compiling demon.qc
+compiling boss.qc
+compiling knight.qc
+compiling hknight.qc
+compiling shalrath.qc
+in function monster_shalrath (line 199),
+shalrath.qc:227: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+compiling shambler.qc
+compiling wizard.qc
+compiling dog.qc
+in function spawn_live_dog (line 342),
+dog.qc:358: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+in function monster_dog (line 457),
+dog.qc:483: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+in function spawn_dog (line 491),
+dog.qc:526: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+compiling ogre.qc
+in function spawn_live_ogre (line 840),
+ogre.qc:857: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+compiling misc.qc
+in function hostage_spawn (line 342),
+misc.qc:391: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+in function scientist (line 398),
+misc.qc:416: warning F314: Implicit cast from void() to void(entity attacker, float damage)
+compiling mod_buy.qc
+in function W_PlayerMenu (line 419),
+mod_buy.qc:494: warning F321: A leading 0 is interpreted as base-8.
+mod_buy.qc:496: warning F321: A leading 0 is interpreted as base-8.
+compiling turrets.qc
+compiling cmds.qc
+at global scope,
+defs.qc:484: warning Q302: float round_end  no references.
+defs.qc:487: warning Q302: float teamthatwon  no references.
+defs.qc:488: warning Q302: float team_blue  no references.
+defs.qc:489: warning Q302: float team_red  no references.
+defs.qc:490: warning Q302: float bombed  no references.
+defs.qc:491: warning Q302: float zombies  no references.
+defs.qc:492: warning Q302: float hostages  no references.
+defs.qc:493: warning Q302: float dead_hostage  no references.
+defs.qc:494: warning Q302: float team1win  no references.
+defs.qc:495: warning Q302: float team2win  no references.
+note: suppressed 15 more warnings about unreferenced variables, as you clearly don't care about the first 10.
+turrets.qc:232: warning F210: Model "progs/coil.mdl" was used but not directly precached
+turrets.qc:247: warning F210: Model "progs/turrgun.mdl" was used but not directly precached
+turrets.qc:248: warning F210: Model "progs/turrbase.mdl" was used but not directly precached
+turrets.qc:252: warning F210: Model "progs/miniturr.mdl" was used but not directly precached
+turrets.qc:253: warning F210: Model "progs/minibase.mdl" was used but not directly precached
+ai.qc:297: warning F210: Sound "blob/sight1.wav" was used but not directly precached
+ai.qc:299: warning F210: Sound "vomitus/v_sight1.wav" was used but not directly precached
+items.qc:332: warning F210: Sound "misc/item1.wav" was used but not directly precached
+items.qc:334: warning F210: Sound "misc/item2.wav" was used but not directly precached
+weapons.qc:933: warning F210: Sound "misc/weapon.wav" was used but not directly precached
+weapons.qc:1732: warning F210: Sound "misc/woodhit.wav" was used but not directly precached
+note: suppressed 16 more warnings about precaches.
+Writing ../qwprogs.dat
+Compile finished: ../qwprogs.dat (id format)
+Done. 69 warnings
