@@ -177,6 +177,8 @@ string () OtherString =
 		"ê4ë (20) auto-doc               20$\n"
 		"ê5ë (20) shield-gen             20$\n"
 		"ê6ë (20) tesla-turret           20$\n"
+		"ê7ë (20) rocket-turret          20$\n"
+		"ê8ë (20) machinegun-turret      20$\n"
 		;
 };
 

@@ -1024,6 +1024,18 @@ string(float iid) GetItemDesc =
 		return "the ak74 is the predecessor of the legendary ak-47. it is still the same old killing machine, except that it uses the 5.45mm high-velocity round favoured by late-model assault rifles.";
 	if (iid == IID_BUILD_MRAMMO)
 		return "a military prototype, the field forge was designed to allow soldiers an extra source of ammunition in remote areas, as the handy little machine is capable of churning out ammo from things such as rocks, debris, and metal scraps.";
+	if (iid == IID_BUILD_SHIELDGEN)
+		return "a portable shield generator that radiates a protective field over nearby teammates until its power cells run dry.";
+	if (iid == IID_BUILD_AUTODOC)
+		return "an automated field medic that patches up nearby allies over time, provided it still has enough medical supplies left.";
+	if (iid == IID_BUILD_ROBOFANG)
+		return "a compact robotic attack hound intended to harass nearby hostiles once assembled in the field.";
+	if (iid == IID_BUILD_TTURRET)
+		return "a tesla turret that lashes nearby enemies with chained electricity once construction is complete.";
+	if (iid == IID_BUILD_RTURRET)
+		return "a rocket turret that trades fire rate for heavy explosive shots against distant threats.";
+	if (iid == IID_BUILD_GTURRET)
+		return "a machine-gun turret that lays down sustained automatic fire to hold a lane for your team.";
 	if (iid == IID_EQUIP_CLIMBINGGEAR)
 		return "FIXME:\nActivate, and then run at and up a wall. Don't look too far away from the wall!";
 
@@ -1325,6 +1337,20 @@ float(string itname) ItemIDOfName =
 
 	if (itname == "tesla")
 		return IID_BUILD_TTURRET;
+	if (itname == "tesla turret")
+		return IID_BUILD_TTURRET;
+	if (itname == "rocket turret")
+		return IID_BUILD_RTURRET;
+	if (itname == "rocketturret")
+		return IID_BUILD_RTURRET;
+	if (itname == "machine-gun turret")
+		return IID_BUILD_GTURRET;
+	if (itname == "machine gun turret")
+		return IID_BUILD_GTURRET;
+	if (itname == "machinegun turret")
+		return IID_BUILD_GTURRET;
+	if (itname == "mg turret")
+		return IID_BUILD_GTURRET;
 
 	return 0;
 };

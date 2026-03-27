@@ -682,6 +682,10 @@ void() W_PlayerMenu =
 			BuyStackable(20, IID_BUILD_SHIELDGEN);
 		if (self.impulse == 6)
 			BuyStackable(20, IID_BUILD_TTURRET);
+		if (self.impulse == 7)
+			BuyStackable(20, IID_BUILD_RTURRET);
+		if (self.impulse == 8)
+			BuyStackable(20, IID_BUILD_GTURRET);
 		return;
 	}
 
