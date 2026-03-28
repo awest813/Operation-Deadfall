@@ -2896,7 +2896,7 @@ void () DisplayMenu =
 		menu = TraitString ();
 		centerprint (self, menu);
 	}
-	if (self.currentmenu == "shop_perks")
+	if (self.currentmenu == "shop_perk")
 	{
 		menu = PerkString ();
 		centerprint (self, menu);
