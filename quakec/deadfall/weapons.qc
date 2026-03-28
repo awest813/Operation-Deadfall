@@ -14,6 +14,14 @@ float() FireToolkit;
 void () FireAlienBlaster;
 void(vector org) spawn_dog;
 void(vector src, vector hit, float weap) EmitHitscanTrail;
+void() player_reload1;
+void() player_creload1;
+void() player_use1;
+float(float wid) ReloadIsShellFed;
+float(float wid) ReloadIsLightClass;
+string(float wid) ReloadSoundForWeapon;
+void(float wid) PlayReloadAnimation;
+float(float wid) ReloadDurationForWeapon;
 void () W_PlayerMenu;
 //void () UseChem;
 void () Special;
@@ -68,6 +76,8 @@ void() W_Precache =
 	precache_sound ("weapons/grenade.wav"); // grenade launcher
 	precache_sound ("weapons/bounce.wav");          // grenade bounce
 	precache_sound ("weapons/shotgn2.wav"); // super shotgun
+	precache_sound ("weapons/reload.wav");
+	precache_sound ("weapons/shell.wav");
 	precache_sound (SND_ENERGY_MELEE_HIT); // energy melee hit sound (Vibroblade, Power Axe)
 };
 
@@ -974,6 +984,8 @@ void (float slotno) ReloadWeapon =
 	local float ac;
 	local float x;
 	local float wid;
+	local float reload_time;
+	local string reload_snd;
 
 	local .float wslot;
 
@@ -1015,51 +1027,19 @@ void (float slotno) ReloadWeapon =
 
 	self.wslot = SlotVal(wid, x + ToStatus(self.wslot));
 
-	if (wid == IID_WP_ROCKETLAUNCHER || wid == IID_WP_PIPERIFLE || wid == IID_WP_WINCHESTER || wid == IID_WP_MOSSBERG)
-	{
-		sound (self, CHAN_WEAPON, "weapons/shell.wav", TRUE, ATTN_NORM);
-		self.attack_finished = time + 1;
-		self.rtime = time + 1;
-		if (self.current_slot == slotno)
-			self.currentammo = ToStatus(ItemInSlot(self, slotno));
+	reload_snd = ReloadSoundForWeapon(wid);
+	reload_time = ReloadDurationForWeapon(wid);
 
-		return;
-	}
-	else
-		sound (self, CHAN_WEAPON, "weapons/reload.wav", TRUE, ATTN_NORM);
-
+	sound (self, CHAN_WEAPON, reload_snd, TRUE, ATTN_NORM);
+	if (self.current_slot == slotno)
+		PlayReloadAnimation(wid);
 	sprint(self, 2, "reloading...\n");
 
-	// Pistols and SMGs reload faster than rifles and heavy weapons
-	if (wid == IID_WP_USP || wid == IID_WP_DEAGLE || wid == IID_WP_NEEDLER ||
-	    wid == IID_WP_ALIENBLASTER || wid == IID_WP_MP9 || wid == IID_WP_MP7)
-	{
-		if (self.perk == 3)
-		{
-			self.attack_finished = time + 0.8;
-			self.rtime = time + 0.8;
-		}
-		else
-		{
-			self.attack_finished = time + 1.5;
-			self.rtime = time + 1.5;
-		}
-	}
-	else if (self.perk == 3)
-	{
-		self.attack_finished = time + 1;
-		self.rtime = time + 1;
-	}
-	else
-	{
-		self.attack_finished = time + 2;
-		self.rtime = time + 2;
-	}
+	self.attack_finished = time + reload_time;
+	self.rtime = time + reload_time;
 
 	if (self.current_slot == slotno)
 		self.currentammo = ToStatus(ItemInSlot(self, slotno));
-
-	player_run();
 };
 
 
@@ -2083,6 +2063,92 @@ void(float slot, float magazine) GiveAmmo =
 		return;	//no free slots, so we can't give them ammo
 	if (ToStatus(ItemInSlot(self, as)) < magazine)
 		SetItemSlot(self, as, SlotVal(at, magazine));
+};
+
+float(float wid) ReloadIsShellFed =
+{
+	if (wid == IID_WP_ROCKETLAUNCHER ||
+	    wid == IID_WP_PIPERIFLE ||
+	    wid == IID_WP_WINCHESTER ||
+	    wid == IID_WP_MOSSBERG)
+		return TRUE;
+	return FALSE;
+};
+
+float(float wid) ReloadIsLightClass =
+{
+	if (wid == IID_WP_USP ||
+	    wid == IID_WP_DEAGLE ||
+	    wid == IID_WP_NEEDLER ||
+	    wid == IID_WP_ALIENBLASTER ||
+	    wid == IID_WP_MP9 ||
+	    wid == IID_WP_MP7)
+		return TRUE;
+	return FALSE;
+};
+
+string(float wid) ReloadSoundForWeapon =
+{
+	if (ReloadIsShellFed(wid))
+		return "weapons/shell.wav";
+
+	if (wid == IID_WP_ALIENBLASTER)
+		return "weapons/spike2.wav";
+
+	if (wid == IID_WP_FNFAL || wid == IID_WP_DKS1 || wid == IID_WP_JACKHAMMER)
+		return "weapons/shotgn2.wav";
+
+	if (wid == IID_WP_AK112 || wid == IID_WP_AK74 || wid == IID_WP_MOONLIGHT ||
+	    wid == IID_WP_SA80 || wid == IID_WP_RANGEMASTER || wid == IID_WP_PULSERIFLE)
+		return "weapons/guncock.wav";
+
+	return "weapons/reload.wav";
+};
+
+void(float wid) PlayReloadAnimation =
+{
+	// Crouch reload uses the compact crouched animation set.
+	if (self.position >= POS_DUCK)
+	{
+		player_creload1();
+		return;
+	}
+
+	// Heavier rifles/shotguns use the longer upper-body handling animation.
+	if (wid == IID_WP_FNFAL || wid == IID_WP_DKS1 || wid == IID_WP_JACKHAMMER ||
+	    wid == IID_WP_ROCKETLAUNCHER || wid == IID_WP_WINCHESTER || wid == IID_WP_MOSSBERG)
+	{
+		player_use1();
+		return;
+	}
+
+	player_reload1();
+};
+
+float(float wid) ReloadDurationForWeapon =
+{
+	if (ReloadIsShellFed(wid))
+		return 1.0;
+
+	// Pistols/SMGs/energy sidearms stay snappy.
+	if (ReloadIsLightClass(wid))
+	{
+		if (self.perk == 3)
+			return 0.8;
+		return 1.5;
+	}
+
+	// Heavy magazine-fed weapons take longer to cycle.
+	if (wid == IID_WP_FNFAL || wid == IID_WP_DKS1 || wid == IID_WP_JACKHAMMER)
+	{
+		if (self.perk == 3)
+			return 1.1;
+		return 2.2;
+	}
+
+	if (self.perk == 3)
+		return 1.0;
+	return 2.0;
 };
 
 
