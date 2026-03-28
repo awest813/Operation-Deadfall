@@ -213,6 +213,38 @@ void (float cost, float item) BuyPerk =
 	return;
 };
 
+// Return a human-readable name for a trait ID (1-6).
+string (float id) TraitName =
+{
+	if (id == 1) return "one handed";
+	if (id == 2) return "small frame";
+	if (id == 3) return "bruiser";
+	if (id == 4) return "heavy handed";
+	if (id == 5) return "bloody mess";
+	if (id == 6) return "bad luck";
+	return "unknown";
+};
+
+// Select a trait (free, once per life).  Traits have no point cost but can
+// only be chosen once.  Pass the trait ID (1-6 matching TraitString).
+void (float id) SelectTrait =
+{
+	if (self.trait > 0)
+	{
+		sprint (self, PRINT_HIGH, "you already have a trait: ");
+		sprint (self, PRINT_HIGH, TraitName(self.trait));
+		sprint (self, PRINT_HIGH, ".\n");
+		self.currentmenu = "none";
+		return;
+	}
+	sound (self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	self.trait = id;
+	sprint (self, PRINT_HIGH, "trait selected: ");
+	sprint (self, PRINT_HIGH, TraitName(id));
+	sprint (self, PRINT_HIGH, ".\n");
+	self.currentmenu = "none";
+};
+
 /*
 void (float wt, float cost, float item) BuyArmor =
 {
@@ -445,24 +477,12 @@ void() W_PlayerMenu =
 
 	if (self.currentmenu == "shop_trait")
 	{
-		if (self.impulse == 1)
-			self.currentmenu = "shop_trait";
-		if (self.impulse == 2)
-			self.currentmenu = "shop_perk";
-		if (self.impulse == 3)
-			self.currentmenu = "shop_armor";
-		if (self.impulse == 4)
-			self.currentmenu = "shop_protect";
-		if (self.impulse == 5)
-			self.currentmenu = "shop_weapons";
-		if (self.impulse == 6)
-			self.currentmenu = "shop_equipment";
-		if (self.impulse == 7)
-			self.currentmenu = "shop_chems";
-		if (self.impulse == 8)
-			self.currentmenu = "shop_other";
-
-		DisplayMenu();
+		if (self.impulse == 1) { SelectTrait(1); return; }
+		if (self.impulse == 2) { SelectTrait(2); return; }
+		if (self.impulse == 3) { SelectTrait(3); return; }
+		if (self.impulse == 4) { SelectTrait(4); return; }
+		if (self.impulse == 5) { SelectTrait(5); return; }
+		if (self.impulse == 6) { SelectTrait(6); return; }
 		return;
 	}
 	if (self.currentmenu == "shop_perk")
