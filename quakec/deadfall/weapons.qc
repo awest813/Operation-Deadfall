@@ -13,6 +13,7 @@ void (float damage, float dist, float rate, string entsnd) FireMelee;
 float() FireToolkit;
 void () FireAlienBlaster;
 void(vector org) spawn_dog;
+void(vector src, vector hit, float weap) EmitHitscanTrail;
 void () W_PlayerMenu;
 //void () UseChem;
 void () Special;
@@ -1672,6 +1673,46 @@ void (vector org) bullet_hole =
 	remove(ric);
 };
 
+void(vector src, vector hit, float weap) EmitHitscanTrail =
+{
+	local vector dir;
+	local vector p1;
+	local vector p2;
+	local float dist;
+
+	dir = hit - src;
+	dist = vlen(dir);
+
+	// Skip very short traces; muzzleflash already provides enough close-range feedback.
+	if (dist < 256)
+		return;
+
+	dir = normalize(dir);
+	p1 = src + dir * (dist * 0.35);
+	p2 = src + dir * (dist * 0.70);
+
+	// Small in-air smoke puffs act as lightweight tracers for hitscan weapons.
+	WriteByte (MSG_MULTICAST, SVC_TEMPENTITY);
+	WriteByte (MSG_MULTICAST, TE_GUNSHOT);
+	WriteByte (MSG_MULTICAST, 1);
+	WriteCoord (MSG_MULTICAST, p1_x);
+	WriteCoord (MSG_MULTICAST, p1_y);
+	WriteCoord (MSG_MULTICAST, p1_z);
+	multicast (p1, MULTICAST_PVS);
+
+	// Give heavier rifles a second segment so long shots read more clearly.
+	if (weap == IID_WP_FNFAL || weap == IID_WP_DKS1 || weap == IID_WP_RANGEMASTER)
+	{
+		WriteByte (MSG_MULTICAST, SVC_TEMPENTITY);
+		WriteByte (MSG_MULTICAST, TE_GUNSHOT);
+		WriteByte (MSG_MULTICAST, 1);
+		WriteCoord (MSG_MULTICAST, p2_x);
+		WriteCoord (MSG_MULTICAST, p2_y);
+		WriteCoord (MSG_MULTICAST, p2_z);
+		multicast (p2, MULTICAST_PVS);
+	}
+};
+
 void (vector test, float length, float dam) penetrate =
 {
 	local vector org;
@@ -2105,6 +2146,7 @@ void (float dam, float rec, string snd, float rng, float rate) FirePistol =
 	targ = self.origin + '0 0 22' + v_right*crandom()* tmp + v_up*crandom()*tmp;
 
 	traceline (source+adjust, targ+adjust+v_forward*4000, FALSE, self);
+	EmitHitscanTrail(source+adjust, trace_endpos, weap);
 	if (trace_fraction == 1)
 		return;
 
@@ -2214,6 +2256,7 @@ void (float dam, float rec, string snd, float rng, float rate) FireSMG =
 	targ = self.origin + '0 0 22' + v_right*crandom()* tmp + v_up*crandom()*tmp;
 
 	traceline (source+adjust, targ+adjust+v_forward*4000, FALSE, self);
+	EmitHitscanTrail(source+adjust, trace_endpos, weap);
 	if (trace_fraction == 1)
 		return;
 
@@ -2337,6 +2380,7 @@ void (float dam, float rec, string snd, float rng, float rate) FireAssaultRifle 
 	targ = self.origin + '0 0 22' + v_right*crandom()* tmp + v_up*crandom()*tmp;
 
 	traceline (source+adjust, targ+adjust+v_forward*4000, FALSE, self);
+	EmitHitscanTrail(source+adjust, trace_endpos, weap);
 	if (trace_fraction == 1)
 		return;
 

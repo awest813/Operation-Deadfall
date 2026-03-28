@@ -34,7 +34,7 @@ Source of truth for this list: `specs/weapon_balance.md` ("Follow-up Recommendat
 | Item | Surfaced | Playable | Planned | Notes |
 |---|---|---|---|---|
 | Per-weapon reload animations | No | No | Yes | Still listed as future work. |
-| Muzzle flash/tracer effects for hitscan weapons | No | No | Yes | Still listed as future work. |
+| Muzzle flash/tracer effects for hitscan weapons | Yes | Yes | No | Added lightweight in-air shot trails for pistol/SMG/assault rifle fire paths in `weapons.qc`. |
 | Hit-confirm cue (`weapons/ric1.wav`) | Yes | Yes | No | Implemented in pistol/SMG/AR hit paths. |
 | Tiered ammo drop economy | Yes | Yes | No | Implemented in `zombie_die` by round tier. |
 | Improvised rifle single-shot pacing | Yes | Yes | No | Implemented via shell-insert reload path. |
