@@ -117,6 +117,12 @@ void(string arg1) Cmd_InvUse =
 		return;
 	}
 
+	if (iid == IID_BUILD_TELEPAD)
+	{
+		sprint(self, PRINT_HIGH, "Telepad deployment is still on the roadmap and is not implemented yet.\n");
+		return;
+	}
+
 	if (iid == IID_EQUIP_CLIMBINGGEAR)
 	{
 		if (self.equipment_slot == slotno)

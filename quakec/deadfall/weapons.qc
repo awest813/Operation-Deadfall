@@ -12,6 +12,7 @@ void (float dam, float rec, string snd, float rng, float rate) FireSMG;
 void (float damage, float dist, float rate, string entsnd) FireMelee;
 float() FireToolkit;
 void () FireAlienBlaster;
+void(vector org) spawn_dog;
 void () W_PlayerMenu;
 //void () UseChem;
 void () Special;
@@ -3512,12 +3513,12 @@ float() FireToolkit =
 
 			if (trace_ent.buildtype == IID_BUILD_ROBOFANG)
 			{
+				// Hand off from the construction station to the active companion unit.
+				spawn_dog(trace_ent.origin);
 				trace_ent.solid = SOLID_NOT;
 				trace_ent.think = SUB_Remove;
 				trace_ent.nextthink = time;
-				makevectors (self.v_angle);
-sprint(self, PRINT_HIGH, "Robofang appears to have malfunctioned\n");
-//				spawn_dog (self.origin + v_forward * 32);
+				sprint(self, PRINT_HIGH, "Robofang online.\n");
 			}
 			if (trace_ent.buildtype == IID_BUILD_AUTODOC)
 				trace_ent.frame = 1;

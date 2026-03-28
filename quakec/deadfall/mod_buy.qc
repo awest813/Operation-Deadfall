@@ -674,6 +674,8 @@ void() W_PlayerMenu =
 	{
 		if (self.impulse == 1)
 			BuyChem(5, IID_CHEM_MEDICALBAG);
+		if (self.impulse == 2)
+			BuyStackable(20, IID_BUILD_ROBOFANG);
 		if (self.impulse == 3)
 			BuyStackable(20, IID_BUILD_MRAMMO);
 		if (self.impulse == 4)
@@ -686,6 +688,8 @@ void() W_PlayerMenu =
 			BuyStackable(20, IID_BUILD_RTURRET);
 		if (self.impulse == 8)
 			BuyStackable(20, IID_BUILD_GTURRET);
+		if (self.impulse == 9)
+			sprint(self, PRINT_HIGH, "Telepad deployment is planned, but the buildable is not implemented yet.\n");
 		return;
 	}
 

@@ -793,6 +793,8 @@ float(float iid) GetItemWeight =
 		return 2;
 	if (iid == IID_BUILD_TTURRET)
 		return 3;
+	if (iid == IID_BUILD_TELEPAD)
+		return 3;
 	if (iid == IID_BUILD_GTURRET)
 		return 3;
 	if (iid == IID_BUILD_RTURRET)
@@ -994,6 +996,8 @@ string(float iid) GetItemName =
 		return "robofang";
 	if (iid == IID_BUILD_TTURRET)
 		return "tesla turret";
+	if (iid == IID_BUILD_TELEPAD)
+		return "telepad";
 	if (iid == IID_BUILD_RTURRET)
 		return "rocket turret";
 	if (iid == IID_BUILD_GTURRET)
@@ -1032,6 +1036,8 @@ string(float iid) GetItemDesc =
 		return "a compact robotic attack hound intended to harass nearby hostiles once assembled in the field.";
 	if (iid == IID_BUILD_TTURRET)
 		return "a tesla turret that lashes nearby enemies with chained electricity once construction is complete.";
+	if (iid == IID_BUILD_TELEPAD)
+		return "a portable teleport pad kit. roadmap item: the item is surfaced in the inventory and shop, but the actual deployable teleporter gameplay is not implemented yet.";
 	if (iid == IID_BUILD_RTURRET)
 		return "a rocket turret that trades fire rate for heavy explosive shots against distant threats.";
 	if (iid == IID_BUILD_GTURRET)
@@ -1178,6 +1184,8 @@ string(float iid) GetItemImage =
 		return "robofang.jpg";
 	if (iid == IID_BUILD_TTURRET)
 		return "tesla.jpg";
+	if (iid == IID_BUILD_TELEPAD)
+		return "blank.jpg";
 	if (iid == IID_BUILD_RTURRET)
 		return "rturret.jpg";
 	if (iid == IID_BUILD_GTURRET)
@@ -1339,6 +1347,12 @@ float(string itname) ItemIDOfName =
 		return IID_BUILD_TTURRET;
 	if (itname == "tesla turret")
 		return IID_BUILD_TTURRET;
+	if (itname == "telepad")
+		return IID_BUILD_TELEPAD;
+	if (itname == "tele-pad")
+		return IID_BUILD_TELEPAD;
+	if (itname == "teleport pad")
+		return IID_BUILD_TELEPAD;
 	if (itname == "rocket turret")
 		return IID_BUILD_RTURRET;
 	if (itname == "rocketturret")
