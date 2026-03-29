@@ -1,5 +1,5 @@
 !!cvari r_menutint_inverse=0
-!!cvar3f r_menutint=0.68 0.4 0.13
+!!cvar3f r_menutint=0.55 0.52 0.58
 !!samps 1
 
 #include "sys/defs.h"

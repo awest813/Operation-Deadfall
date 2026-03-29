@@ -9028,7 +9028,7 @@ YOU SHOULD NOT EDIT THIS FILE BY HAND
 #ifdef D3D11QUAKE
 {QR_DIRECT3D11, 11, "menutint",
 "!!samps 1\n"
-"!!cvard3 r_menutint=0.2 0.2 0.2\n"
+"!!cvard3 r_menutint=0.55 0.52 0.58\n"
 "!!cvardf r_menutint_inverse=0.0\n"
 
 "struct a2v\n"
