@@ -8,7 +8,14 @@ fork of [FTEQW](https://fte.triptohell.info/), compiled with the `nzportable` co
 ## Quick Start
 
 If you want the least-friction paths for the two most common desktop targets, use the top-level
-wrapper scripts:
+wrapper scripts.
+
+**First-time Linux (native build):** install distro packages in one step, then build:
+
+```bash
+./scripts/install-linux-build-deps.sh
+./build.sh --preset linux64 --package
+```
 
 ### Linux 64-bit
 
