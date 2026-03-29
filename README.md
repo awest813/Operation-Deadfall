@@ -123,6 +123,22 @@ The engine looks for a directory named `nzp` next to its base path (`GAME_BASEGA
    This passes `-basedir` so the engine finds `nzp/` without copying the binary next to it.
    Extra engine flags work after `--`, for example: `./run_game.sh -- +map nzp_asylum`
 
+### Windows (from a clone)
+
+1. Put **`nzp\`** in the repo root or in the parent folder (same as Linux).
+2. **Engine** — download a release binary into `engine\release\`, **or** double-click **`build_engine.cmd`**
+   (needs [MSYS2](https://www.msys2.org/) MinGW-w64 on your `PATH`; see [BUILD.md](BUILD.md)).
+   That produces a ready-to-run folder at `engine\dist\win11\`.
+3. **Run** — double-click **`run_game.cmd`** or from a command prompt in the repo root:
+
+   ```bat
+   run_game.cmd
+   ```
+
+   Optional map load: `run_game.cmd -- +map nzp_asylum`
+
+4. **QuakeC** (optional) — after `fteqcc` is available (build with `mingw32-make -C engine\qclib qcc` in MSYS2, or set `FTEQCC`), run **`build_qc.cmd`**.
+
 ### If you only have a ZIP or folder of binaries (no git clone)
 
 Place the engine executable next to the `nzp` folder, then:
@@ -144,6 +160,8 @@ make -C engine/qclib qcc    # builds engine/qclib/fteqcc.bin
 ./build_qc.sh               # writes artifacts under build/qc/ by default
 ```
 
+On Windows, use **`build_qc.cmd`** (or `powershell -File build_qc.ps1`) after building **`engine\qclib\fteqcc.bin`** with MinGW in MSYS2.
+
 See [BUILD.md](BUILD.md) for engine build options (Docker, Windows, cross-compile) and
 [RUNNING_THE_GAME.md](RUNNING_THE_GAME.md) for directory layout, launch flags, config paths, and troubleshooting.
 
@@ -153,6 +171,10 @@ See [BUILD.md](BUILD.md) for engine build options (Docker, Windows, cross-compil
 
 ```
 run_game.sh      Launch helper when nzp/ sits next to the repo (Linux)
+run_game.cmd     Same idea on Windows (double-click or run from cmd)
+build_engine.cmd One-step MinGW engine build (calls build.bat --mingw --package)
+build_qc.cmd     Build QuakeC on Windows (runs build_qc.ps1)
+build_qc.ps1     QuakeC compile script for PowerShell
 scripts/
 └── install-linux-build-deps.sh   One-shot apt/dnf packages for ./build.sh
 engine/          FTEQW engine source (C)

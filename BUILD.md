@@ -17,6 +17,20 @@ wrapper scripts.
 ./build.sh --preset linux64 --package
 ```
 
+**First-time Windows (native build, recommended):** install [MSYS2](https://www.msys2.org/), then in an MSYS2 terminal (`UCRT64` or `MINGW64`):
+
+```bash
+pacman -S --needed mingw-w64-ucrt-x86_64-toolchain
+```
+
+Add MSYS2’s compiler `bin` folder to your user **PATH** (for example `C:\msys64\ucrt64\bin`), then from **cmd** in the repo root either double-click **`build_engine.cmd`** or run:
+
+```bat
+build.bat --preset win11 --mingw --package
+```
+
+Output: `engine\dist\win11\` with `nzportable-sdl64.exe` and `SDL2.dll`. Launch with **`run_game.cmd`** once `nzp\` is beside the clone (see [RUNNING_THE_GAME.md](RUNNING_THE_GAME.md)).
+
 ### Linux 64-bit
 
 ```bash
