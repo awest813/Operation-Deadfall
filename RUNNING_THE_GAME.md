@@ -3,6 +3,11 @@
 This document explains how to set up and launch the game after building (or downloading) the
 engine binary. See [BUILD.md](BUILD.md) for compilation instructions.
 
+If you are working from a **git clone** of this repository, you can use **`./run_game.sh`**
+from the repo root: it picks a Linux binary under `engine/release/` or `engine/dist/`, passes
+`-basedir` automatically, and looks for `nzp/` either inside the repo or in the parent folder.
+On Windows, keep using the layout below (binary and `SDL2.dll` next to `nzp\`).
+
 ---
 
 ## Prerequisites
