@@ -111,6 +111,8 @@ nonstatic void(mitem_desktop desktop) M_Main =
 																								 			"m_pop",				y); y += 16;}
 	if (clientstate() == 2)								{menuitemtext_cladd16(m, isdemo()?_("End Demo"):(isserver?_("End Game"):_("Disconnect")),
 																											"m_pop;disconnect",		y); y += 16;}
+	if (clientstate() == 1)								{menuitemtext_cladd16(m, _("Getting Started"),
+																											"m_pop;m_welcome_tour",	y); y += 16;}
 	if (isserver() != 1 && checkbuiltin2(gethostcacheindexforkey,ISMENUQC))	{menuitemtext_cladd16(m, _("Join Server"),
 																											"m_pop;m_servers",		y); y += 16;}
 	if (checkcommand2("map", TRUE))						{menuitemtext_cladd16(m, _("New Game"),				"m_pop;m_newgame",		y); y += 16;}
