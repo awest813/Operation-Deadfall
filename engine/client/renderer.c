@@ -202,7 +202,7 @@ cvar_t r_loadlits							= CVARFD("r_loadlit", "1", CVAR_ARCHIVE, "Whether to loa
 #else
 cvar_t r_loadlits							= CVARFD("r_loadlit", "1", CVAR_ARCHIVE, "Whether to load lit files.");
 #endif
-cvar_t r_menutint							= CVARF	("r_menutint", "0.68 0.4 0.13",
+cvar_t r_menutint							= CVARF	("r_menutint", "0.55 0.52 0.58",
 												CVAR_RENDERERCALLBACK);
 cvar_t r_netgraph							= CVARD	("r_netgraph", "0", "Displays a graph of packet latency. A value of 2 will give additional info about what sort of data is being received from the server.");
 extern cvar_t r_lerpmuzzlehack;

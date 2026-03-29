@@ -192,6 +192,7 @@ void M_DrawTextBox (int x, int y, int width, int lines)
 	mpic_t	*p;
 	int		cx, cy;
 	int		n, w;
+	int		ox = x + ((vid.width - 320)>>1);
 
 	// draw left side
 	cx = x;
@@ -202,9 +203,7 @@ void M_DrawTextBox (int x, int y, int width, int lines)
 	case -1:
 		return;	//still pending
 	case 0:
-		R2D_ImageColours(0.0, 0.0, 0.0, 1.0);
-		R2D_FillBlock(x + ((vid.width - 320)>>1), y, width*8+16, lines*8+16);
-		R2D_ImageColours(1.0, 1.0, 1.0, 1.0);
+		Draw_TacticalTextBox ((float)ox, (float)y, (float)(width*8), (float)(lines*8));
 		return;
 	}
 	M_DrawScalePic (cx, cy, 8, 8, p);
@@ -603,8 +602,9 @@ static void Prompt_Draw(struct menu_s *g)
 		{
 			if (m->mbutton == i)
 			{
-				float alphamax = 0.5, alphamin = 0.2;
-				R2D_ImageColours(.5,.4,0,(sin(realtime*2)+1)*0.5*(alphamax-alphamin)+alphamin);
+				float alphamax = 0.38f, alphamin = 0.12f;
+				float a = (sin(realtime*2)+1)*0.5f*(alphamax-alphamin)+alphamin;
+				R2D_ImageColours(0.72f*a, 0.06f*a, 0.05f*a, a);
 				R2D_FillBlock(bx[i], y, bx[i+1]-bx[i], scale);
 				R2D_ImageColours(1,1,1,1);
 			}
