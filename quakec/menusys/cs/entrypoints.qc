@@ -126,6 +126,8 @@ void(float apilevel, string enginename, float engineversion) CSQC_Init =
 #ifdef CSQC_SIMPLE
 	Hud_Init();	//make sure the hud images are precached properly, so there's no stalls.
 #endif
+	/* Match menu.src m_init: main menu first so returning players are not left on a blank desktop. */
 	if (clientstate() == 1)
-		M_Welcome_Maybe(thedesktop);
+		M_Main(thedesktop);
+	M_Welcome_Maybe(thedesktop);
 };
