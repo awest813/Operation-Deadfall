@@ -31,6 +31,10 @@ void(mitem_desktop desktop) M_Pop =
 //cmd argments are: Name, Function, Sourcefile(may be empty)
 #define concommandslist									\
 	cmd("m_main",		M_Main,					menu/main.qc,				"Main Menu")	\
+	cmd("m_welcome",	M_Welcome,				menu/welcome.qc,			"First-time welcome screen")	\
+	cmd("m_welcome_tour",	M_Welcome_Tour,			,							__NULL__)	\
+	cmd("m_welcome_mark",	M_Welcome_Mark,			,							__NULL__)	\
+	cmd("m_welcome_maybe",	M_Welcome_Maybe,		,							__NULL__)	\
 	cmd("m_pop",		M_Pop,					,							__NULL__)	\
 	cmd("m_options",	M_Options,				menu/options.qc,			__NULL__)	\
 	cmd("m_keys",		M_Options_Keys,			menu/options_keys.qc,		"Fix up the stupid default key bindings.")	\
@@ -165,5 +169,6 @@ void() m_init =
 
 	if (clientstate() == 1)	//disconnected==1, supposedly
 		m_toggle(1);
+	M_Welcome_Maybe(desktop);
 };
 

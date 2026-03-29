@@ -32,6 +32,10 @@ menusys/mitem_spinnymodel.qc	//rotating 3d models, used for art/theme.
 #define concommandslist													\
 	cmd("togglemenu", 	M_ToggleMenu, 		)							\
 	cmd("m_main",		M_Main,				menu/main.qc)				\
+	cmd("m_welcome",	M_Welcome,			menu/welcome.qc)			\
+	cmd("m_welcome_tour",	M_Welcome_Tour,		)							\
+	cmd("m_welcome_mark",	M_Welcome_Mark,		)							\
+	cmd("m_welcome_maybe",	M_Welcome_Maybe,	)							\
 	cmd("m_pop",		M_Pop, 				)							\
 	cmd("m_options",	M_Options, 			menu/options.qc)			\
 	cmd("m_keys",		M_Options_Keys, 	menu/options_keys.qc)		\

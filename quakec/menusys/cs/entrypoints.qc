@@ -126,4 +126,6 @@ void(float apilevel, string enginename, float engineversion) CSQC_Init =
 #ifdef CSQC_SIMPLE
 	Hud_Init();	//make sure the hud images are precached properly, so there's no stalls.
 #endif
+	if (clientstate() == 1)
+		M_Welcome_Maybe(thedesktop);
 };
