@@ -6,7 +6,11 @@ engine binary. See [BUILD.md](BUILD.md) for compilation instructions.
 If you are working from a **git clone** of this repository, you can use **`./run_game.sh`**
 from the repo root: it picks a Linux binary under `engine/release/` or `engine/dist/`, passes
 `-basedir` automatically, and looks for `nzp/` either inside the repo or in the parent folder.
-On Windows, keep using the layout below (binary and `SDL2.dll` next to `nzp\`).
+
+On Windows, use **`run_game.cmd`** from the repo root the same way: it finds `nzp\`, picks
+`engine\dist\win11\nzportable-sdl64.exe` or `engine\release\nzportable-sdl64.exe` (or MSVC
+`fteqw.exe` if present), and passes `-basedir` so you do not need to copy the binary next to
+`nzp\`. You can still use the manual layout below if you prefer.
 
 ---
 
@@ -88,7 +92,16 @@ For the X11-direct (no-SDL) build:
 
 ### Windows
 
-If you used the packaged wrapper output:
+From a **git clone** (easiest):
+
+```bat
+cd C:\path\to\Operation-Deadfall
+run_game.cmd
+```
+
+Optional: `run_game.cmd -- +map nzp_asylum`
+
+If you prefer to run the binary directly, use the packaged wrapper output:
 
 ```bat
 cd C:\path\to\Operation-Deadfall\engine\dist\win11
