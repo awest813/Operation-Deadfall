@@ -4,89 +4,74 @@
 #include "shader.h"
 #include "fs.h"
 
+/*
+ * Inner (x,y,width,height) matches legacy menu box semantics: content sits in that
+ * rectangle; the panel extends ~8px outside on each side (same as old ApproxTextBox).
+ */
+void Draw_TacticalTextBox (float x, float y, float width, float height)
+{
+	const float border = 2.0f;
+	float ox = x - 8.0f;
+	float oy = y - 8.0f;
+	float ow = width + 16.0f;
+	float oh = height + 16.0f;
+	float tick = min (12.0f, min (ow, oh) * 0.2f);
+
+	if (ow < 4.0f || oh < 4.0f)
+		return;
+
+	/* Outer bezel */
+	R2D_ImageColours (0.02f, 0.02f, 0.03f, 0.94f);
+	R2D_FillBlock (ox, oy, ow, oh);
+
+	/* Inner panel — cool desaturated metal */
+	R2D_ImageColours (0.05f, 0.06f, 0.07f, 0.88f);
+	R2D_FillBlock (ox + border, oy + border, ow - 2.0f * border, oh - 2.0f * border);
+
+	/* Top accent strip (Wolfenstein red / COD warning bar) */
+	R2D_ImageColours (0.72f, 0.06f, 0.05f, 0.92f);
+	R2D_FillBlock (ox + border, oy + border, ow - 2.0f * border, 3.0f);
+	R2D_ImageColours (0.88f, 0.72f, 0.15f, 0.75f);
+	R2D_FillBlock (ox + border, oy + border + 3.0f, ow - 2.0f * border, 1.0f);
+
+	/* Corner brackets */
+	R2D_ImageColours (0.9f, 0.76f, 0.22f, 0.9f);
+	R2D_FillBlock (ox, oy, tick, 2.0f);
+	R2D_FillBlock (ox, oy, 2.0f, tick);
+	R2D_FillBlock (ox + ow - tick, oy, tick, 2.0f);
+	R2D_FillBlock (ox + ow - 2.0f, oy, 2.0f, tick);
+	R2D_FillBlock (ox, oy + oh - 2.0f, tick, 2.0f);
+	R2D_FillBlock (ox, oy + oh - tick, 2.0f, tick);
+	R2D_FillBlock (ox + ow - tick, oy + oh - 2.0f, tick, 2.0f);
+	R2D_FillBlock (ox + ow - 2.0f, oy + oh - tick, 2.0f, tick);
+
+	R2D_ImageColours (1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Draw_MenuBackdrop (void)
+{
+	float band;
+
+	if (vid.width <= 0 || vid.height <= 0)
+		return;
+
+	band = vid.width * 0.26f;
+	if (band < 48.0f)
+		band = 48.0f;
+	R2D_ImageColours (0.0f, 0.0f, 0.0f, 0.42f);
+	R2D_FillBlock (0, 0, band, vid.height);
+
+	R2D_ImageColours (0.0f, 0.0f, 0.0f, 0.2f);
+	R2D_FillBlock (0, 0, vid.width, min (56, vid.height / 5));
+
+	R2D_ImageColours (1.0f, 1.0f, 1.0f, 1.0f);
+}
+
 //draws the size specified, plus a little extra border (about 8 pixels in each direction, could be more though).
 //size is in vpixels.
 void Draw_ApproxTextBox (float x, float y, float width, float height)
 {
-	mpic_t	*p;
-	float	cx, cy;
-	int		n, lines, columns;
-
-	x -= 8;
-	y -= 8;
-
-	p = R2D_SafeCachePic ("gfx/box_tl.lmp");
-	if (R_GetShaderSizes(p, NULL, NULL, false) != true)	//assume none exist
-	{	//simple fill.
-		R2D_ImageColours(0.1, 0.1, 0.1, 0.9);
-		R2D_FillBlock(x, y, width + 16, height + 16);
-		R2D_ImageColours(1.0, 1.0, 1.0, 1.0);
-		return;
-	}
-
-	//okay, we're drawing it with pics.
-	//expand the border to keep things centred.
-	lines = ceil(height/8);
-	y -= (lines*8-height)/2;
-
-	columns = ceil(width/16)*2;	//columns must be a multiple of 2.
-	x -= (columns*8-width)/2;
-
-	// draw left side
-	cx = x;
-	cy = y;
-	if (p)
-		R2D_ScalePic (cx, cy, 8, 8, p);
-	p = R2D_SafeCachePic ("gfx/box_ml.lmp");
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		if (p)
-			R2D_ScalePic (cx, cy, 8, 8, p);
-	}
-	p = R2D_SafeCachePic ("gfx/box_bl.lmp");
-	if (p)
-		R2D_ScalePic (cx, cy+8, 8, 8, p);
-
-	// draw middle
-	cx += 8;
-	while (columns > 0)
-	{
-		cy = y;
-		p = R2D_SafeCachePic ("gfx/box_tm.lmp");
-		if (p)
-			R2D_ScalePic (cx, cy, 16, 8, p);
-		p = R2D_SafeCachePic ("gfx/box_mm.lmp");
-		for (n = 0; n < lines; n++)
-		{
-			cy += 8;
-			if (n == 1)
-				p = R2D_SafeCachePic ("gfx/box_mm2.lmp");
-			if (p)
-				R2D_ScalePic (cx, cy, 16, 8, p);
-		}
-		p = R2D_SafeCachePic ("gfx/box_bm.lmp");
-		if (p)
-			R2D_ScalePic (cx, cy+8, 16, 8, p);
-		columns -= 2;
-		cx += 16;
-	}
-
-	// draw right side
-	cy = y;
-	p = R2D_SafeCachePic ("gfx/box_tr.lmp");
-	if (p)
-		R2D_ScalePic (cx, cy, 8, 8, p);
-	p = R2D_SafeCachePic ("gfx/box_mr.lmp");
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		if (p)
-			R2D_ScalePic (cx, cy, 8, 8, p);
-	}
-	p = R2D_SafeCachePic ("gfx/box_br.lmp");
-	if (p)
-		R2D_ScalePic (cx, cy+8, 8, 8, p);
+	Draw_TacticalTextBox (x, y, width, height);
 }
 
 #ifndef NOBUILTINMENUS
@@ -537,13 +522,19 @@ static float M_DrawScrollbar(int x, int y, int width, int height, float frac, qb
 	else
 	{
 		unused = width;	//top+bottom are invisible, knob is square
-		R2D_ImageColours(0.1, 0.1, 0.2, 1.0);
+		R2D_ImageColours(0.04f, 0.05f, 0.06f, 0.92f);
 		R2D_FillBlock(x, y, width, height);
+		R2D_ImageColours(0.72f, 0.06f, 0.05f, 0.55f);
+		R2D_FillBlock(x, y, width, 1.0f);
+		R2D_ImageColours(0.88f, 0.72f, 0.15f, 0.4f);
+		R2D_FillBlock(x, y + 1.0f, width, 1.0f);
 
 		knob += frac * (height-unused);
 
-		R2D_ImageColours(0.35, 0.35, 0.55, 1.0);
+		R2D_ImageColours(0.72f, 0.06f, 0.05f, 0.85f);
 		R2D_FillBlock(x, knob, width, width);
+		R2D_ImageColours(0.88f, 0.72f, 0.15f, 0.5f);
+		R2D_FillBlock(x, knob, width, 1.0f);
 		R2D_ImageColours(1,1,1,1);
 	}
 
@@ -600,8 +591,9 @@ static void MenuDrawItems(int xpos, int ypos, menuoption_t *option, emenu_t *men
 
 		if (&menu->menu == topmenu && menu->mouseitem == option && option->common.type != mt_frameend)
 		{
-			float alphamax = 0.5, alphamin = 0.2;
-			R2D_ImageColours(.5,.4,0,(sin(realtime*2)+1)*0.5*(alphamax-alphamin)+alphamin);
+			float alphamax = 0.38f, alphamin = 0.12f;
+			float a = (sin(realtime*2)+1)*0.5f*(alphamax-alphamin)+alphamin;
+			R2D_ImageColours(0.72f*a, 0.06f*a, 0.05f*a, a);
 			R2D_FillBlock(xpos+menu->mouseitem->common.posx, ypos+menu->mouseitem->common.posy, menu->mouseitem->common.width, menu->mouseitem->common.height);
 			R2D_ImageColours(1,1,1,1);
 		}
@@ -898,6 +890,7 @@ static void MenuDraw(emenu_t *menu)
 	}
 	if (menu->predraw)
 		menu->predraw(menu);
+	Draw_MenuBackdrop ();
 	if (menu->selecteditem && menu->selecteditem->common.type == mt_text)
 		menu->menu.showosk = true;
 	else
