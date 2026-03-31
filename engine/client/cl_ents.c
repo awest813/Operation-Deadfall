@@ -3559,7 +3559,7 @@ void CLQ1_AddPowerupShell(entity_t *ent, qboolean viewweap, unsigned int effects
 	shell->shaderRGBAf[2] *= (effects & EF_BLUE)?1:0;
 	shell->shaderRGBAf[3] *= v_powerupshell.value;
 	/*let the shader do all the work*/
-	shell->flags &= ~RF_TRANSLUCENT|RF_ADDITIVE;
+	shell->flags &= ~(RF_TRANSLUCENT | RF_ADDITIVE);
 }
 
 static void CL_LerpNetFrameState(framestate_t *fs, lerpents_t *le)

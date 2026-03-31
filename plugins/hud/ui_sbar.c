@@ -866,7 +866,10 @@ void Hud_Powerup(void)
 {
 	int flash;
 	if (!(stats[STAT_ITEMS] & (IT_PUP1 << sbartype)) && !hudedit)
+	{
+		gotpuptime[sbartype] = 0;
 		return;
+	}
 
 	if (!gotpuptime[sbartype])
 		gotpuptime[sbartype] = currenttime;
