@@ -57,7 +57,7 @@ void() Invent_Draw =
 	local float op;
 	
 	local float height;
-	height = cvar("vid_conheight");
+	height = stof(cvar_string("vid_conheight"));
 	//how much space have we got for the slider?
 
 
@@ -150,7 +150,7 @@ void() Invent_Draw =
 
 void() CalcScrollPos =
 {
-	sliderpos = (mousepos_y-24)/(cvar("vid_conheight")-48);
+	sliderpos = (mousepos_y-24)/(stof(cvar_string("vid_conheight"))-48);
 	if (sliderpos < 0)
 		sliderpos = 0;
 	if (sliderpos > 1)

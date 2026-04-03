@@ -199,7 +199,7 @@ void(string snd, float vol) RM_SoundAll =
 // ---------------------------------------------------------------------------
 float ROUND_INTRO_DURATION  =  5;   // seconds of fanfare before first spawn
 float ROUND_INTERMISSION    = 10;   // seconds of rest between rounds
-float ROUND_MAX_CONCURRENT  = 24;   // hard cap on zombies alive at once (set by preset)
+float ROUND_MAX_CONCURRENT;         // hard cap on zombies alive at once (initialized in RM_Init by preset)
 float ROUND_SPAWN_RETRY     = 0.25; // blocked spawn-point retry interval
 float ROUND_SPAWN_FAIL_MAX  = 8;    // retries before a permanently blocked slot is skipped
 float ROUND_STUCK_TIMEOUT   = 300;  // auto-end a hung active phase (seconds)

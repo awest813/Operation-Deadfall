@@ -49,6 +49,7 @@ float(vector v) pointcontents		= #41;		// returns a CONTENT_*
 float(float f) fabs = #43;
 
 float(string s) cvar = #45;						// return cvar.value
+string(string s) cvar_string = #71;				// return cvar value as string (reliable for screen dimensions)
 void(string s, ...) localcmd = #46;					// put string into local que
 entity(entity e) nextent = #47;					// for looping through all ents
 void(vector o, vector d, float color, float count) particle = #48;// start a particle effect

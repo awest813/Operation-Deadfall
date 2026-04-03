@@ -511,9 +511,9 @@ void() W_PlayerMenu =
 	if (self.currentmenu == "shop_armor")
 	{
 		if (self.impulse == 1)
-                  BuyArmor(3, 03, IID_ARM_SHIRT);         //weight, cost, item
+                  BuyArmor(3, 3, IID_ARM_SHIRT);          //weight, cost, item
 		if (self.impulse == 2)
-                  BuyArmor(7, 05, IID_ARM_LEATHER);         //weight, cost, item
+                  BuyArmor(7, 5, IID_ARM_LEATHER);          //weight, cost, item
 		if (self.impulse == 3)
                   BuyArmor(9, 10, IID_ARM_KEVLAR);         //weight, cost, item
 		if (self.impulse == 4)

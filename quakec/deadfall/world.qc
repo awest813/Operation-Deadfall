@@ -673,7 +673,45 @@ void() worldspawn =
 	precache_sound ("zombie/idle_w2.wav");
 
 	precache_model ("progs/v_light.mdl");
-	
+
+	// Turret models (used in turrets.qc FinishTesla / FinishGunPost)
+	precache_model ("progs/coil.mdl");
+	precache_model ("progs/turrgun.mdl");
+	precache_model ("progs/turrbase.mdl");
+	precache_model ("progs/miniturr.mdl");
+	precache_model ("progs/minibase.mdl");
+
+	// Enemy ambient sounds (used in ai.qc AI_Target)
+	precache_sound ("blob/sight1.wav");
+	precache_sound ("vomitus/v_sight1.wav");
+
+	// Item pickup sounds (used in items.qc, mod_buy.qc, weapons.qc)
+	precache_sound ("misc/item1.wav");
+	precache_sound ("misc/item2.wav");
+	precache_sound ("items/item1.wav");
+
+	// Weapon sounds (used in weapons.qc)
+	precache_sound ("misc/weapon.wav");
+	precache_sound ("misc/woodhit.wav");
+	precache_sound ("misc/woodhit2.wav");
+	precache_sound ("misc/bounce_1.wav");
+	precache_sound ("misc/bounce_2.wav");
+	precache_sound ("misc/bounce_3.wav");
+	precache_sound ("misc/exp1.wav");
+	precache_sound ("misc/exp2.wav");
+	precache_sound ("misc/exp3.wav");
+	precache_sound ("misc/flash.wav");
+	precache_sound ("misc/tools.wav");
+	precache_sound ("ambience/gunfire7.wav");
+
+	// Player voice sounds (used in player.qc)
+	precache_sound ("radio/grenade.wav");
+	precache_sound ("radio/lookout.wav");
+	precache_sound ("player/yourturn.wav");
+	precache_sound ("player/ax1.wav");
+
+	// Soldier sounds (used in soldier.qc)
+	precache_sound ("misc/greload.wav");
 
 
 //
