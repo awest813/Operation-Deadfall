@@ -82,7 +82,19 @@ resolve_nzp() {
 Obtain nzp from NZ:P releases (see README.md Quick Start)."
 }
 
+# Optional: LibreQuake free asset layer. If lq1/ sits next to nzp/ (same basedir),
+# pass -game lq1 so FTEQW loads LibreQuake's BSD-licensed Quake assets alongside nzp/.
+# Download from https://github.com/lavenderdotpet/LibreQuake/releases (mod.zip -> lq1/).
+LQ1_ARGS=()
+resolve_lq1() {
+	if [[ -n "$BASEDIR" && -d "$BASEDIR/lq1" ]]; then
+		LQ1_ARGS=(-game lq1)
+		echo "LibreQuake data found at $BASEDIR/lq1 — loading as supplementary asset layer."
+	fi
+}
+
 resolve_nzp
+resolve_lq1
 
 pick_linux_binary() {
 	local candidates=()
@@ -158,7 +170,7 @@ See RUNNING_THE_GAME.md."
 		;;
 	Linux)
 		EXE="$(pick_linux_binary)"
-		exec "$EXE" -basedir "$BASEDIR" "${GAME_ARGS[@]}"
+		exec "$EXE" -basedir "$BASEDIR" "${LQ1_ARGS[@]}" "${GAME_ARGS[@]}"
 		;;
 	*)
 		die "Unsupported OS: $(uname -s)"

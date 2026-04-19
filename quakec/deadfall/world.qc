@@ -533,6 +533,8 @@ void() worldspawn =
 	precache_model ("progs/v_handgren.mdl");
 	precache_model ("progs/v_jackhammer.mdl");
 	precache_model ("progs/v_rocket.mdl");
+	precache_model ("progs/v_gauss.mdl");
+	precache_model ("progs/v_carbine.mdl");
 
 	precache_model ("progs/handgren.mdl");
 	precache_model ("progs/plasma.mdl");
