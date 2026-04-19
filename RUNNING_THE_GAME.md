@@ -38,31 +38,55 @@ Obtain the `nzp` folder from the official
 [NZ:P releases](https://github.com/nzp-team/nzportable/releases) or from your existing
 installation of Nazi Zombies: Portable.
 
+### 3. LibreQuake assets (`lq1` folder) — optional but recommended
+
+[LibreQuake](https://github.com/lavenderdotpet/LibreQuake) is a BSD-licensed, completely free
+replacement for standard Quake game data (enemy models, player gibs, environmental sounds, health
+pickups, and more). When an `lq1/` folder is present next to `nzp/`, the run scripts automatically
+load it as a supplementary asset layer: LibreQuake's free assets are used for standard Quake
+content, while NZ:P continues to supply all custom Operation Deadfall content (weapon models,
+sounds, zombie variants, etc.).
+
+To add it:
+
+1. Download **`mod.zip`** from the
+   [LibreQuake v0.09-beta release](https://github.com/lavenderdotpet/LibreQuake/releases/tag/v0.09-beta).
+2. Extract it — you should get an `lq1/` folder containing `pak0.pak` and `pak1.pak`.
+3. Place `lq1/` next to `nzp/` (in the same directory as the engine binary or the parent of the
+   repo, matching wherever your `nzp/` lives).
+
+The `lq1/` folder is entirely optional. The game runs without it; NZ:P data covers everything
+needed.
+
 ---
 
 ## Directory Layout
 
-Place the engine binary next to the `nzp` folder:
+Place the engine binary next to the `nzp` folder. The optional `lq1/` folder (LibreQuake) goes in
+the same location:
 
 ```text
 game-directory/
 ├── nzportable64-sdl          ← engine binary (Linux alias created by build.sh)
 ├── nzportable-sdl64.exe      ← engine binary (Windows 11 / 64-bit)
 ├── SDL2.dll                  ← Windows SDL2 runtime (copied automatically by wrapper builds)
-└── nzp/                      ← game-data folder (required)
-    ├── pak0.pak              ← base game data
-    ├── progs.dat             ← server-side QuakeC bytecode
-    ├── menu.dat              ← menu system QuakeC bytecode
-    ├── csaddon.dat           ← client-side QuakeC bytecode
-    ├── maps/
-    ├── models/
-    ├── sound/
-    └── textures/
+├── nzp/                      ← game-data folder (required)
+│   ├── pak0.pak              ← base game data
+│   ├── progs.dat             ← server-side QuakeC bytecode
+│   ├── menu.dat              ← menu system QuakeC bytecode
+│   ├── csaddon.dat           ← client-side QuakeC bytecode
+│   ├── maps/
+│   ├── models/
+│   ├── sound/
+│   └── textures/
+└── lq1/                      ← LibreQuake assets (optional — see §3 above)
+    ├── pak0.pak
+    └── pak1.pak
 ```
 
 > **Note:** The engine uses `nzp` as its base game directory
 > (`GAME_BASEGAMES "nzp"` in `engine/common/config_nzportable.h`). It will refuse to start if
-> this folder is missing or empty.
+> this folder is missing or empty. `lq1/` is loaded on top when present.
 
 ---
 

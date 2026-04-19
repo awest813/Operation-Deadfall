@@ -95,6 +95,10 @@ You always need **two things**: an **engine binary** and the **`nzp` game-data
 folder** (from [Nazi Zombies: Portable](https://github.com/nzp-team/nzportable)).
 The engine looks for a directory named `nzp` next to its base path (`GAME_BASEGAMES "nzp"`).
 
+Optionally, place an **`lq1/`** folder (from [LibreQuake](https://github.com/lavenderdotpet/LibreQuake/releases) — BSD-licensed, free)
+next to `nzp/`. The run scripts detect it automatically and load it as a free Quake-asset layer
+alongside NZ:P data — no configuration needed.
+
 ### If you cloned this repository (recommended for contributors)
 
 1. **Clone** the repo and add **`nzp/`** (NZ:P game data) in either place:
@@ -102,7 +106,8 @@ The engine looks for a directory named `nzp` next to its base path (`GAME_BASEGA
    - **Inside** the repo: `Operation-Deadfall/nzp/` — easy for a single-folder checkout; or
    - **Next to** the repo: same parent folder as `Operation-Deadfall/`, i.e. `../nzp/` from the repo root.
 
-   `./run_game.sh` detects both layouts.
+   `./run_game.sh` detects both layouts. If an `lq1/` folder exists in the same location, it is
+   loaded automatically as a supplementary free-asset layer (LibreQuake mod.zip → `lq1/`).
 
 2. **Engine binary** — either download from
    [Releases](https://github.com/awest813/Operation-Deadfall/releases/tag/bleeding-edge)

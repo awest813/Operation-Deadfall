@@ -1,0 +1,13 @@
+// LibreQuake — BSD-licensed free and open-source replacement for Quake game data.
+// https://github.com/lavenderdotpet/LibreQuake
+
+// Uses the v0.09-beta full release, which places compiled game data under id1/,
+// making LibreQuake a drop-in replacement for the original Quake pak files.
+// CRC checks are omitted (0) so FTEQW skips hash verification on download.
+
+FTEManifestVer 1
+game quake
+name "LibreQuake"
+
+archivedpackage id1/pak0.pak 0 id1/pak0.pak https://github.com/lavenderdotpet/LibreQuake/releases/download/v0.09-beta/full.zip
+archivedpackage id1/pak1.pak 0 id1/pak1.pak https://github.com/lavenderdotpet/LibreQuake/releases/download/v0.09-beta/full.zip

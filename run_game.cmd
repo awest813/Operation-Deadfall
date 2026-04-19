@@ -91,6 +91,15 @@ exit /b 1
 
 :have_nzp
 
+:: Optional: LibreQuake free asset layer. If lq1\ sits next to nzp\ (same basedir),
+:: pass -game lq1 so FTEQW loads LibreQuake's BSD-licensed Quake assets alongside nzp\.
+:: Download from https://github.com/lavenderdotpet/LibreQuake/releases (mod.zip -> lq1\).
+set "LQ1_ARGS="
+if exist "!BASEDIR!\lq1\" (
+  set "LQ1_ARGS=-game lq1"
+  echo LibreQuake data found at !BASEDIR!\lq1 -- loading as supplementary asset layer.
+)
+
 set "EXE="
 
 if not "!BINARY_OVERRIDE!"=="" (
@@ -142,7 +151,7 @@ if /i not "!EXE:~-4!"==".exe" (
 )
 
 pushd "%BASEDIR%" >nul 2>&1
-"!EXE!" -basedir "!BASEDIR!" !ENGINE_ARGS!
+"!EXE!" -basedir "!BASEDIR!" !LQ1_ARGS! !ENGINE_ARGS!
 set "EC=!ERRORLEVEL!"
 popd >nul 2>&1
 exit /b !EC!
