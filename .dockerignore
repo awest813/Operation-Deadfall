@@ -1,0 +1,9 @@
+.git
+.github
+tmp
+build/qc
+engine/release
+engine/dist
+**/*.o
+**/*.a
+**/.DS_Store

@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build-linux64-and-qc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: ./scripts/install-linux-build-deps.sh
+
+      - name: Build engine (linux64)
+        run: ./build.sh --preset linux64 --package
+
+      - name: Smoke test engine binary
+        run: |
+          BIN=engine/release/nzportable64-sdl
+          test -x "$BIN"
+          file "$BIN" | grep -q 'ELF 64-bit'
+          "$BIN" -nohome -dedicated +quit
+
+      - name: Build FTEQCC and compile QuakeC
+        run: |
+          make -C engine/qclib qcc -j"$(nproc)"
+          ./build_qc.sh
+          test -f build/qc/qwprogs.dat || test -f quakec/qwprogs.dat
