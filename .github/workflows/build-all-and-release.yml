@@ -1,5 +1,13 @@
 name: Build ALL and Publish Release
-on: [push]
+
+# Full multi-platform release builds are manual so every push does not overwrite
+# bleeding-edge artifacts or burn 14 parallel jobs on typo fixes. Fast checks run in ci.yml.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+      - 'release-*'
 jobs:
   Compile-Linux32:
     runs-on: ubuntu-latest

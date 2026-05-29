@@ -73,22 +73,43 @@ build.bat --preset win11
 
 ---
 
-## Docker Build (Recommended for Linux-hosted cross-compiles)
+## Docker Build (Recommended for reproducible Linux builds)
 
-The most reproducible Linux and Windows cross-build path is the official Docker image, which
-bundles the compilers and dependencies.
+The repository includes a **`Dockerfile`** that installs pinned Debian packages and runs the same
+`./build.sh` flow as a native machine. This avoids “works on my laptop” drift from missing SDL or
+OpenGL headers.
 
 ```bash
-# Pull the image (one-time)
-docker pull motolegacy/fteqw:latest
-
-# Clone the repo if you haven't already
 git clone https://github.com/awest813/Operation-Deadfall.git
 cd Operation-Deadfall
 
-# Build Linux 64-bit with SDL2 and gather a runnable bundle
+# One-time: build the builder image
+docker build --target builder -t operation-deadfall-build .
+
+# Build linux64 bundle via wrapper (uses operation-deadfall-build when present)
 ./build.sh --preset linux64 --docker --package
 ```
+
+Or build and copy artifacts manually:
+
+```bash
+docker build --target builder -t operation-deadfall-build .
+docker create --name od-extract operation-deadfall-build
+docker cp od-extract:/src/engine/dist/linux64 ./engine/dist/
+docker rm od-extract
+```
+
+### Legacy cross-compile image
+
+The older `motolegacy/fteqw:latest` image is still used as a fallback when
+`operation-deadfall-build` is not present:
+
+```bash
+docker pull motolegacy/fteqw:latest
+./build.sh --preset linux64 --docker --package
+```
+
+Dedicated server hosting with Docker is documented in [HOSTING.md](HOSTING.md).
 
 The finished binaries are placed in `engine/release/`. If you use `--package`, the game-ready
 subset also lands in `engine/dist/<preset>/`.

@@ -49,16 +49,58 @@ die() {
     exit 1
 }
 
-ensure_docker_build() {
-    local docker_cmd="make makelibs FTE_TARGET=$FTE_TARGET && make m-rel FTE_TARGET=$FTE_TARGET FTE_CONFIG=nzportable -j$JOBS"
+preflight_native_deps() {
+    if [[ "$USE_DOCKER" -eq 1 ]]; then
+        return 0
+    fi
+
+    if ! command -v make >/dev/null 2>&1; then
+        die "make not found. Install build tools (see scripts/install-linux-build-deps.sh or BUILD.md)."
+    fi
+
+    if ! command -v gcc >/dev/null 2>&1 && ! command -v cc >/dev/null 2>&1; then
+        die "No C compiler found. Run: ./scripts/install-linux-build-deps.sh"
+    fi
+
     case "$FTE_TARGET" in
-        win32_SDL2|win64_SDL2)
-            docker_cmd+=" && make m-rel FTE_TARGET=$FTE_TARGET FTE_CONFIG=nzportable -j$JOBS"
+        SDL2|*_SDL2)
+            if ! pkg-config --exists sdl2 2>/dev/null && ! command -v sdl2-config >/dev/null 2>&1; then
+                die "SDL2 development files missing. Run: ./scripts/install-linux-build-deps.sh"
+            fi
+            if [[ ! -e /usr/include/GL/gl.h ]] && ! pkg-config --exists gl 2>/dev/null; then
+                die "OpenGL development headers missing (GL/gl.h). Run: ./scripts/install-linux-build-deps.sh"
+            fi
             ;;
     esac
+}
 
-    echo "==> Running build inside motolegacy/fteqw Docker container..."
-    exec docker run --rm         -v "$SCRIPT_DIR":/src         -w /src/engine         motolegacy/fteqw:latest         bash -lc "$docker_cmd"
+run_docker_build() {
+    local image="${OD_BUILD_IMAGE:-operation-deadfall-build}"
+    if docker image inspect "$image" >/dev/null 2>&1; then
+        echo "==> Running build in local image: $image"
+        docker run --rm -v "$SCRIPT_DIR":/src -w /src "$image" \
+            bash -lc "./build.sh --preset ${PRESET:-linux64} --package --jobs $JOBS"
+        return 0
+    fi
+
+    if docker image inspect motolegacy/fteqw:latest >/dev/null 2>&1 || docker pull motolegacy/fteqw:latest >/dev/null 2>&1; then
+        local docker_cmd="make makelibs FTE_TARGET=$FTE_TARGET && make m-rel FTE_TARGET=$FTE_TARGET FTE_CONFIG=nzportable -j$JOBS"
+        case "$FTE_TARGET" in
+            win32_SDL2|win64_SDL2)
+                docker_cmd+=" && make m-rel FTE_TARGET=$FTE_TARGET FTE_CONFIG=nzportable -j$JOBS"
+                ;;
+        esac
+        echo "==> Running build inside motolegacy/fteqw:latest (legacy fallback)..."
+        docker run --rm -v "$SCRIPT_DIR":/src -w /src/engine motolegacy/fteqw:latest bash -lc "$docker_cmd"
+        cd "$ENGINE_DIR"
+        create_aliases
+        if [[ "$PACKAGE_OUTPUT" -eq 1 ]]; then
+            package_output
+        fi
+        return 0
+    fi
+
+    die "No Docker build image found. Build one with: docker build --target builder -t operation-deadfall-build ."
 }
 
 resolve_settings() {

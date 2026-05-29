@@ -144,6 +144,14 @@ Or run the same executable from `engine\release\`.
 
 ### Dedicated server
 
+From a repo clone (recommended):
+
+```bash
+./scripts/run-dedicated-server.sh
+```
+
+Or invoke the binary directly:
+
 ```bash
 # Linux – headless, no window
 ./nzportable64-sdl -dedicated +map nzp_asylum
@@ -151,6 +159,8 @@ Or run the same executable from `engine\release\`.
 # Windows
 nzportable-sdl64.exe -dedicated +map nzp_asylum
 ```
+
+For Docker-based hosting, firewall ports, and production notes, see [HOSTING.md](HOSTING.md).
 
 ---
 

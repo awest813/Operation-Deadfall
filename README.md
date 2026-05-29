@@ -198,6 +198,7 @@ specs/
 ├── CONTENT_PIPELINE.md   Step-by-step guide for adding weapons, enemies, perks, maps
 └── weapon_balance.md     Weapon balance notes and tuning reference
 BUILD.md                  Engine build instructions
+HOSTING.md                Dedicated server and Docker hosting
 RUNNING_THE_GAME.md       Setup and launch instructions
 ```
 

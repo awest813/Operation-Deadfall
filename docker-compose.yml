@@ -1,0 +1,27 @@
+# Dedicated Operation Deadfall server (Docker).
+#
+# Prerequisites:
+#   1. Place NZ:P game data in ./nzp/ (same layout as run_game.sh).
+#   2. docker compose up --build
+#
+# Clients connect with: +connect <host-ip>:27500
+
+services:
+  deadfall-server:
+    build:
+      context: .
+      target: runtime
+    ports:
+      - "${OD_PORT_UDP:-27500}:27500/udp"
+      - "${OD_PORT_UDP_STATUS:-27501}:27501/udp"
+    volumes:
+      - ${OD_GAME_DIR:-./nzp}:/game/nzp:ro
+    environment:
+      OD_MAP: ${OD_MAP:-nzp_asylum}
+      OD_MAXPLAYERS: ${OD_MAXPLAYERS:-4}
+    command:
+      - "+map"
+      - "${OD_MAP:-nzp_asylum}"
+      - "+maxplayers"
+      - "${OD_MAXPLAYERS:-4}"
+    restart: unless-stopped

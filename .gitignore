@@ -8,6 +8,7 @@ engine/nzp/
 *.o.d
 engine/debug/
 engine/release/
+engine/dist/
 engine/libs-*/
 engine/*.tar.gz
 engine/shaders/generatebuiltinsl
