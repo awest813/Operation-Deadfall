@@ -167,9 +167,8 @@ make -C engine/qclib qcc    # builds engine/qclib/fteqcc.bin
 
 On Windows, use **`build_qc.cmd`** (or `powershell -File build_qc.ps1`) after building **`engine\qclib\fteqcc.bin`** with MinGW in MSYS2.
 
-See [BUILD.md](BUILD.md) for engine build options (Docker, Windows, cross-compile),
-[RUNNING_THE_GAME.md](RUNNING_THE_GAME.md) for directory layout, launch flags, config paths, and troubleshooting, and
-[HOSTING.md](HOSTING.md) for dedicated servers and Docker deployment.
+See [BUILD.md](BUILD.md) for engine build options (Docker, Windows, cross-compile) and
+[RUNNING_THE_GAME.md](RUNNING_THE_GAME.md) for directory layout, launch flags, config paths, and troubleshooting.
 
 ---
 
@@ -199,6 +198,7 @@ specs/
 ├── CONTENT_PIPELINE.md   Step-by-step guide for adding weapons, enemies, perks, maps
 └── weapon_balance.md     Weapon balance notes and tuning reference
 BUILD.md                  Engine build instructions
+HOSTING.md                Dedicated server and Docker hosting
 RUNNING_THE_GAME.md       Setup and launch instructions
 ```
 
