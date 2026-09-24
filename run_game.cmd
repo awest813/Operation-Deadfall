@@ -28,6 +28,11 @@ if /i "%~1"=="--" (
 )
 if /i "%~1"=="-h" goto show_help
 if /i "%~1"=="--help" goto show_help
+if /i "%~1"=="--setup" (
+  call "%ROOT%\setup_game.cmd"
+  shift
+  goto parse_args
+)
 if /i "%~1"=="--dist" (
   set "USE_DIST=%~2"
   if "!USE_DIST!"=="" (
@@ -86,6 +91,12 @@ if exist "!PARENT!\nzp\" (
 echo ERROR: Missing nzp\ game data. Expected either:
 echo   %ROOT%\nzp
 echo   !PARENT!\nzp
+if exist "%ROOT%\setup_game.cmd" (
+  echo.
+  echo Running one-time setup now to download and configure game assets...
+  call "%ROOT%\setup_game.cmd"
+  goto parse_args
+)
 echo Obtain nzp from NZ:P releases (see README Quick Start^).
 exit /b 1
 
@@ -118,6 +129,7 @@ if not "!USE_DIST!"=="" (
     exit /b 1
   )
   if exist "!D!\nzportable-sdl64.exe" set "EXE=!D!\nzportable-sdl64.exe"
+  if "!EXE!"=="" if exist "!D!\nzportable.exe" set "EXE=!D!\nzportable.exe"
   if "!EXE!"=="" if exist "!D!\fteqw.exe" set "EXE=!D!\fteqw.exe"
   if "!EXE!"=="" (
     echo ERROR: No nzportable-sdl64.exe or fteqw.exe in !D!\ >&2
@@ -128,12 +140,19 @@ if not "!USE_DIST!"=="" (
 
 :: Default search: packaged MinGW output, then release folder (MinGW then MSVC).
 if exist "%ROOT%\engine\dist\win11\nzportable-sdl64.exe" set "EXE=%ROOT%\engine\dist\win11\nzportable-sdl64.exe"
+if "!EXE!"=="" if exist "%ROOT%\engine\dist\win11\nzportable.exe" set "EXE=%ROOT%\engine\dist\win11\nzportable.exe"
 if "!EXE!"=="" if exist "%ROOT%\engine\release\nzportable-sdl64.exe" set "EXE=%ROOT%\engine\release\nzportable-sdl64.exe"
+if "!EXE!"=="" if exist "%ROOT%\engine\release\nzportable.exe" set "EXE=%ROOT%\engine\release\nzportable.exe"
 if "!EXE!"=="" if exist "%ROOT%\engine\dist\win11-msvc\fteqw.exe" set "EXE=%ROOT%\engine\dist\win11-msvc\fteqw.exe"
 if "!EXE!"=="" if exist "%ROOT%\engine\release\fteqw.exe" set "EXE=%ROOT%\engine\release\fteqw.exe"
 if "!EXE!"=="" if exist "%ROOT%\engine\dist\win11\fteqw.exe" set "EXE=%ROOT%\engine\dist\win11\fteqw.exe"
 
 if "!EXE!"=="" (
+  if exist "%ROOT%\setup_game.cmd" (
+    echo No Windows engine binary found. Running setup to prepare engine...
+    call "%ROOT%\setup_game.cmd"
+    goto parse_args
+  )
   echo ERROR: No Windows engine binary found.
   echo Build one: double-click build_engine.cmd or run:
   echo   build.bat --preset win11 --mingw --package

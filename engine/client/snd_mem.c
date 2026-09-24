@@ -864,7 +864,7 @@ static qboolean QDECL S_LoadWavSound (sfx_t *s, qbyte *data, size_t datalen, int
 		case 6/*WAVE_FORMAT_ALAW*/:				Con_Printf ("%s uses unsupported a-law format.\n", s->name); break;
 		case 7/*WAVE_FORMAT_MULAW*/:			Con_Printf ("%s uses unsupported mu-law format.\n", s->name); break;
 		case 0xfffe/*WAVE_FORMAT_EXTENSIBLE*/:
-		default:								Con_Printf ("%s has an unsupported format (%#"PRIX16").\n", s->name, info.format); break;
+		default:								Con_Printf ("%s has an unsupported format (0x%04x).\n", s->name, (unsigned int)info.format); break;
 		}
 		return false;
 	}

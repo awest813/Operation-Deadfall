@@ -2,7 +2,7 @@
 void() InitBodyQue;
 
 void() sci_think;
-void() hostage_pain;
+void(entity attacker, float damage) hostage_pain;
 void() hostage_think;
 void() hostage_die;
 void(entity stuff) spawn_zombie;

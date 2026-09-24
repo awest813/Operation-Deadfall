@@ -294,7 +294,7 @@ void () hostage_die =
 	setsize (self, VEC_ORIGIN, VEC_ORIGIN);
 };
 
-void () hostage_pain =
+void (entity attacker, float damage) hostage_pain =
 {
 	if (((random () * SECRET_NO_SHOOT) < SECRET_1ST_DOWN))
 	{

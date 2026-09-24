@@ -1222,6 +1222,11 @@ void () grunt_pain =
 	}
 };
 
+void (entity attacker, float damage) grunt_pain_th =
+{
+	grunt_pain();
+};
+
 void (vector stuff, vector ang) spawn_live_grunt =
 {
 	local entity grunt;
@@ -1240,7 +1245,7 @@ void (vector stuff, vector ang) spawn_live_grunt =
 	grunt.health = 180;
 	grunt.angles = ang;
 	grunt.max_health = grunt.health;
-	grunt.th_pain = grunt_pain;
+	grunt.th_pain = grunt_pain_th;
 	grunt.think = grunt_pain;
 	grunt.nextthink = time + 0.05;
 };

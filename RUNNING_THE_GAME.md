@@ -3,6 +3,16 @@
 This document explains how to set up and launch the game after building (or downloading) the
 engine binary. See [BUILD.md](BUILD.md) for compilation instructions.
 
+### Quickest Start (One-Click Setup)
+
+Run the automated setup script to download game assets, set up engine binaries, and compile the QuakeC module automatically:
+- **Windows**: `setup_game.cmd`
+- **Linux**: `./setup_game.sh`
+
+Once setup is complete, launch with:
+- **Windows**: `run_game.cmd`
+- **Linux**: `./run_game.sh`
+
 If you are working from a **git clone** of this repository, you can use **`./run_game.sh`**
 from the repo root: it picks a Linux binary under `engine/release/` or `engine/dist/`, passes
 `-basedir` automatically, and looks for `nzp/` either inside the repo or in the parent folder.
@@ -10,7 +20,7 @@ from the repo root: it picks a Linux binary under `engine/release/` or `engine/d
 On Windows, use **`run_game.cmd`** from the repo root the same way: it finds `nzp\`, picks
 `engine\dist\win11\nzportable-sdl64.exe` or `engine\release\nzportable-sdl64.exe` (or MSVC
 `fteqw.exe` if present), and passes `-basedir` so you do not need to copy the binary next to
-`nzp\`. You can still use the manual layout below if you prefer.
+`nzp\`. If game data is not found, it automatically prompts you to run setup.
 
 ---
 

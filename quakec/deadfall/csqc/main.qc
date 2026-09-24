@@ -43,11 +43,8 @@ void() CSQC_Init =
 
 
 
-void(float do2d) CSQC_UpdateView =
+void(float width, float height, float do2d) CSQC_UpdateView =
 {
-	float width,height;
-	width = stof(cvar_string("vid_conwidth"));
-	height = stof(cvar_string("vid_conheight"));
 
 	clearscene();
 

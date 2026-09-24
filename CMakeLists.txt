@@ -3,7 +3,7 @@
 #It uses system libraries, so it will have dependancy issues with public releases where those dependancies are distro/version-specific.
 #Public builds are still built using the (overcomplicated) traditional (g)makefile.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5...3.30)
 cmake_policy(SET CMP0063 NEW)
 
 PROJECT(FTEQuake)
@@ -113,7 +113,7 @@ ELSE()
 	ENDIF()
 ENDIF()
 
-SET(FTE_BUILD_CONFIG ${CMAKE_HOME_DIRECTORY}/engine/common/config_fteqw.h CACHE FILEPATH "Which build config file to use to control supported features.")
+SET(FTE_BUILD_CONFIG ${CMAKE_HOME_DIRECTORY}/engine/common/config_nzportable.h CACHE FILEPATH "Which build config file to use to control supported features.")
 SET(FTE_LIB_DEFINES ${FTE_LIB_DEFINES};CONFIG_FILE_NAME=${FTE_BUILD_CONFIG})
 SET(FTE_USE_SDL false CACHE BOOL "Force the use of SDL instead of using native builds.")
 
@@ -298,7 +298,7 @@ IF(CMAKE_BUILD_TYPE MATCHES "Debug")
 ENDIF()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FILE_OFFSET_BITS=64")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFTE_LIBRARY_PATH=${CMAKE_INSTALL_FULL_LIBDIR}/${FTE_INSTALL_LIBDIR} -DFTE_DATA_DIR=${CMAKE_INSTALL_FULL_DATAROOTDIR}")
+add_definitions(-DFTE_LIBRARY_PATH="${CMAKE_INSTALL_FULL_LIBDIR}/${FTE_INSTALL_LIBDIR}" -DFTE_DATA_DIR="${CMAKE_INSTALL_FULL_DATAROOTDIR}")
 
 FUNCTION(EMBED_PLUGIN_META PLUGNAME PLUGTITLE PLUGDESC)
 	SET_TARGET_PROPERTIES(plug_${PLUGNAME} PROPERTIES OUTPUT_NAME "${PLUGNAME}")
@@ -1134,7 +1134,7 @@ ELSE()
 	ENDIF()
 
 	SET(FTE_TOOL_QTV true CACHE BOOL "Compile qtv server.")
-	IF(FTE_TOOL_QTV)
+	IF(FTE_TOOL_QTV AND ZLIB_FOUND)
 		ADD_EXECUTABLE(qtv
 			fteqtv/netchan.c
 			fteqtv/parse.c

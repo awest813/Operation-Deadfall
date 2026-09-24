@@ -99,50 +99,38 @@ Optionally, place an **`lq1/`** folder (from [LibreQuake](https://github.com/lav
 next to `nzp/`. The run scripts detect it automatically and load it as a free Quake-asset layer
 alongside NZ:P data — no configuration needed.
 
-### If you cloned this repository (recommended for contributors)
+### One-Click Setup (Fastest)
 
-1. **Clone** the repo and add **`nzp/`** (NZ:P game data) in either place:
+Clone the repository and run the automated setup script for your platform:
 
-   - **Inside** the repo: `Operation-Deadfall/nzp/` — easy for a single-folder checkout; or
-   - **Next to** the repo: same parent folder as `Operation-Deadfall/`, i.e. `../nzp/` from the repo root.
+- **Windows**: Double-click **`setup_game.cmd`** (or run `setup_game.cmd` in cmd / PowerShell).
+- **Linux**: Run **`./setup_game.sh`**.
 
-   `./run_game.sh` detects both layouts. If an `lq1/` folder exists in the same location, it is
-   loaded automatically as a supplementary free-asset layer (LibreQuake mod.zip → `lq1/`).
+This automatically downloads required game assets into `nzp/`, sets up the engine binaries and SDL2 runtime, compiles the Operation Deadfall QuakeC bytecode, and validates that everything is ready to play.
 
-2. **Engine binary** — either download from
-   [Releases](https://github.com/awest813/Operation-Deadfall/releases/tag/bleeding-edge)
-   and copy the executable into `Operation-Deadfall/engine/release/`, **or** build locally (Linux):
+Then launch the game:
+- **Windows**: Double-click **`run_game.cmd`**
+- **Linux**: Run **`./run_game.sh`**
 
+### Manual Setup & Contributing
+
+#### Windows (from a clone)
+
+1. Put **`nzp\`** in the repo root or parent folder (or run `setup_game.cmd` to fetch it automatically).
+2. **Engine** — double-click **`build_engine.cmd`** (supports MSYS2 MinGW-w64 or Visual Studio + CMake) or download a release binary into `engine\release\`.
+3. **QuakeC** — run **`build_qc.cmd`** to compile and automatically deploy Deadfall bytecode to `nzp\`.
+4. **Run** — double-click **`run_game.cmd`** (e.g. `run_game.cmd -- +map ndu`).
+
+#### Linux (from a clone)
+
+1. Add **`nzp/`** in repo root or parent folder (or run `./setup_game.sh`).
+2. Install build packages and compile engine:
    ```bash
-   cd Operation-Deadfall
-   ./scripts/install-linux-build-deps.sh    # Debian/Ubuntu or Fedora — once per machine
-   ./build.sh --preset linux64 --package    # output also in engine/dist/linux64/
+   ./scripts/install-linux-build-deps.sh
+   ./build.sh --preset linux64 --package
    ```
-
-3. **Run** from the repo root:
-
-   ```bash
-   ./run_game.sh
-   ```
-
-   This passes `-basedir` so the engine finds `nzp/` without copying the binary next to it.
-   Extra engine flags work after `--`, for example: `./run_game.sh -- +map nzp_asylum`
-
-### Windows (from a clone)
-
-1. Put **`nzp\`** in the repo root or in the parent folder (same as Linux).
-2. **Engine** — download a release binary into `engine\release\`, **or** double-click **`build_engine.cmd`**
-   (needs [MSYS2](https://www.msys2.org/) MinGW-w64 on your `PATH`; see [BUILD.md](BUILD.md)).
-   That produces a ready-to-run folder at `engine\dist\win11\`.
-3. **Run** — double-click **`run_game.cmd`** or from a command prompt in the repo root:
-
-   ```bat
-   run_game.cmd
-   ```
-
-   Optional map load: `run_game.cmd -- +map nzp_asylum`
-
-4. **QuakeC** (optional) — after `fteqcc` is available (build with `mingw32-make -C engine\qclib qcc` in MSYS2, or set `FTEQCC`), run **`build_qc.cmd`**.
+3. Compile QuakeC: `./build_qc.sh`
+4. Run: `./run_game.sh` (e.g. `./run_game.sh -- +map ndu`)
 
 ### If you only have a ZIP or folder of binaries (no git clone)
 

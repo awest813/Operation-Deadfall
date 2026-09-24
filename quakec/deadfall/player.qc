@@ -875,7 +875,7 @@ void () player_pain6 = [ 19, player_run ]
 {
 };
 
-void () player_pain =
+void (entity attacker, float damage) player_pain =
 {
 	if (self.pain_finished > time)
 	{

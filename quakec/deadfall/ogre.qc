@@ -836,6 +836,11 @@ void () mutant_pain =
 };
 
 
+void (entity attacker, float damage) mutant_pain_th =
+{
+	mutant_pain();
+};
+
 void (vector stuff, vector ang) spawn_live_ogre =
 {
 	local entity ogre;
@@ -854,7 +859,7 @@ void (vector stuff, vector ang) spawn_live_ogre =
 	ogre.health = 180;
 	ogre.angles = ang;
 	ogre.max_health = ogre.health;
-	ogre.th_pain = mutant_pain;
+	ogre.th_pain = mutant_pain_th;
 	ogre.think = mutant_pain;
 	ogre.nextthink = time + 0.05;
 };

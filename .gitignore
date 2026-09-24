@@ -1,7 +1,14 @@
 # engine runtime-generated files
+conhistory.txt
+qconsole.log
 engine/conhistory.txt
 engine/qconsole.log
+nzp/
+lq1/
 engine/nzp/
+build/
+build-*/
+*.pfx
 
 #misc build artifacts
 *.o
@@ -20,6 +27,7 @@ plugins/cef/cef_windows64/
 #quakec build artifacts...
 build/qc/
 engine/qclib/fteqcc.bin
+engine/qclib/fteqcc.exe
 quakec/csaddon/csaddon.dat
 quakec/csaddon/csaddon.lno
 quakec/csqctest/csprogs.dat

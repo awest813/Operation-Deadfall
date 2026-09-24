@@ -61,7 +61,19 @@ This produces:
 build.bat --preset win11 --mingw --package
 ```
 
-For an MSVC-native build instead:
+For Visual Studio with CMake:
+
+```bat
+# Automatically detected and built by build_engine.cmd
+build_engine.cmd
+
+# Or manually:
+cmake -B build -S . -DFTE_TOOL_QTV=OFF
+cmake --build build --target fteqw --config Release
+cmake --build build --target fteqcc --config Release
+```
+
+For an MSVC-native nmake build:
 
 ```bat
 build.bat --preset win11

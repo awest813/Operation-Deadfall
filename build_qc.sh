@@ -104,6 +104,9 @@ run_compile "$ROOT_DIR/quakec/deadfall" "csprogs.src" "deadfall-csprogs.txt" "de
 
 copy_if_exists "$ROOT_DIR/quakec/qwprogs.dat" "$BUILDFOLDER"
 copy_if_exists "$ROOT_DIR/quakec/csprogs.dat" "$BUILDFOLDER"
+if [ -f "$ROOT_DIR/quakec/qwprogs.dat" ]; then
+	cp -f "$ROOT_DIR/quakec/qwprogs.dat" "$BUILDFOLDER/progs.dat"
+fi
 
 if [ -d "$ROOT_DIR/quakec/csaddon/src" ]; then
 	run_compile "$ROOT_DIR/quakec/csaddon/src" "csaddon.src" "csaddon.txt" "csaddon"
@@ -126,6 +129,18 @@ if [ -d "$ROOT_DIR/quakec/menusys" ]; then
 		)
 	fi
 fi
+
+# Auto-deploy compiled bytecode to nzp game folder if present
+for nzp_candidate in "$ROOT_DIR/nzp" "$(cd "$ROOT_DIR/.." && pwd)/nzp"; do
+	if [ -d "$nzp_candidate" ]; then
+		echo "Deploying compiled QC bytecode to $nzp_candidate ..."
+		[ -f "$ROOT_DIR/quakec/qwprogs.dat" ] && cp -f "$ROOT_DIR/quakec/qwprogs.dat" "$nzp_candidate/progs.dat"
+		[ -f "$ROOT_DIR/quakec/qwprogs.dat" ] && cp -f "$ROOT_DIR/quakec/qwprogs.dat" "$nzp_candidate/qwprogs.dat"
+		[ -f "$ROOT_DIR/quakec/csprogs.dat" ] && cp -f "$ROOT_DIR/quakec/csprogs.dat" "$nzp_candidate/csprogs.dat"
+		[ -f "$ROOT_DIR/quakec/menu.dat" ] && cp -f "$ROOT_DIR/quakec/menu.dat" "$nzp_candidate/menu.dat"
+		[ -f "$ROOT_DIR/quakec/csaddon/csaddon.dat" ] && cp -f "$ROOT_DIR/quakec/csaddon/csaddon.dat" "$nzp_candidate/csaddon.dat"
+	fi
+done
 
 if [ -z "$FTEQCC" ]; then
 	cat <<'EOF'

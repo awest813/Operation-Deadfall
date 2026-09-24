@@ -268,7 +268,7 @@ void() dog_painb14	=[	$painb14 ,	dog_painb15	] {};
 void() dog_painb15	=[	$painb15 ,	dog_painb16	] {};
 void() dog_painb16	=[	$painb16 ,	dog_run1	] {};
 
-void() dog_pain =
+void(entity attacker, float damage) dog_pain =
 {
 	sound (self, CHAN_VOICE, "dog/dpain1.wav", 1, ATTN_NORM);
 
@@ -338,6 +338,11 @@ void () woof_pain =
 	}
 };
 
+void (entity attacker, float damage) woof_pain_th =
+{
+	woof_pain();
+};
+
 void (vector stuff) spawn_live_dog =
 {
 	local entity dog;
@@ -355,7 +360,7 @@ void (vector stuff) spawn_live_dog =
 	dog.netname = "dead";
 	dog.health = 180;
 	dog.max_health = dog.health;
-	dog.th_pain = woof_pain;
+	dog.th_pain = woof_pain_th;
 	dog.think = woof_pain;
 	dog.nextthink = time + 0.05;
 };
