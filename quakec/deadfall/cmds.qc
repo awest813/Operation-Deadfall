@@ -302,6 +302,14 @@ void(string line) SV_ParseClientCommand =
 	}
 	else if (cmd == "invgive")
 	{
+		// invgive spawns arbitrary items for free - a debug tool, not a
+		// gameplay command.  Without this gate any client could hand itself
+		// an arsenal and bypass the entire point economy.
+		if (!cvar("sv_cheats"))
+		{
+			sprint(self, PRINT_MEDIUM, "invgive is only available with sv_cheats.\n");
+			return;
+		}
 		if (self.deadflag || self.current_slot==0)
 			return;
 		Cmd_InvGive(argv(1), stof(argv(2)), stof(argv(3)));

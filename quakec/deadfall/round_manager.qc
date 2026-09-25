@@ -324,9 +324,11 @@ void() RM_ResetToWaiting =
 };
 
 // Pick a random zombie spawn point using reservoir sampling.
-// Priority: info_zombie_spawn > info_player_deathmatch > info_player_start >
-// the NZ:P character spawn points (info_player_tank/nikolai/takeo/doctor),
-// which ship on stock NZ:P maps and are spread across the playable area.
+// Priority: the map's own "spawn_zombie" marker entities (every NZ:P map
+// ships them as intended zombie entry points) > info_zombie_spawn >
+// info_player_deathmatch > info_player_start > the NZ:P character spawn
+// points (info_player_tank/nikolai/takeo/doctor), which are spread across
+// the playable area.
 // count is deliberately not reset between fallback tiers: the early-return
 // after each tier means the fallback is only reached when count == 0, so the
 // sampling is always correct.  spawn_zombie itself vetoes spots with a
@@ -335,6 +337,20 @@ entity() RM_PickSpawnPoint =
 {
     local entity spot, chosen;
     local float  count;
+
+    count  = 0;
+    chosen = world;
+
+    spot = find(world, classname, "spawn_zombie");
+    while (spot)
+    {
+        count = count + 1;
+        if (random() < (1.0 / count))
+            chosen = spot;
+        spot = find(spot, classname, "spawn_zombie");
+    }
+    if (chosen != world)
+        return chosen;
 
     count  = 0;
     chosen = world;

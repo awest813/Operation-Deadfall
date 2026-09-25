@@ -758,6 +758,14 @@ void (entity stuff) spawn_zombie =
 	local entity zombie;
 	local entity te;
 
+	// NZ:P maps place marker entities whose classname IS "spawn_zombie";
+	// the engine dispatches them here as spawn functions with no arguments
+	// (stale parameter data then trips a QC exception).  Leave those
+	// markers intact - the round manager harvests them as wave entry
+	// points - and only run the real spawn path for round-manager calls.
+	if (self.classname != "round_manager")
+		return;
+
 	te = findradius (stuff.origin, 80);
 	while (te)
 	{
