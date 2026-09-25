@@ -32,7 +32,7 @@ Default game port: **UDP 27500** (Quake-family default). Open this port on your 
 Options:
 
 ```bash
-./scripts/run-dedicated-server.sh --map nzp_asylum --maxplayers 8 --port 27500
+./scripts/run-dedicated-server.sh --map ndu --maxplayers 8 --port 27500
 ```
 
 Clients connect from the game console or launch line:
@@ -74,7 +74,7 @@ Environment variables (optional):
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `OD_MAP` | `nzp_asylum` | Map loaded at startup |
+| `OD_MAP` | `ndu` | Map loaded at startup |
 | `OD_MAXPLAYERS` | `4` | Player cap |
 | `OD_PORT_UDP` | `27500` | Host UDP port mapping |
 | `OD_GAME_DIR` | `./nzp` | Host path mounted read-only at `/game/nzp` |
@@ -82,7 +82,7 @@ Environment variables (optional):
 Example with a custom map and eight players:
 
 ```bash
-OD_MAP=nzp_asylum OD_MAXPLAYERS=8 docker compose up --build
+OD_MAP=ndu OD_MAXPLAYERS=8 docker compose up --build
 ```
 
 ### 3. Firewall

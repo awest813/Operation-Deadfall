@@ -184,3 +184,18 @@ float(entity player, float cost) EC_CanAfford =
 {
     return (player.ammo_shells >= cost);
 };
+
+// TRUE when the perk's gameplay effect is actually implemented in the game
+// module.  Purchasable perks without a wired effect (see client.qc /
+// combat.qc / weapons.qc / player.qc) are refused at the perk machine so
+// players cannot spend points on nothing.  When you implement a new perk
+// effect, add its PERK_ID_* here.
+float(float id) EC_PerkWired =
+{
+    return (id == PERK_ID_POCKET    // reload/switch speed (weapons.qc)
+         || id == PERK_ID_SILENT    // reduced aggro radius (player.qc)
+         || id == PERK_ID_RANGED    // headshot severity bonus (combat.qc)
+         || id == PERK_ID_MOVE      // flat move-speed boost (client.qc)
+         || id == PERK_ID_BACK      // raised carry cap (mod_buy.qc)
+         || id == PERK_ID_CRITS);   // headshot severity bonus (combat.qc)
+};

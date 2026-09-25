@@ -298,7 +298,7 @@ resolve_settings
 
 # ---------- Docker path -------------------------------------------------------
 if [[ "$USE_DOCKER" -eq 1 ]]; then
-    ensure_docker_build
+    run_docker_build
 fi
 
 # ---------- native build ------------------------------------------------------

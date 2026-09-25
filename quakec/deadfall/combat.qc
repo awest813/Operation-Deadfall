@@ -139,7 +139,9 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage =
 		if (attacker.critical == 3)
 		{
 			severity = 0 + random()*20;
-			if (attacker.perk == 7)
+			if (attacker.perk == PERK_ID_RANGED)
+				severity = severity + 4;
+			if (attacker.perk == PERK_ID_CRITS)
 				severity = severity + 4;
 
 			if (attacker.class == 3)
@@ -381,7 +383,9 @@ void(entity targ, entity inflictor, entity attacker, float damage) X_Damage =
 		if (attacker.critical == 3)
 		{
 			severity = 0 + random()*20;
-			if (attacker.perk == 7)
+			if (attacker.perk == PERK_ID_RANGED)
+				severity = severity + 4;
+			if (attacker.perk == PERK_ID_CRITS)
 				severity = severity + 4;
 
 			if (attacker.class == 3)

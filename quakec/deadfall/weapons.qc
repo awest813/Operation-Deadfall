@@ -923,11 +923,11 @@ void() W_SetCurrentAmmo =
 			self.weaponmodel = "";
 		}
 		else
-			sound (self, CHAN_WEAPON, "misc/menu3.wav", 1, ATTN_NORM);
+			sound (self, CHAN_WEAPON, "sounds/misc/denybuy.wav", 1, ATTN_NORM);
 	}
 */
 //	else
-		sound (self, CHAN_WEAPON, "misc/menu3.wav", 1, ATTN_NORM);
+		sound (self, CHAN_WEAPON, "sounds/misc/denybuy.wav", 1, ATTN_NORM);
 
 		if (self.current_slot == 1)
 			x = GetItemName(ToIID(self.islot1));
@@ -2133,7 +2133,7 @@ float(float wid) ReloadDurationForWeapon =
 	// Pistols/SMGs/energy sidearms stay snappy.
 	if (ReloadIsLightClass(wid))
 	{
-		if (self.perk == 3)
+		if (self.perk == PERK_ID_POCKET)
 			return 0.8;
 		return 1.5;
 	}
@@ -2141,12 +2141,12 @@ float(float wid) ReloadDurationForWeapon =
 	// Heavy magazine-fed weapons take longer to cycle.
 	if (wid == IID_WP_FNFAL || wid == IID_WP_DKS1 || wid == IID_WP_JACKHAMMER)
 	{
-		if (self.perk == 3)
+		if (self.perk == PERK_ID_POCKET)
 			return 1.1;
 		return 2.2;
 	}
 
-	if (self.perk == 3)
+	if (self.perk == PERK_ID_POCKET)
 		return 1.0;
 	return 2.0;
 };
@@ -2591,7 +2591,7 @@ void () WeaponTouch =
 	if (!slotnum)
 		return;	//can't get it.
 
-	sound (other, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	sound (other, CHAN_BODY, "sounds/player/pickup.wav", 1, ATTN_NORM);
 
 	SetItemSlot(other, slotnum, self.islot1);
 
@@ -3244,7 +3244,7 @@ void () station_think =
 			{
 				if (self.chemcount <= 0)
 				{
-					sound (self, CHAN_BODY, "misc/menu2.wav", TRUE, ATTN_NORM);
+					sound (self, CHAN_BODY, "sounds/misc/denybuy.wav", TRUE, ATTN_NORM);
 					sprint (te, 2, "the shield generator is out of power.\n");
 					return;
 				}
@@ -3267,7 +3267,7 @@ void () station_think =
 			{
 				if (self.chemcount <= 0)
 				{
-					sound (self, CHAN_BODY, "misc/item1.wav", TRUE, ATTN_NORM);
+					sound (self, CHAN_BODY, "sounds/player/pickup.wav", TRUE, ATTN_NORM);
 					sprint (te, 2, "the autodoc is out of medical supplies.\n");
 					return;
 				}
@@ -3312,7 +3312,7 @@ void () station_think =
 			{
 				if (self.chemcount <= 0)
 				{
-					sound (self, CHAN_BODY, "misc/item1.wav", TRUE, ATTN_NORM);
+					sound (self, CHAN_BODY, "sounds/player/pickup.wav", TRUE, ATTN_NORM);
 					sprint (te, 2, "this mr.ammo is out of ammunition.\n");
 					return;
 				}
@@ -3903,7 +3903,7 @@ void () UseEquipment =
 	if (self.equipment == 7 && self.equipment_slot == 0)
 	{
 		sprint (self, PRINT_HIGH, "climbing gear in place.\n");
-		sound (self, CHAN_BODY, "misc/item2.wav", 1, ATTN_NORM);
+		sound (self, CHAN_BODY, "sounds/player/pickup.wav", 1, ATTN_NORM);
 		self.maxspeed = 100;
 		self.velocity_z = 0;
 		self.equipment_state = 1;
@@ -3911,7 +3911,7 @@ void () UseEquipment =
 	if (self.equipment == 7 && self.equipment_state == 1)
 	{
 		sprint (self, PRINT_HIGH, "climbing gear retrieved.\n");
-		sound (self, CHAN_BODY, "misc/item2.wav", 1, ATTN_NORM);
+		sound (self, CHAN_BODY, "sounds/player/pickup.wav", 1, ATTN_NORM);
 		self.grab = 0;
 		self.equipment_state = 0;
 		return;

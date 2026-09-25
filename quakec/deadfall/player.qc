@@ -22,7 +22,7 @@ void () Footstep =
 	if (self.sneak != 0)
 		return;
 
-	if (self.perk == 5)
+	if (self.perk == PERK_ID_SILENT)
 		r = 0.5;
 	else
 	{
@@ -34,24 +34,24 @@ void () Footstep =
 	if (world.worldtype == 1 || world.worldtype == 2)
 	{
 		if ((rand < 0.25))
-			sound (self, CHAN_ITEM, "player/step1.wav", r, ATTN_NORM);
+			sound (self, CHAN_ITEM, "sounds/player/footstep1.wav", r, ATTN_NORM);
 		else if ((rand < 0.5))
-			sound (self, CHAN_ITEM, "player/step2.wav", r, ATTN_NORM);
+			sound (self, CHAN_ITEM, "sounds/player/footstep2.wav", r, ATTN_NORM);
 		else if ((rand < 0.75))
-			sound (self, CHAN_ITEM, "player/step3.wav", r, ATTN_NORM);
+			sound (self, CHAN_ITEM, "sounds/player/footstep3.wav", r, ATTN_NORM);
 		else
-			sound (self, CHAN_ITEM, "player/step4.wav", r, ATTN_NORM);
+			sound (self, CHAN_ITEM, "sounds/player/footstep4.wav", r, ATTN_NORM);
 	}
 	if (world.worldtype == 0)
 	{
 		if ((rand < 0.25))
-			sound (self, CHAN_ITEM, "player/step1a.wav", r, ATTN_NORM);
+			sound (self, CHAN_ITEM, "sounds/player/footstep1.wav", r, ATTN_NORM);
 		else if ((rand < 0.5))
-			sound (self, CHAN_ITEM, "player/step2a.wav", r, ATTN_NORM);
+			sound (self, CHAN_ITEM, "sounds/player/footstep2.wav", r, ATTN_NORM);
 		else if ((rand < 0.75))
-			sound (self, CHAN_ITEM, "player/step3a.wav", r, ATTN_NORM);
+			sound (self, CHAN_ITEM, "sounds/player/footstep3.wav", r, ATTN_NORM);
 		else
-			sound (self, CHAN_ITEM, "player/step4a.wav", r, ATTN_NORM);
+			sound (self, CHAN_ITEM, "sounds/player/footstep4.wav", r, ATTN_NORM);
 	}
 };
 

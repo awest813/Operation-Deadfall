@@ -5,7 +5,7 @@
 #   ./scripts/run-dedicated-server.sh [options] [--] [extra engine args...]
 #
 # Options:
-#   --map NAME       Map to load (default: nzp_asylum)
+#   --map NAME       Map to load (default: ndu)
 #   --port PORT      UDP port (default: 27500, passed as +port)
 #   --maxplayers N   Max players (default: 4)
 #   -h, --help       Show help
@@ -15,7 +15,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-MAP="${OD_MAP:-nzp_asylum}"
+MAP="${OD_MAP:-ndu}"
 PORT="${OD_PORT:-27500}"
 MAXPLAYERS="${OD_MAXPLAYERS:-4}"
 EXTRA_ARGS=()
@@ -33,7 +33,7 @@ Requires nzp/ next to the repo or in the parent folder (same as run_game.sh).
 
 Examples:
   ./scripts/run-dedicated-server.sh
-  ./scripts/run-dedicated-server.sh --map nzp_asylum --maxplayers 8
+  ./scripts/run-dedicated-server.sh --map ndu --maxplayers 8
   ./scripts/run-dedicated-server.sh -- +sv_public 1
 
 Docker alternative: docker compose up --build (see HOSTING.md).
@@ -89,4 +89,4 @@ exec "$ROOT/run_game.sh" -- \
 	"+map" "$MAP" \
 	"+port" "$PORT" \
 	"+maxplayers" "$MAXPLAYERS" \
-	"${EXTRA_ARGS[@]}"
+	${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}

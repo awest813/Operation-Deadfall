@@ -30,7 +30,16 @@ void(float cost, float iid) BuyStackable =
 		return;
 	}
 
-	sound (self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	// Grant first, charge only on success — a full inventory must not
+	// swallow the purchase price.
+	if (!TryGiveStackable(self, iid, 1))
+	{
+		self.currentmenu = "none";
+		sprint(self, PRINT_HIGH, "no room to carry that.\n");
+		return;
+	}
+
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 	self.ammo_shells = self.ammo_shells - cost;
 
 	sprint(self, PRINT_HIGH, "you bought a ");
@@ -38,11 +47,6 @@ void(float cost, float iid) BuyStackable =
 	z = GetItemName(iid);
 	sprint(self, PRINT_HIGH, z);
 	sprint(self, PRINT_HIGH, "\n");
-
-	//put grenade in inventory
-	//finds existing grenades, otherwise, empty slot
-
-	TryGiveStackable(self, iid, 1);
 };
 
 void() BuyBandages =
@@ -68,7 +72,7 @@ void() BuyBandages =
 		return;
 	}
 
-	sound (self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 	self.bandages = self.bandages + 25;
 	self.ammo_shells = self.ammo_shells - 2;
 	if (self.bandages > 50)
@@ -113,12 +117,20 @@ void(float cost, float type) BuyChem =
 		return;
 	}
 
-	sound (self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	// Grant first, charge only on success — a full chem pouch must not
+	// swallow the purchase price.
+	if (!TryGiveStackable(self, type, 1))
+	{
+		self.currentmenu = "none";
+		sprint(self, PRINT_HIGH, "no room to carry that.\n");
+		return;
+	}
+
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 	self.ammo_shells = self.ammo_shells - cost;
 	chemname = GetItemName(type);
 	sprint(self, PRINT_HIGH, chemname);
 	sprint(self, PRINT_HIGH, " purchased.\n");
-	TryGiveStackable(self, type, 1);
 };
 
 void(string type) ChangeAmmo =
@@ -132,7 +144,7 @@ void(string type) ChangeAmmo =
 	}
 
 	
-	sound (self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 
 	if (self.current_slot == 1)
 		self.ammotype1 = type;
@@ -152,12 +164,12 @@ void (float wt, float cost, float wid) BuyWeapon =
 	if (self.ammo_shells < cost)
 	{
 		self.currentmenu = "none";
-		sound (self, CHAN_BODY, "misc/menu3.wav", 1, ATTN_IDLE);
+		sound (self, CHAN_BODY, "sounds/misc/denybuy.wav", 1, ATTN_IDLE);
 		sprint(self, PRINT_HIGH, "not enough money.\n");
 		return;
 	}
 
-	sound (self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 	self.ammo_shells = self.ammo_shells - cost;
 
 	sprint(self, PRINT_HIGH, "you bought ");
@@ -204,7 +216,7 @@ void (float cost, float item) BuyPerk =
 		return;
 	}
 	self.ammo_shells = self.ammo_shells - cost;
-	sound (self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 	sprint (self, PRINT_HIGH, "perk installed: ");
 	sprint (self, PRINT_HIGH, EC_PerkName(item));
 	sprint (self, PRINT_HIGH, ".\n");
@@ -237,7 +249,7 @@ void (float id) SelectTrait =
 		self.currentmenu = "none";
 		return;
 	}
-	sound (self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 	self.trait = id;
 	sprint (self, PRINT_HIGH, "trait selected: ");
 	sprint (self, PRINT_HIGH, TraitName(id));
@@ -272,7 +284,7 @@ void (float wt, float cost, float item) BuyArmor =
 		self.currentmenu = "none";
 		return;
 	}
-	sound (self, CHAN_BODY, "misc/item2.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 	self.ammo_shells = (self.ammo_shells - cost);
 //	self.armor_weight = wt;
 	self.armor = item;
@@ -292,12 +304,12 @@ void (float wt, float cost, float item) BuyArmor =
 	if (self.ammo_shells < cost)
 	{
 		self.currentmenu = "none";
-		sound (self, CHAN_BODY, "misc/menu3.wav", 1, ATTN_IDLE);
+		sound (self, CHAN_BODY, "sounds/misc/denybuy.wav", 1, ATTN_IDLE);
 		sprint(self, PRINT_HIGH, "not enough money.\n");
 		return;
 	}
 
-	sound (self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 	self.ammo_shells = self.ammo_shells - cost;
 
 	sprint(self, PRINT_HIGH, "you bought ");
@@ -332,7 +344,7 @@ void (float cost, float item) BuyEquipment =
 		self.currentmenu = "none";
 		return;
 	}
-	sound (self, CHAN_BODY, "items/item1.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 	self.equipment = item;
 	x = GetEquipmentName();
 	sprint (self, PRINT_HIGH, x);
@@ -359,7 +371,7 @@ void (float cost, float item) BuyProtect =
 		self.currentmenu = "none";
 		return;
 	}
-	sound (self, CHAN_BODY, "items/item1.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 	self.ammo_shells = (self.ammo_shells - cost);
 	self.protect = item;
 	x = GetProtectName();
@@ -377,13 +389,10 @@ float (float input) overweight =
 
 	tmp = input + self.weight;
 	max = self.max_weight;
-	if (self.class == TE_LIGHTNING2)
+	// Strong back perk raises the carry cap (mirrors PositionControl).
+	if (self.perk == PERK_ID_BACK)
 	{
-		max = max + SPAWNFLAG_LASER;
-	}
-	if (self.perk == TE_LAVASPLASH)
-	{
-		return (FALSE);
+		max = max + 25;
 	}
 	if (tmp > max)
 	{
@@ -919,7 +928,7 @@ if (!EC_GiveItem(iid))
 return;
 
 EC_SpendPoints(self, cost);
-sound(self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+sound(self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 sprint(self, PRINT_HIGH, "bought ");
 sprint(self, PRINT_HIGH, name);
 sprint(self, PRINT_HIGH, ".\n");
@@ -957,39 +966,42 @@ cost = ent.buy_cost;
 if (!cost)
 cost = EC_BOX_COST;
 
-if (!EC_CanAfford(self, cost))
-{
-sprint(self, PRINT_HIGH, "not enough money (");
-sprint(self, PRINT_HIGH, ftos(cost));
-sprint(self, PRINT_HIGH, " pts needed).\n");
-return;
-}
+	if (!EC_CanAfford(self, cost))
+	{
+	sprint(self, PRINT_HIGH, "not enough money (");
+	sprint(self, PRINT_HIGH, ftos(cost));
+	sprint(self, PRINT_HIGH, " pts needed).\n");
+	return;
+	}
 
-EC_SpendPoints(self, cost);
+	// Random weapon pool — BOX_POOL_SIZE entries (indices 0 .. BOX_POOL_SIZE-1).
+	// To add a weapon: append an "else if" branch, then increment BOX_POOL_SIZE.
+	r = floor(random() * BOX_POOL_SIZE);
+	if      (r ==  0) iid = IID_WP_USP;
+	else if (r ==  1) iid = IID_WP_DEAGLE;
+	else if (r ==  2) iid = IID_WP_NEEDLER;
+	else if (r ==  3) iid = IID_WP_MP9;
+	else if (r ==  4) iid = IID_WP_MP7;
+	else if (r ==  5) iid = IID_WP_PIPERIFLE;
+	else if (r ==  6) iid = IID_WP_WINCHESTER;
+	else if (r ==  7) iid = IID_WP_MOSSBERG;
+	else if (r ==  8) iid = IID_WP_JACKHAMMER;
+	else if (r ==  9) iid = IID_WP_RANGEMASTER;
+	else if (r == 10) iid = IID_WP_AK112;
+	else if (r == 11) iid = IID_WP_AK74;
+	else if (r == 12) iid = IID_WP_ALIENBLASTER;
+	else              iid = IID_WP_ROCKETLAUNCHER;  // index 13 = BOX_POOL_SIZE-1
 
-// Random weapon pool — BOX_POOL_SIZE entries (indices 0 .. BOX_POOL_SIZE-1).
-// To add a weapon: append an "else if" branch, then increment BOX_POOL_SIZE.
-r = floor(random() * BOX_POOL_SIZE);
-if      (r ==  0) iid = IID_WP_USP;
-else if (r ==  1) iid = IID_WP_DEAGLE;
-else if (r ==  2) iid = IID_WP_NEEDLER;
-else if (r ==  3) iid = IID_WP_MP9;
-else if (r ==  4) iid = IID_WP_MP7;
-else if (r ==  5) iid = IID_WP_PIPERIFLE;
-else if (r ==  6) iid = IID_WP_WINCHESTER;
-else if (r ==  7) iid = IID_WP_MOSSBERG;
-else if (r ==  8) iid = IID_WP_JACKHAMMER;
-else if (r ==  9) iid = IID_WP_RANGEMASTER;
-else if (r == 10) iid = IID_WP_AK112;
-else if (r == 11) iid = IID_WP_AK74;
-else if (r == 12) iid = IID_WP_ALIENBLASTER;
-else              iid = IID_WP_ROCKETLAUNCHER;  // index 13 = BOX_POOL_SIZE-1
+	// Grant first, charge only on success — a full inventory must not
+	// swallow the spin cost.
+	if (!EC_GiveItem(iid))
+	return;
 
-sound(self, CHAN_BODY, "misc/item2.wav", 1, ATTN_NORM);
-EC_GiveItem(iid);
-sprint(self, PRINT_HIGH, "mystery box: ");
-sprint(self, PRINT_HIGH, GetItemName(iid));
-sprint(self, PRINT_HIGH, "!\n");
+	EC_SpendPoints(self, cost);
+	sound(self, CHAN_BODY, "sounds/misc/ching.wav", 1, ATTN_NORM);
+	sprint(self, PRINT_HIGH, "mystery box: ");
+	sprint(self, PRINT_HIGH, GetItemName(iid));
+	sprint(self, PRINT_HIGH, "!\n");
 };
 
 // ---------------------------------------------------------------------------
@@ -1018,11 +1030,24 @@ sprint(self, PRINT_HIGH, "perk machine not configured (missing buy_item).\n");
 return;
 }
 
-if (self.perk == perk_id)
-{
-sprint(self, PRINT_HIGH, "you already have that perk.\n");
-return;
-}
+	if (self.perk == perk_id)
+	{
+	sprint(self, PRINT_HIGH, "you already have that perk.\n");
+	return;
+	}
+
+	if (!EC_PerkWired(perk_id))
+	{
+	centerprint(self, "^1This perk machine is not yet wired up. Nothing would happen.");
+	sprint(self, PRINT_HIGH, "that perk has no effect yet (try another machine).\n");
+	return;
+	}
+
+	if (self.perk)
+	{
+	sprint(self, PRINT_HIGH, strcat("^3warning: this will replace your ",
+	                                EC_PerkName(self.perk), ".\n"));
+	}
 
 cost = ent.buy_cost;
 if (!cost)
@@ -1038,7 +1063,7 @@ return;
 
 EC_SpendPoints(self, cost);
 self.perk = perk_id;
-sound(self, CHAN_BODY, "misc/item1.wav", 1, ATTN_NORM);
+sound(self, CHAN_BODY, "sounds/misc/buy.wav", 1, ATTN_NORM);
 sprint(self, PRINT_HIGH, "perk installed: ");
 sprint(self, PRINT_HIGH, EC_PerkName(perk_id));
 sprint(self, PRINT_HIGH, ".\n");
@@ -1182,7 +1207,11 @@ if (!cost)
 cost = EC_PerkCost(perk_id);
 
 if (power_on)
+{
 msg = strcat(EC_PerkName(perk_id), "\n^2[", ftos(cost), " pts - press BUY]");
+if (!EC_PerkWired(perk_id))
+msg = strcat(msg, "\n^1(effect not yet implemented)");
+}
 else
 msg = strcat(EC_PerkName(perk_id), "\n^1[Power required - find the power switch]");
 centerprint(other, msg);
@@ -1234,7 +1263,7 @@ void() power_switch_activate =
 	while (p)
 	{
 		centerprint(p, "^3POWER ON!\nPerk machines and mystery box are now active!");
-		sound(p, CHAN_BODY, "misc/basekey.wav", 1, ATTN_NORM);
+		sound(p, CHAN_BODY, "sounds/misc/electric_bolt.wav", 1, ATTN_NORM);
 		p = find(p, classname, "player");
 	}
 

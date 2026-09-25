@@ -16,12 +16,9 @@ services:
       - "${OD_PORT_UDP_STATUS:-27501}:27501/udp"
     volumes:
       - ${OD_GAME_DIR:-./nzp}:/game/nzp:ro
-    environment:
-      OD_MAP: ${OD_MAP:-nzp_asylum}
-      OD_MAXPLAYERS: ${OD_MAXPLAYERS:-4}
     command:
       - "+map"
-      - "${OD_MAP:-nzp_asylum}"
+      - "${OD_MAP:-ndu}"
       - "+maxplayers"
       - "${OD_MAXPLAYERS:-4}"
     restart: unless-stopped

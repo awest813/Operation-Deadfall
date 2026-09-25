@@ -852,7 +852,8 @@ float(vector v) pointcontents           = #41;          // returns a CONTENT_*
 // #42 was removed
 float(float f) fabs = #43;
 vector(entity e, float speed) aim = #44;                // returns the shooting vector
-float(string s) cvar = #45;                                             // return cvar.value
+float(string s) cvar = #45;
+void(string name, string value) registercvar = #93;                                             // return cvar.value
 void(string s) localcmd = #46;                                  // put string into local que
 entity(entity e) nextent = #47;                                 // for looping through all ents
 // #48 was removed

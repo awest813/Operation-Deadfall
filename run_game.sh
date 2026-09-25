@@ -170,7 +170,7 @@ See RUNNING_THE_GAME.md."
 		;;
 	Linux)
 		EXE="$(pick_linux_binary)"
-		exec "$EXE" -basedir "$BASEDIR" "${LQ1_ARGS[@]}" "${GAME_ARGS[@]}"
+		exec "$EXE" -basedir "$BASEDIR" ${LQ1_ARGS[@]+"${LQ1_ARGS[@]}"} ${GAME_ARGS[@]+"${GAME_ARGS[@]}"}
 		;;
 	*)
 		die "Unsupported OS: $(uname -s)"

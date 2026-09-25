@@ -329,9 +329,9 @@ void () health_touch =
 		sprint (other, PRINT_HIGH, "picked up a medpack.\n");
 
 		if (random()*4 <= 2)
-			sound (other, CHAN_ITEM, "misc/item1.wav", 1, ATTN_NORM);
+			sound (other, CHAN_ITEM, "sounds/player/pickup.wav", 1, ATTN_NORM);
 		else
-			sound (other, CHAN_ITEM, "misc/item2.wav", 1, ATTN_NORM);
+			sound (other, CHAN_ITEM, "sounds/player/pickup.wav", 1, ATTN_NORM);
 
 		self.model = string_null;
 		self.solid = SOLID_NOT;

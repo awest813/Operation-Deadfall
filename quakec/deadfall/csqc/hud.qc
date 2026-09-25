@@ -599,7 +599,7 @@ void(float sw, float sh) HUD_DrawFlash =
         return;
 
     remain = hud_flash_endtime - time;
-    // Fade in during first 0.4 s, hold, fade out during last 0.6 s.
+    // Fade in over the first 1 s, then fade out over the remaining 2 s.
     if (remain > 2.0)
         alpha = (3.0 - remain) / 1.0;  // fade in
     else

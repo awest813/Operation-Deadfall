@@ -4,7 +4,7 @@ setlocal EnableExtensions EnableDelayedExpansion
 :: Launch Operation Deadfall from a repo clone on Windows (like ./run_game.sh on Linux).
 :: Put nzp\ inside the repo root or in the parent folder, then double-click or:
 ::   run_game.cmd
-::   run_game.cmd -- +map nzp_asylum
+::   run_game.cmd -- +map ndu
 
 set "ROOT=%~dp0"
 set "ROOT=%ROOT:~0,-1%"
@@ -91,7 +91,8 @@ if exist "!PARENT!\nzp\" (
 echo ERROR: Missing nzp\ game data. Expected either:
 echo   %ROOT%\nzp
 echo   !PARENT!\nzp
-if exist "%ROOT%\setup_game.cmd" (
+if exist "%ROOT%\setup_game.cmd" if not defined SETUP_NZP_TRIED (
+  set "SETUP_NZP_TRIED=1"
   echo.
   echo Running one-time setup now to download and configure game assets...
   call "%ROOT%\setup_game.cmd"
@@ -148,7 +149,8 @@ if "!EXE!"=="" if exist "%ROOT%\engine\release\fteqw.exe" set "EXE=%ROOT%\engine
 if "!EXE!"=="" if exist "%ROOT%\engine\dist\win11\fteqw.exe" set "EXE=%ROOT%\engine\dist\win11\fteqw.exe"
 
 if "!EXE!"=="" (
-  if exist "%ROOT%\setup_game.cmd" (
+  if exist "%ROOT%\setup_game.cmd" if not defined SETUP_ENGINE_TRIED (
+    set "SETUP_ENGINE_TRIED=1"
     echo No Windows engine binary found. Running setup to prepare engine...
     call "%ROOT%\setup_game.cmd"
     goto parse_args

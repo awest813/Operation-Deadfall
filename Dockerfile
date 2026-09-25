@@ -40,8 +40,5 @@ COPY --from=builder /src/engine/dist/linux64/nzportable-sdl2 /usr/local/bin/nzpo
 WORKDIR /game
 EXPOSE 27500/udp 27501/udp
 
-ENV OD_MAP=nzp_asylum
-ENV OD_MAXPLAYERS=4
-
 ENTRYPOINT ["/usr/local/bin/nzportable64-sdl", "-basedir", "/game", "-nohome", "-dedicated"]
-CMD ["+map", "nzp_asylum", "+maxplayers", "4"]
+CMD ["+map", "ndu", "+maxplayers", "4"]

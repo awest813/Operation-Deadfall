@@ -142,9 +142,14 @@ void() main =
 	precache_file ("gfx/p_multi.lmp");
 
 // sounds loaded by C code
-	precache_sound ("misc/menu1.wav");
-	precache_sound ("misc/menu2.wav");
-	precache_sound ("misc/menu3.wav");
+	precache_sound ("sounds/menu/navigate.wav");
+	precache_sound ("sounds/menu/enter.wav");
+	precache_sound ("sounds/rounds/nround.wav");
+	precache_sound ("sounds/misc/electric_bolt.wav");
+	precache_sound ("sounds/misc/denybuy.wav");
+	precache_sound ("sounds/misc/buy.wav");
+	precache_sound ("sounds/misc/ching.wav");
+	precache_sound ("misc/menu3.wav");   // game-over sting (LibreQuake layer)
 
 	precache_sound ("ambience/water1.wav");
 	precache_sound ("ambience/wind2.wav");
@@ -390,6 +395,7 @@ void() worldspawn =
 	// Read performance preset before create_referees() so the round manager
 	// and all subsystems start with the correct settings.
 	// Server operators can tune this via: set od_perf_preset 0|1|2
+	registercvar("od_perf_preset", "1");	// default Medium (README table)
 	perf_preset = cvar("od_perf_preset");
 	if (perf_preset < PERF_LOW || perf_preset > PERF_HIGH)
 		perf_preset = PERF_MEDIUM;
@@ -575,14 +581,10 @@ void() worldspawn =
 	precache_model ("progs/s_light.spr");
 
 	precache_sound ("misc/thud.wav");
-	precache_sound ("player/step1.wav");
-	precache_sound ("player/step2.wav");
-	precache_sound ("player/step3.wav");
-	precache_sound ("player/step4.wav");
-	precache_sound ("player/step1a.wav");
-	precache_sound ("player/step2a.wav");
-	precache_sound ("player/step3a.wav");
-	precache_sound ("player/step4a.wav");
+	precache_sound ("sounds/player/footstep1.wav");
+	precache_sound ("sounds/player/footstep2.wav");
+	precache_sound ("sounds/player/footstep3.wav");
+	precache_sound ("sounds/player/footstep4.wav");
 	precache_sound ("dog/dattack1.wav");
 	precache_sound ("dog/ddeath.wav");
 	precache_sound ("dog/dpain1.wav");
@@ -688,9 +690,9 @@ void() worldspawn =
 	precache_sound ("vomitus/v_sight1.wav");
 
 	// Item pickup sounds (used in items.qc, mod_buy.qc, weapons.qc)
-	precache_sound ("misc/item1.wav");
-	precache_sound ("misc/item2.wav");
-	precache_sound ("items/item1.wav");
+	precache_sound ("sounds/player/pickup.wav");
+	precache_sound ("sounds/misc/buy.wav");
+	precache_sound ("sounds/misc/ching.wav");
 
 	// Weapon sounds (used in weapons.qc)
 	precache_sound ("misc/weapon.wav");

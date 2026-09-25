@@ -120,9 +120,14 @@ TOP PERFORMANCE BOTTLENECKS & FIXES
    (zombie_idle_sound_time / zombie_pain_sound_time / zombie_attack_sound_time
    globals, zombie.qc).
 
+10. [FIXED] HUD live-player-count scan — PlayerPostThink walked the entire
+    edict pool per player per frame just to keep the "OPS:" stat fresh.
+    Fix: shared cache refreshed at most twice a second (client.qc,
+    hud_lpc_cache / hud_lpc_time globals).
+
 POLISH IMPROVEMENTS  (see also hud.qc, player.qc, zombie.qc, client.qc)
 ───────────────────────────────────────────────────────────────────────────
-1. [NEW] 3-2-1 countdown during INTRO phase — fires misc/menu1.wav ticks and
+1. [NEW] 3-2-1 countdown during INTRO phase — fires sounds/menu/navigate.wav ticks and
    bprint messages at 3/2/1 s before the first zombie spawn.  Builds tension
    and mirrors the intermission countdown already present before this change.
    The INTRO state now tracks self.cnt (same pattern as intermission).
@@ -318,15 +323,33 @@ void() RM_ResetToWaiting =
     dprint("RM: reset to WAITING (no connected players)\n");
 };
 
-// Pick a random zombie spawn point using reservoir sampling.
-// Priority: info_zombie_spawn > info_player_deathmatch > info_player_start.
-// count is deliberately not reset between fallback tiers: the early-return
-// after each tier means the fallback is only reached when count == 0,
-// so the sampling is always correct.
+// True when no live player stands within 128 units of the spot (spawn_zombie
+// vetoes spots with a player within 80 units, so do not pick those).
+float(entity spot) RM_SpotIsClear =
+{
+    local entity te;
+
+    te = findradius(spot.origin, 128);
+    while (te)
+    {
+        if (te.classname == "player" && te.health > 0)
+            return FALSE;
+        te = te.chain;
+    }
+    return TRUE;
+};
+
+// Pick a random zombie spawn point using reservoir sampling, preferring
+// spots away from players.  Priority: info_zombie_spawn >
+// info_player_deathmatch > info_player_start.  count is deliberately not
+// reset between fallback tiers: the early-return after each tier means the
+// fallback is only reached when count == 0, so the sampling is always
+// correct.  Each tier runs twice: first considering only clear spots, then
+// (if the map has no clear spot at all) any spot of that tier.
 entity() RM_PickSpawnPoint =
 {
     local entity spot, chosen;
-    local float  count;
+    local float  count, pass;
 
     count  = 0;
     chosen = world;
@@ -340,23 +363,83 @@ entity() RM_PickSpawnPoint =
         spot = find(spot, classname, "info_zombie_spawn");
     }
     if (chosen != world)
-        return chosen;  // found ≥1 info_zombie_spawn; count == 0 never reached below
-
-    // Fallback: deathmatch spawn points.
-    // count is still 0 here (the tier above returned early if any found).
-    spot = find(world, classname, "info_player_deathmatch");
-    while (spot)
     {
-        count = count + 1;
-        if (random() < (1.0 / count))
-            chosen = spot;
-        spot = find(spot, classname, "info_player_deathmatch");
+        if (RM_SpotIsClear(chosen))
+            return chosen;
+        count = 0;
+        chosen = world;
+        spot = find(world, classname, "info_zombie_spawn");
+        while (spot)
+        {
+            if (RM_SpotIsClear(spot))
+            {
+                count = count + 1;
+                if (random() < (1.0 / count))
+                    chosen = spot;
+            }
+            spot = find(spot, classname, "info_zombie_spawn");
+        }
+        if (chosen != world)
+            return chosen;
+        count = 0;
+        chosen = world;
+        spot = find(world, classname, "info_zombie_spawn");
+        while (spot)
+        {
+            count = count + 1;
+            if (random() < (1.0 / count))
+                chosen = spot;
+            spot = find(spot, classname, "info_zombie_spawn");
+        }
+        if (chosen != world)
+            return chosen;
     }
-    if (chosen != world)
-        return chosen;
 
-    // Last resort: any player start.
-    return find(world, classname, "info_player_start");
+    pass = 0;
+    while (pass < 2)
+    {
+        count  = 0;
+        chosen = world;
+        spot = find(world, classname, "info_player_deathmatch");
+        while (spot)
+        {
+            if (pass == 0 && !RM_SpotIsClear(spot))
+            {
+                spot = find(spot, classname, "info_player_deathmatch");
+                continue;
+            }
+            count = count + 1;
+            if (random() < (1.0 / count))
+                chosen = spot;
+            spot = find(spot, classname, "info_player_deathmatch");
+        }
+        if (chosen != world)
+            return chosen;
+        pass = pass + 1;
+    }
+
+    // Last resort: any player start, then the NZ:P character spawn points
+    // (info_player_tank/nikolai/takeo/doctor) which ship on stock NZ:P maps
+    // and are spread across the playable area - the closest thing to real
+    // zombie entry points on maps without info_zombie_spawn placements.
+    spot = find(world, classname, "info_player_start");
+    if (spot != world)
+        return spot;
+
+    spot = find(world, classname, "info_player_tank");
+    if (spot != world)
+        return spot;
+    spot = find(world, classname, "info_player_nikolai");
+    if (spot != world)
+        return spot;
+    spot = find(world, classname, "info_player_takeo");
+    if (spot != world)
+        return spot;
+    spot = find(world, classname, "info_player_doctor");
+    if (spot != world)
+        return spot;
+
+    return world;
 };
 
 // Attempt to spawn one zombie.
@@ -447,7 +530,7 @@ void() RoundManager_Think =
                              ftos(rnd1_count), " zombies]^b **\n"));
             RM_CenterprintAll(strcat("ROUND 1\nBegins in 5 seconds...\n(",
                                      ftos(rnd1_count), " zombies)"));
-            RM_SoundAll("misc/power.wav", 0.5);
+            RM_SoundAll("sounds/rounds/nround.wav", 0.5);
         }
         self.nextthink = time + 1;
         return;
@@ -476,17 +559,17 @@ void() RoundManager_Think =
         if (self.cnt == ROUND_INTRO_DURATION - 3)
         {
             bprint(2, "^4** 3 **\n");
-            RM_SoundAll("misc/menu1.wav", 0.8);
+            RM_SoundAll("sounds/menu/navigate.wav", 0.8);
         }
         if (self.cnt == ROUND_INTRO_DURATION - 2)
         {
             bprint(2, "^4** 2 **\n");
-            RM_SoundAll("misc/menu1.wav", 0.8);
+            RM_SoundAll("sounds/menu/navigate.wav", 0.8);
         }
         if (self.cnt == ROUND_INTRO_DURATION - 1)
         {
             bprint(2, "^4** 1 **\n");
-            RM_SoundAll("misc/menu1.wav", 1.0);
+            RM_SoundAll("sounds/menu/navigate.wav", 1.0);
         }
 
         if (time >= round_timer)
@@ -615,7 +698,7 @@ void() RoundManager_Think =
             bprint(2, ftos(current_round));
             bprint(2, " COMPLETE!^b **\n");
             RM_CenterprintAll(strcat("ROUND ", ftos(current_round), " COMPLETE!\nNext round in 10 seconds..."));
-            RM_SoundAll("items/protect2.wav", 0.8);
+            RM_SoundAll("sounds/misc/ching.wav", 0.8);
             dprint("RM: ACTIVE→INTERMISSION\n");
         }
         self.nextthink = time + 1;
@@ -647,17 +730,17 @@ void() RoundManager_Think =
         if (self.cnt == ROUND_INTERMISSION - 3)
         {
             bprint(2, "^4** 3 **\n");
-            RM_SoundAll("misc/menu1.wav", 0.8);   // audible countdown tick
+            RM_SoundAll("sounds/menu/navigate.wav", 0.8);   // audible countdown tick
         }
         if (self.cnt == ROUND_INTERMISSION - 2)
         {
             bprint(2, "^4** 2 **\n");
-            RM_SoundAll("misc/menu1.wav", 0.8);
+            RM_SoundAll("sounds/menu/navigate.wav", 0.8);
         }
         if (self.cnt == ROUND_INTERMISSION - 1)
         {
             bprint(2, "^4** 1 **\n");
-            RM_SoundAll("misc/menu1.wav", 1.0);   // louder on the final tick
+            RM_SoundAll("sounds/menu/navigate.wav", 1.0);   // louder on the final tick
         }
 
         if (time >= round_timer)
@@ -674,13 +757,13 @@ void() RoundManager_Think =
             {
                 bprint(2, strcat("^3** ^bMILESTONE — ROUND ", ftos(current_round),
                                  "!  [", ftos(next_count), " zombies]^b **\n"));
-                RM_SoundAll("misc/menu3.wav", 1.0);
+                RM_SoundAll("sounds/menu/enter.wav", 1.0);
             }
             else
             {
                 bprint(2, strcat("^4** ^bROUND ", ftos(current_round),
                                  " BEGINS!  [", ftos(next_count), " zombies]^b **\n"));
-                RM_SoundAll("misc/power.wav", 0.5);
+                RM_SoundAll("sounds/rounds/nround.wav", 0.5);
             }
             RM_CenterprintAll(strcat("ROUND ", ftos(current_round),
                                      "\nBegins now!\n(", ftos(next_count), " zombies)"));

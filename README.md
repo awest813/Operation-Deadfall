@@ -106,7 +106,20 @@ Clone the repository and run the automated setup script for your platform:
 - **Windows**: Double-click **`setup_game.cmd`** (or run `setup_game.cmd` in cmd / PowerShell).
 - **Linux**: Run **`./setup_game.sh`**.
 
-This automatically downloads required game assets into `nzp/`, sets up the engine binaries and SDL2 runtime, compiles the Operation Deadfall QuakeC bytecode, and validates that everything is ready to play.
+This automatically downloads the NZ:P game data into `nzp/`, compiles the Operation
+Deadfall QuakeC bytecode and deploys it to `nzp/`, deploys placeholder UI images
+(see [specs/asset_audit.md](specs/asset_audit.md)), and installs an engine binary:
+from this repository's [Releases](https://github.com/awest813/Operation-Deadfall/releases)
+when available, otherwise you build it (double-click `build_engine.cmd` on Windows,
+or run `./scripts/install-linux-build-deps.sh && ./build.sh --preset linux64 --package`
+on Linux — setup prints the exact steps if it cannot find an engine).
+
+> **Important:** do NOT use the NZ:P nightly engine binary with this mod — that
+> engine build is not compatible with the Operation Deadfall QuakeC and crashes
+> on map load. The NZ:P bundle is used for game data only.
+
+Optional flags: `--with-librequake` / `-WithLibreQuake` also fetches the optional
+LibreQuake asset layer; `--launch` / `-Launch` starts the game when setup finishes.
 
 Then launch the game:
 - **Windows**: Double-click **`run_game.cmd`**
@@ -163,13 +176,19 @@ See [BUILD.md](BUILD.md) for engine build options (Docker, Windows, cross-compil
 ## Repository Layout
 
 ```
+setup_game.sh    One-click setup: NZ:P data, QuakeC compile, validation (Linux)
+setup_game.cmd   Same idea on Windows (delegates to scripts/setup_game.ps1)
 run_game.sh      Launch helper when nzp/ sits next to the repo (Linux)
 run_game.cmd     Same idea on Windows (double-click or run from cmd)
 build_engine.cmd One-step MinGW engine build (calls build.bat --mingw --package)
 build_qc.cmd     Build QuakeC on Windows (runs build_qc.ps1)
 build_qc.ps1     QuakeC compile script for PowerShell
+install_gui.sh   Graphical setup wizard (Linux; runs scripts/install_gui.py)
 scripts/
-└── install-linux-build-deps.sh   One-shot apt/dnf packages for ./build.sh
+├── install-linux-build-deps.sh   One-shot apt/dnf packages for ./build.sh
+├── run-dedicated-server.sh       Headless dedicated-server launcher
+├── setup_game.ps1                Windows setup implementation for setup_game.cmd
+└── install_gui.py                Tk setup wizard for install_gui.sh
 engine/          FTEQW engine source (C)
 quakec/
 └── deadfall/    Operation Deadfall game module (QuakeC)

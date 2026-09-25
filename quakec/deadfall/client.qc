@@ -420,33 +420,48 @@ entity() SelectSpawnPoint =
 			ent1 = "spawn2";
 	}    
    
-// choose a info_player_deathmatch point
+// choose a spawn point: the preferred (mod-specific) classname first, then
+// fall back to the standard Quake spawn points so stock maps - which only
+// ship info_player_deathmatch / info_player_start - still work.
 
-// ok, find all spots that don't have players nearby
-
-	spots = world;
-	spot = find (world, classname, ent1);       
-	while (spot)
+	while (1)
 	{
-		totalspots = totalspots + 1;
-
-		thing=findradius(spot.origin, 40);
-		pcount=0;               
-		while (thing)
+		// ok, find all spots that don't have players nearby
+		spots = world;
+		numspots = 0;
+		totalspots = 0;
+		spot = find (world, classname, ent1);
+		while (spot)
 		{
-			if (thing.classname == "player")
-				pcount=pcount + 1;                      
-			thing=thing.chain;      
-		}
-		if (pcount == 0)
-		{
-			spot.goalentity = spots;
-			spots = spot;
-			numspots = numspots + 1;
+			totalspots = totalspots + 1;
+
+			thing=findradius(spot.origin, 40);
+			pcount=0;
+			while (thing)
+			{
+				if (thing.classname == "player")
+					pcount=pcount + 1;
+				thing=thing.chain;
+			}
+			if (pcount == 0)
+			{
+				spot.goalentity = spots;
+				spots = spot;
+				numspots = numspots + 1;
+			}
+
+			// Get the next spot in the chain
+			spot = find (spot, classname, ent1);
 		}
 
-		// Get the next spot in the chain
-		spot = find (spot, classname, ent1);                
+		if (totalspots > 0)
+			break;
+		if (ent1 == "info_player_deathmatch")
+			ent1 = "info_player_start";
+		else if (ent1 != "info_player_start")
+			ent1 = "info_player_deathmatch";
+		else
+			break;	// no spawn points at all; callers handle null
 	}
 
 
@@ -1230,6 +1245,7 @@ void () WeightControl =
 void () PositionControl =
 {
 	local float exp;
+	local float wcap;
 
 	if (self.position == 0)
 		self.view_ofs = '0 0 22';
@@ -1259,9 +1275,18 @@ void () PositionControl =
 	else //if (self.position == 2)
 		self.maxspeed = 50;
 
-	if (self.weight > self.max_weight) //this is the penalty for being overweight.
+	// Bonus movement perk: flat boost before encumbrance scaling.
+	if (self.perk == PERK_ID_MOVE)
+		self.maxspeed = self.maxspeed + 50;
+
+	// Strong back perk: raises the carry cap above the class baseline.
+	wcap = self.max_weight;
+	if (self.perk == PERK_ID_BACK)
+		wcap = wcap + 25;
+
+	if (self.weight > wcap) //this is the penalty for being overweight.
 	{
-		exp = (self.weight/self.max_weight);
+		exp = (self.weight/wcap);
 		exp = (exp+2)*(exp+2)+(exp*exp*exp*8);	//is this enough?
 		self.maxspeed = self.maxspeed / exp;
 	}
@@ -1707,6 +1732,13 @@ PlayerPostThink
 Called every frame after physics are run
 ================
 */
+// Cached live-player count for the HUD stat below.  A find() walk costs
+// O(all edicts) - at high rounds the pool holds hundreds of gibs, items and
+// zombies, so the scan is time-gated to twice a second and shared by all
+// players instead of running per player per frame.
+float hud_lpc_cache;
+float hud_lpc_time;
+
 void() PlayerPostThink =
 {
 //dprint ("post think\n");
@@ -1728,7 +1760,8 @@ void() PlayerPostThink =
 	self.hud_deaths         = self.dead;
 	self.hud_round_total    = zombies_round_total;
 	self.hud_current_iid    = ToIID(ItemInSlot(self, self.current_slot));
-	// Live player count — iterate all players once per tick.
+	// Live player count — refresh the shared cache at most twice a second.
+	if (time >= hud_lpc_time)
 	{
 		local entity lp;
 		local float  lpc;
@@ -1739,8 +1772,10 @@ void() PlayerPostThink =
 				lpc = lpc + 1;
 			lp = find(lp, classname, "player");
 		}
-		self.hud_live_players = lpc;
+		hud_lpc_cache = lpc;
+		hud_lpc_time  = time + 0.5;
 	}
+	self.hud_live_players = hud_lpc_cache;
 	// Countdown seconds for the intermission break.
 	if (round_state == RSTATE_INTERMISSION)
 	{
@@ -1926,7 +1961,7 @@ void(entity player) CheckKillMilestone =
 		sprint(player, PRINT_HIGH,
 		       strcat("^3** KILL MILESTONE: ", ftos(milestone), " kills!  ^2+",
 		              ftos(bonus), " pts **\n"));
-		sound(player, CHAN_AUTO, "misc/menu3.wav", 1, ATTN_NONE);
+		sound(player, CHAN_AUTO, "sounds/misc/ching.wav", 1, ATTN_NONE);
 	}
 	else
 	{

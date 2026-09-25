@@ -20,7 +20,8 @@ from the repo root: it picks a Linux binary under `engine/release/` or `engine/d
 On Windows, use **`run_game.cmd`** from the repo root the same way: it finds `nzp\`, picks
 `engine\dist\win11\nzportable-sdl64.exe` or `engine\release\nzportable-sdl64.exe` (or MSVC
 `fteqw.exe` if present), and passes `-basedir` so you do not need to copy the binary next to
-`nzp\`. If game data is not found, it automatically prompts you to run setup.
+`nzp\`. If game data is not found, it automatically runs one-time setup (`setup_game.cmd`)
+to download it.
 
 ---
 
@@ -28,8 +29,13 @@ On Windows, use **`run_game.cmd`** from the repo root the same way: it finds `nz
 
 ### 1. Engine binary
 
-Either build it yourself (see [BUILD.md](BUILD.md)) or download a pre-built binary from the
-[Releases](https://github.com/awest813/Operation-Deadfall/releases/tag/bleeding-edge) page.
+Either build it yourself (see [BUILD.md](BUILD.md)) or grab an engine binary from this
+repository's [Releases](https://github.com/awest813/Operation-Deadfall/releases) page
+(published by the *Build ALL and Publish Release* workflow).
+
+> **Warning:** the engine binary shipped inside the NZ:P nightly bundles is a
+> different engine build and crashes on map load with this mod. Use only engines
+> built from this repository.
 
 If you built locally with the wrapper scripts, the easiest place to start is the packaged output:
 
@@ -61,12 +67,16 @@ To add it:
 
 1. Download **`mod.zip`** from the
    [LibreQuake v0.09-beta release](https://github.com/lavenderdotpet/LibreQuake/releases/tag/v0.09-beta).
-2. Extract it — you should get an `lq1/` folder containing `pak0.pak` and `pak1.pak`.
+2. Extract it — the archive wraps the data as `mod/lq1/`; move that `lq1/` folder out so it
+   sits next to `nzp/` (it contains `pak0.pak` and `pak1.pak`). Running the one-click setup
+   does this for you.
 3. Place `lq1/` next to `nzp/` (in the same directory as the engine binary or the parent of the
    repo, matching wherever your `nzp/` lives).
 
-The `lq1/` folder is entirely optional. The game runs without it; NZ:P data covers everything
-needed.
+The `lq1/` folder is entirely optional. The game runs without it; NZ:P data
+covers all custom Operation Deadfall content. Known asset gaps in both data
+layers (a few legacy model/sound references) are catalogued in
+[specs/asset_audit.md](specs/asset_audit.md).
 
 ---
 
@@ -133,7 +143,7 @@ cd C:\path\to\Operation-Deadfall
 run_game.cmd
 ```
 
-Optional: `run_game.cmd -- +map nzp_asylum`
+Optional: `run_game.cmd -- +map ndu`
 
 If you prefer to run the binary directly, use the packaged wrapper output:
 
@@ -164,10 +174,10 @@ Or invoke the binary directly:
 
 ```bash
 # Linux – headless, no window
-./nzportable64-sdl -dedicated +map nzp_asylum
+./nzportable64-sdl -dedicated +map ndu
 
 # Windows
-nzportable-sdl64.exe -dedicated +map nzp_asylum
+nzportable-sdl64.exe -dedicated +map ndu
 ```
 
 For Docker-based hosting, firewall ports, and production notes, see [HOSTING.md](HOSTING.md).
