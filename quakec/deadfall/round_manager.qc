@@ -323,33 +323,18 @@ void() RM_ResetToWaiting =
     dprint("RM: reset to WAITING (no connected players)\n");
 };
 
-// True when no live player stands within 128 units of the spot (spawn_zombie
-// vetoes spots with a player within 80 units, so do not pick those).
-float(entity spot) RM_SpotIsClear =
-{
-    local entity te;
-
-    te = findradius(spot.origin, 128);
-    while (te)
-    {
-        if (te.classname == "player" && te.health > 0)
-            return FALSE;
-        te = te.chain;
-    }
-    return TRUE;
-};
-
-// Pick a random zombie spawn point using reservoir sampling, preferring
-// spots away from players.  Priority: info_zombie_spawn >
-// info_player_deathmatch > info_player_start.  count is deliberately not
-// reset between fallback tiers: the early-return after each tier means the
-// fallback is only reached when count == 0, so the sampling is always
-// correct.  Each tier runs twice: first considering only clear spots, then
-// (if the map has no clear spot at all) any spot of that tier.
+// Pick a random zombie spawn point using reservoir sampling.
+// Priority: info_zombie_spawn > info_player_deathmatch > info_player_start >
+// the NZ:P character spawn points (info_player_tank/nikolai/takeo/doctor),
+// which ship on stock NZ:P maps and are spread across the playable area.
+// count is deliberately not reset between fallback tiers: the early-return
+// after each tier means the fallback is only reached when count == 0, so the
+// sampling is always correct.  spawn_zombie itself vetoes spots with a
+// player within 80 units; the manager retries those shortly after.
 entity() RM_PickSpawnPoint =
 {
     local entity spot, chosen;
-    local float  count, pass;
+    local float  count;
 
     count  = 0;
     chosen = world;
@@ -363,65 +348,19 @@ entity() RM_PickSpawnPoint =
         spot = find(spot, classname, "info_zombie_spawn");
     }
     if (chosen != world)
-    {
-        if (RM_SpotIsClear(chosen))
-            return chosen;
-        count = 0;
-        chosen = world;
-        spot = find(world, classname, "info_zombie_spawn");
-        while (spot)
-        {
-            if (RM_SpotIsClear(spot))
-            {
-                count = count + 1;
-                if (random() < (1.0 / count))
-                    chosen = spot;
-            }
-            spot = find(spot, classname, "info_zombie_spawn");
-        }
-        if (chosen != world)
-            return chosen;
-        count = 0;
-        chosen = world;
-        spot = find(world, classname, "info_zombie_spawn");
-        while (spot)
-        {
-            count = count + 1;
-            if (random() < (1.0 / count))
-                chosen = spot;
-            spot = find(spot, classname, "info_zombie_spawn");
-        }
-        if (chosen != world)
-            return chosen;
-    }
+        return chosen;
 
-    pass = 0;
-    while (pass < 2)
+    spot = find(world, classname, "info_player_deathmatch");
+    while (spot)
     {
-        count  = 0;
-        chosen = world;
-        spot = find(world, classname, "info_player_deathmatch");
-        while (spot)
-        {
-            if (pass == 0 && !RM_SpotIsClear(spot))
-            {
-                spot = find(spot, classname, "info_player_deathmatch");
-                continue;
-            }
-            count = count + 1;
-            if (random() < (1.0 / count))
-                chosen = spot;
-            spot = find(spot, classname, "info_player_deathmatch");
-        }
-        if (chosen != world)
-            return chosen;
-        pass = pass + 1;
+        count = count + 1;
+        if (random() < (1.0 / count))
+            chosen = spot;
+        spot = find(spot, classname, "info_player_deathmatch");
     }
+    if (chosen != world)
+        return chosen;
 
-    // Last resort: any player start, then the NZ:P character spawn points
-    // (info_player_tank/nikolai/takeo/doctor) which ship on stock NZ:P maps
-    // and are spread across the playable area - the closest thing to real
-    // zombie entry points on maps without info_zombie_spawn placements.
     spot = find(world, classname, "info_player_start");
     if (spot != world)
         return spot;

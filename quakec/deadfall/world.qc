@@ -395,7 +395,6 @@ void() worldspawn =
 	// Read performance preset before create_referees() so the round manager
 	// and all subsystems start with the correct settings.
 	// Server operators can tune this via: set od_perf_preset 0|1|2
-	registercvar("od_perf_preset", "1");	// default Medium (README table)
 	perf_preset = cvar("od_perf_preset");
 	if (perf_preset < PERF_LOW || perf_preset > PERF_HIGH)
 		perf_preset = PERF_MEDIUM;
