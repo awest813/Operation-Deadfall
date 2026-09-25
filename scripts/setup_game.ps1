@@ -131,6 +131,19 @@ if (-not $haveEngine) {
                         if ($f -ne "SDL2.dll") { $gotRelease = $true }
                     }
                 }
+                # Release zips ship the compiled mod bytecode under nzp\.
+                # progs.dat must always overwrite the NZ:P one (that is the
+                # whole mod); other files are copied only if absent.
+                $relNzp = Get-ChildItem -Path $relDir -Recurse -Directory -Filter "nzp" -ErrorAction SilentlyContinue | Select-Object -First 1
+                if ($relNzp) {
+                    New-Item -ItemType Directory -Force -Path $NzpDir | Out-Null
+                    Get-ChildItem -Path $relNzp.FullName -File | ForEach-Object {
+                        $dst = Join-Path $NzpDir $_.Name
+                        if ($_.Name -eq "progs.dat" -or -not (Test-Path -LiteralPath $dst)) {
+                            Copy-Item $_.FullName $dst -Force
+                        }
+                    }
+                }
             }
         } catch {
             Write-Host "No engine release available yet ($($_.Exception.Message))."
